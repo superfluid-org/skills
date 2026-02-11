@@ -1,0 +1,27 @@
+{
+  "name": "superfluid-skills",
+  "owner": {
+    "name": "Superfluid"
+  },
+  "metadata": {
+    "description": "Official Superfluid Protocol skills for AI agents"
+  },
+  "plugins": [
+    {
+      "name": "superfluid",
+      "source": "./",
+      "description": "Superfluid Protocol expert — smart contract interfaces, integration code, and debugging for real-time finance on EVM chains",
+      "version": "0.1.0",
+      "category": "development",
+      "tags": [
+        "superfluid",
+        "ethereum",
+        "evm",
+        "defi",
+        "solidity",
+        "streaming-payments",
+        "real-time-finance"
+      ]
+    }
+  ]
+}

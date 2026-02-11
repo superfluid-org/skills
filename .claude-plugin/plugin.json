@@ -1,0 +1,23 @@
+{
+  "name": "superfluid",
+  "description": "Superfluid Protocol expert — smart contract interfaces, integration code, and debugging for real-time finance on EVM chains. Covers Super Tokens, CFA streaming, GDA pools, automation, Super Apps, and all Superfluid contract ABIs.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Kaspar Kallas",
+    "email": "superfluid@kasparkallas.com"
+  },
+  "homepage": "https://superfluid.finance",
+  "repository": "https://github.com/superfluid-org/skills",
+  "license": "MIT",
+  "keywords": [
+    "superfluid",
+    "ethereum",
+    "evm",
+    "defi",
+    "solidity",
+    "streaming-payments",
+    "real-time-finance",
+    "super-tokens",
+    "money-streaming"
+  ]
+}
