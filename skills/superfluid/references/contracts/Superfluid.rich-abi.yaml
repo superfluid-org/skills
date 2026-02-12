@@ -366,6 +366,10 @@ callAppAfterCallback:
 appCallbackPush:
   # Push a new callback frame onto the context stack before invoking a Super App.
   # Sets up app credit and tracks the callback nesting level.
+  # GOTCHA: The appCreditGranted is backed by the flow sender's deposit as
+  # "owed deposit". If the Super App opens outgoing streams using this credit,
+  # the sender's total locked capital increases accordingly (roughly doubles
+  # for 1:1 relay, more for fan-out patterns).
   mutability: nonpayable
   access: agreement
   inputs:

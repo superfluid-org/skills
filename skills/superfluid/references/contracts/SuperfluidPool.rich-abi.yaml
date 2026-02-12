@@ -40,6 +40,10 @@ updateMemberUnits:
   # Set a member's units to an exact value.
   # GOTCHA: Emits Transfer as mint (from address(0)) or burn (to address(0)) depending
   # on whether units increased or decreased, making unit changes visible to ERC20 indexers.
+  # GOTCHA: Does not recompute the pool's per-unit flow rate. If a previous unit change
+  # caused per-unit rate to truncate to 0, reducing units won't restore the distribution.
+  # More generally, unit changes can only increase the adjustment flow (sticky), never
+  # decrease it. The distributor must re-call distributeFlow to reset.
   mutability: nonpayable
   access: admin | GDA
   inputs:
@@ -52,6 +56,7 @@ updateMemberUnits:
 
 increaseMemberUnits:
   # Increase a member's units by a delta.
+  # GOTCHA: Same rounding caveat as updateMemberUnits — does not recompute per-unit flow rate.
   mutability: nonpayable
   access: admin | GDA
   inputs:
@@ -64,6 +69,7 @@ increaseMemberUnits:
 
 decreaseMemberUnits:
   # Decrease a member's units by a delta.
+  # GOTCHA: Same rounding caveat as updateMemberUnits — does not recompute per-unit flow rate.
   mutability: nonpayable
   access: admin | GDA
   inputs:

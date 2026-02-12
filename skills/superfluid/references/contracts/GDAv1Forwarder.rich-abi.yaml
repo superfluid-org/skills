@@ -72,6 +72,14 @@ createPool:
 
 updateMemberUnits:
   # Set a member's units in a pool. Only the pool admin can call this.
+  # GOTCHA: Unit changes do NOT recompute the per-unit flow rate from scratch.
+  # The pool index stores a per-unit rate set by the last distributeFlow call.
+  # If a unit increase once caused that rate to truncate to 0 (totalUnits > flowRate),
+  # decreasing units later won't recover the distribution — the per-unit rate stays 0
+  # and the entire flow goes to the admin as the adjustment flow.
+  # More generally, the adjustment flow can only increase with unit changes (sticky) —
+  # it never decreases until distributeFlow is re-called.
+  # Fix: re-call distributeFlow with the same flow rate to force recomputation.
   mutability: nonpayable
   access: admin
   inputs:
@@ -133,6 +141,11 @@ distribute:
 
 distributeFlow:
   # Start or update a continuous flow distribution from `from` into the pool.
+  # GOTCHA: The actual flow rate may differ from the requested rate due to rounding
+  # across member units. The difference becomes the adjustment flow to the admin.
+  # If requestedFlowRate < totalUnits, the per-unit rate truncates to 0 and the
+  # entire flow goes to the admin. Unit changes can only increase the adjustment flow
+  # (sticky), never decrease it. Re-call distributeFlow to reset.
   mutability: nonpayable
   access: admin | anyone(if-pool-allows) | anyone(if-liquidation)
   inputs:
@@ -175,6 +188,8 @@ getFlowDistributionFlowRate:
 
 getPoolAdjustmentFlowRate:
   # The adjustment flow rate for a pool (rounding remainder directed to admin).
+  # NOTE: This value can only increase with unit changes (sticky) — it resets only
+  # when distributeFlow is re-called. If unexpectedly high, re-call distributeFlow.
   mutability: view
   inputs:
     - pool: address

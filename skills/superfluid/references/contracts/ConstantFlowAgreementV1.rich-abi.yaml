@@ -57,7 +57,9 @@ meta:
 # pleb period           — window after patrician where reward goes to the liquidator
 # pirate / bailout      — state where total deposit cannot cover the deficit; protocol bails out
 # Super App             — a contract registered with the Host that receives agreement callbacks
-# app credit            — deposit credit granted to Super Apps so they can relay incoming flows
+# app credit            — deposit credit granted to Super Apps so they can relay incoming flows.
+#                          The credit covers outgoing stream deposits, but these are backed by
+#                          the original sender as "owed deposit", increasing their locked capital.
 # critical              — an account whose available balance is negative (eligible for liquidation)
 # jailed                — a Super App penalized for violating protocol rules; loses callbacks
 #
@@ -98,6 +100,8 @@ updateFlow:
   # Change the flow rate of an existing stream from ctx.msgSender to receiver.
   # GOTCHA: Deposit is adjusted to match the new flow rate but never refunds
   # owed deposit — that adjustment happens separately via the app credit system.
+  # Note: owedDeposit accumulates when a Super App receiver uses app credit to
+  # open outgoing streams. The sender bears the deposit cost for those streams.
   mutability: nonpayable
   access: anyone  # flow from ctx.msgSender
   inputs:

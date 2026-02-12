@@ -1,8 +1,9 @@
 ---
-status: open
+status: done
 priority: high
 tags: [spec, contracts, skill, enhancement]
 created: 2026-02-12
+resolved: 2026-02-12
 ---
 
 # T002 — Document GDA adjustment flow rate semantics
@@ -41,6 +42,15 @@ When `totalUnits` exceeds `actualFlowRate` (even transiently), `floor(actualFR /
 ### Compounding
 
 Issues 1 and 2 compound. Issue 1 locks in a reduced `actualFlowRate`. Issue 2 then ratchets `adjustmentFlowRate` up against that already-reduced actual. The effective flow rate can be driven arbitrarily far below the target by nothing more than the ordering of pool admin operations.
+
+## Resolution
+
+Implemented across two passes:
+
+- **T008** covered the extreme case (#3): GOTCHAs on `updateMemberUnits` and `distributeFlow` about truncation to 0 and the need to re-call `distributeFlow`.
+- **T002 completion** added the general sticky behavior (#2): the adjustment flow can only increase with unit changes, never decrease. Also added a GDA rounding subsection to `architecture.md`, expanded `estimateFlowDistributionActualFlowRate` with the `actualFlowRate` formula, and added a sticky note to `getPoolAdjustmentFlowRate`.
+
+The three-level model (#1) is not explicitly documented as a separate concept — the requested→actual gap is small and already implied by the estimation function param/output names. The compounding analysis remains in this ticket as reference material.
 
 ## Proposed changes
 

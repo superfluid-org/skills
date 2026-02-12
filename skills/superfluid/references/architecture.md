@@ -80,6 +80,27 @@ Creates continuous money streams: one sender, one receiver, constant flow rate.
   of senders via `flowOperatorDefinitions`
 - All CFA state changes go through the Host's `callAgreement`
 
+#### App Credit & Deposit Mechanics
+
+When a Super App receives a CFA stream, it often needs to open outgoing streams
+in its callback (e.g., a payment splitter). Opening a stream normally requires
+a buffer deposit, but the Super App may not hold tokens yet. **App credit**
+solves this: the Host grants the Super App a temporary deposit credit during its
+callback, allowing it to open outgoing streams without pre-funded tokens.
+
+The cost is borne by the **original sender**. The deposits for the Super App's
+outgoing streams are tracked as **owed deposit** (`owedDeposit`) on the sender's
+account. This means the sender's total locked capital roughly doubles: their own
+deposit for the stream to the Super App, plus the owed deposit backing the Super
+App's outgoing streams. Fan-out patterns (1 incoming → N outgoing) amplify this
+further — each outgoing stream has its own deposit, so the total can exceed 2×.
+
+This connects to the balance formula in the Super Token section below:
+`availableBalance = settledBalance + dynamics - max(0, deposit - owedDeposit)`.
+Higher locked capital means the sender reaches **critical** status (negative
+available balance, eligible for liquidation) sooner than they would streaming
+to a regular account.
+
 ### GDA — General Distribution Agreement
 
 Many-to-many distribution via **pools**:
@@ -93,6 +114,17 @@ Many-to-many distribution via **pools**:
   members can still **claim** accumulated distributions
 - Pool `distributionFromAnyAddress` setting controls whether only the admin can
   distribute or anyone can — enabling many-to-many patterns
+
+#### GDA Rounding & Adjustment Flow
+
+Flow distributions use integer math: `perUnitRate = requestedFlowRate / totalUnits`
+(truncated). The small remainder becomes the **adjustment flow** directed to the pool
+admin. When `updateMemberUnits` changes the unit count, the adjustment flow is
+recalculated but can only increase (sticky behavior) — it never decreases until
+`distributeFlow` is called again. In the extreme case where `totalUnits` exceeds
+`requestedFlowRate` (even transiently), the per-unit rate truncates to 0 and the
+entire distribution becomes adjustment flow. Re-calling `distributeFlow` resets
+the per-unit rate and adjustment flow from scratch.
 
 ### IDA — Instant Distribution Agreement (Deprecated)
 
