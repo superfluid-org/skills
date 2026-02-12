@@ -1,7 +1,7 @@
 {
   "name": "superfluid",
   "description": "Superfluid Protocol expert — smart contract interfaces, integration code, and debugging for real-time finance on EVM chains. Covers Super Tokens, CFA streaming, GDA pools, automation, Super Apps, and all Superfluid contract ABIs.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Kaspar Kallas",
     "email": "superfluid@kasparkallas.com"

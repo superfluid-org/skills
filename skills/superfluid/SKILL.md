@@ -91,6 +91,11 @@ callbacks. See the YAML header and glossary for Foundry testing gotchas.
 | Token-centric API for callback logic | also `references/contracts/SuperTokenV1Library.rich-abi.yaml` (use `WithCtx` variants) |
 | App registration, Host context, batch calls | `references/contracts/Superfluid.rich-abi.yaml` |
 
+Super Apps that relay incoming flows via app credit cause the **sender's deposit
+to roughly double** (or more for fan-out patterns), because outgoing stream
+deposits are backed by the sender as owed deposit. See "App Credit & Deposit
+Mechanics" in `references/architecture.md` for the full explanation.
+
 ### Sentinels and liquidation
 
 | Intent | Read |

@@ -13,6 +13,12 @@
 #
 # Important: the "terminated" callbacks (delete) are NOT allowed to revert.
 # Reverting in a delete callback causes the SuperApp to be "jailed" (defunct).
+#
+# GOTCHA: When a Super App relays an incoming flow by opening outgoing streams
+# in its callback, the deposits for those outgoing streams are covered by app
+# credit but ultimately backed by the original sender via "owed deposit".
+# The sender's total locked capital roughly doubles (their deposit + owed
+# deposit). Fan-out (1 incoming → N outgoing) amplifies this further.
 
 meta:
   name: CFASuperAppBase

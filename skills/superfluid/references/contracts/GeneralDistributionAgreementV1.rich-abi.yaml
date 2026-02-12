@@ -129,6 +129,11 @@ distributeFlow:
   # Start or update a continuous flow distribution from `from` into the pool.
   # GOTCHA: The actual flow rate may differ from the requested rate due to rounding
   # across member units. The difference becomes the adjustment flow to the admin.
+  # The per-unit rate is stored in the pool index as requestedFlowRate / totalUnits
+  # (integer division). If this truncates to 0 (totalUnits > requestedFlowRate),
+  # the entire flow becomes the adjustment flow. Unit changes (updateMemberUnits)
+  # can only increase the adjustment flow (sticky), never decrease it.
+  # Re-calling distributeFlow is the only way to reset the per-unit rate and adjustment flow.
   # Setting requestedFlowRate to 0 closes the flow. A third party can close a flow
   # (from != ctx.msgSender) only when `from` is critical (liquidation).
   # During liquidation, reward distribution follows the same 3Ps model as CFA.
@@ -154,6 +159,12 @@ updateMemberUnits:
   # Set a member's units in a pool. Only callable by the pool admin through the Host.
   # GOTCHA: Delegates to the pool's updateMemberUnits, which also emits MemberUnitsUpdated
   # and Transfer (mint/burn) from the SuperfluidPool contract.
+  # GOTCHA: Unit changes adjust the adjustment flow but do NOT recompute the per-unit flow
+  # rate stored in the pool index. If the per-unit rate was previously truncated to 0
+  # (because totalUnits exceeded the flow rate), changing units won't fix it.
+  # More generally, unit changes can only increase the adjustment flow, never decrease it
+  # (sticky behavior). Even if new units divide cleanly, the adjustment flow stays at its
+  # high-water mark. The distributor must re-call distributeFlow to reset.
   mutability: nonpayable
   access: admin
   inputs:
@@ -320,8 +331,10 @@ getAccountFlowInfo:
 # DO NOT rely on these if querying off-chain.
 
 estimateFlowDistributionActualFlowRate:
-  # Estimate the actual flow rate and total distribution flow rate for a given request.
-  # The difference between requested and actual is the adjustment flow rate.
+  # Estimate the actual flow rate for a given request based on current pool state.
+  # actualFlowRate = floor(requestedFlowRate / totalUnits) * totalUnits.
+  # The initial adjustment flow is requestedFlowRate - actualFlowRate (small rounding remainder).
+  # NOTE: After unit changes, the actual adjustment flow may be higher due to sticky behavior.
   # GOTCHA: Only precise in an atomic transaction — do not rely on off-chain queries.
   mutability: view
   inputs:
@@ -413,6 +426,9 @@ isPatricianPeriod:
 appendIndexUpdateByPool:
   # Called by a pool after a member unit update to propagate the index change
   # and adjust the pool's adjustment flow rate.
+  # NOTE: Recomputes the adjustment flow using the existing per-unit rate in the pool
+  # index — does NOT recompute the per-unit rate itself from the distributor's requested
+  # flow rate. This is why unit changes can't recover a distribution that was truncated to 0.
   mutability: nonpayable
   access: pool
   inputs:

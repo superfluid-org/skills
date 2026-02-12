@@ -12,10 +12,13 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Open Tickets
 
-- [[T002-document-gda-adjustment-flow-rate]] -- Document GDA adjustment flow rate semantics (ratchet, three-level model)
+(none)
 
 ## Resolved Tickets
 
+- [[T009-document-app-credit-deposit-implications]] -- Document app credit deposit implications for Super App senders
+- [[T002-document-gda-adjustment-flow-rate]] -- Document GDA adjustment flow rate semantics (sticky, rounding)
+- [[T008-add-unit-change-rounding-gotchas]] -- Add GOTCHAs for unit-change / flow-rate rounding interaction
 - [[T007-add-abi-script]] -- Add abi.mjs script and SDK ABI index to SKILL.md
 - [[T006-improve-skill-trigger-description]] -- Improve SKILL.md description so the AI invokes the skill more reliably
 - [[T005-add-balance-script]] -- Add balance.mjs script for live Super Token balance lookups
