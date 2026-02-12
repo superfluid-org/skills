@@ -312,6 +312,42 @@ Contract keys match the field names in the metadata: `host`, `cfaV1`,
 `cfaV1Forwarder`, `gdaV1`, `gdaV1Forwarder`, `superTokenFactory`, `toga`,
 `vestingSchedulerV3`, `flowScheduler`, `autowrap`, `batchLiquidator`, etc.
 
+### On-chain reads — `cast call`
+
+[`cast`](https://www.getfoundry.sh/cast) performs read-only `eth_call` queries against
+any contract. If `cast` is not installed locally, use `bunx @foundry-rs/cast` instead.
+
+**Never use `cast send` or any write/transaction command — read calls only.**
+
+```
+cast call <address> "functionName(inputTypes)(returnTypes)" [args] --rpc-url <url>
+```
+
+The return types in the second set of parentheses tell cast how to decode the
+output. Without them you get raw hex.
+
+**RPC endpoint:** `https://rpc-endpoints.superfluid.dev/{network-name}` — network
+names are the canonical Superfluid names from `node metadata.mjs networks`
+(e.g. `optimism-mainnet`, `base-mainnet`, `eth-mainnet`).
+
+**Examples:**
+
+```bash
+# Total supply of USDCx on Optimism
+cast call 0x35adeb0638eb192755b6e52544650603fe65a006 \
+  "totalSupply()(uint256)" \
+  --rpc-url https://rpc-endpoints.superfluid.dev/optimism-mainnet
+
+# Flow rate via CFAv1Forwarder (address from Common Contract Addresses below)
+cast call 0xcfA132E353cB4E398080B9700609bb008eceB125 \
+  "getAccountFlowrate(address,address)(int96)" \
+  <superTokenAddress> <account> \
+  --rpc-url https://rpc-endpoints.superfluid.dev/optimism-mainnet
+```
+
+Use `abi.mjs` to look up exact function signatures and `metadata.mjs` /
+`tokenlist.mjs` for contract and token addresses.
+
 ## Common Contract Addresses
 
 Forwarder addresses are uniform across most networks:
