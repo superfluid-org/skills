@@ -1,13 +1,10 @@
 ---
 name: superfluid
 description: >
-  Superfluid Protocol expert — smart contract interfaces, integration code, and
-  debugging for the Superfluid real-time finance protocol on EVM chains. Trigger
-  on: Superfluid, Super Tokens, money streaming, CFA, GDA, IDA, pools, flow
-  rates, real-time balance, sentinel, TOGA, liquidation, or any Superfluid
-  contract name. Also trigger on Solidity/TypeScript/JavaScript code that
-  interacts with Superfluid contracts, debugging Superfluid reverts, or mentions
-  of "streaming payments" / "real-time finance" on EVM.
+  Use this skill for ANY question or task involving the Superfluid Protocol —
+  writing integration code, debugging, looking up contract ABIs, understanding
+  architecture, or answering questions. Do NOT search the web for Superfluid
+  information before invoking this skill.
 ---
 
 # Superfluid Protocol Skill
@@ -73,11 +70,25 @@ public function, event, and error for one contract.
 | Schedule future stream start/stop | `references/contracts/FlowScheduler.rich-abi.yaml` |
 | Auto-wrap when Super Token balance is low | `references/contracts/AutoWrapManager.rich-abi.yaml` and `references/contracts/AutoWrapStrategy.rich-abi.yaml` |
 
+### Writing Solidity integrations (SuperTokenV1Library)
+
+| Intent | Read |
+|--------|------|
+| Token-centric Solidity API (`using SuperTokenV1Library for ISuperToken`) | `references/contracts/SuperTokenV1Library.rich-abi.yaml` |
+
+The library wraps CFA and GDA agreement calls into ergonomic methods like
+`token.flow(receiver, flowRate)`. Use it for any Solidity contract that
+interacts with Superfluid — Super Apps, automation contracts, DeFi
+integrations. Includes agreement-abstracted functions (`flowX`, `transferX`)
+that auto-route to CFA or GDA, plus `WithCtx` variants for Super App
+callbacks. See the YAML header and glossary for Foundry testing gotchas.
+
 ### Building Super Apps
 
 | Intent | Read |
 |--------|------|
 | CFA callback hooks (simplified base) | `references/contracts/CFASuperAppBase.rich-abi.yaml` |
+| Token-centric API for callback logic | also `references/contracts/SuperTokenV1Library.rich-abi.yaml` (use `WithCtx` variants) |
 | App registration, Host context, batch calls | `references/contracts/Superfluid.rich-abi.yaml` |
 
 ### Sentinels and liquidation
@@ -165,6 +176,8 @@ Fields appear in this order: description comment, `mutability`, `access`,
   not alphabetical. First errors in the list are the most likely causes.
 - **`# GOTCHA:`** prefix flags non-obvious behavior, common mistakes, or edge
   cases. Pay close attention to these.
+- **`meta.source`** is an array of raw GitHub URLs to the Solidity source files
+  (implementation, interface, base — filenames are self-documenting).
 - **`meta.deployments`** has per-network addresses split into `mainnet` and
   `testnet` subgroups.
 
@@ -193,10 +206,49 @@ errors:
 
 ## Runtime Data (Scripts)
 
-The Rich ABIs document **interfaces** (what to call and how). Two scripts
-provide the **runtime data** (what to call it on) by wrapping the canonical
-npm packages with local caching for offline use. No npm install required —
-the scripts fetch from CDN equivalents of the packages.
+The Rich ABIs document **interfaces** (what to call and how). Scripts provide
+**runtime data** (what to call it on) by wrapping canonical npm packages with
+local caching for offline use. No npm install required — the scripts fetch
+from CDN equivalents of the packages.
+
+### ABI JSON — `@sfpro/sdk` package + `scripts/abi.mjs`
+
+The [`@sfpro/sdk`](https://sdk.superfluid.pro/docs) package provides typed JSON ABIs
+for use with viem / wagmi / ethers. ABIs are split across sub-paths:
+
+| Contract (YAML name) | Import path | Export name |
+|---|---|---|
+| CFAv1Forwarder | `@sfpro/sdk/abi` | `cfaForwarderAbi` |
+| GDAv1Forwarder | `@sfpro/sdk/abi` | `gdaForwarderAbi` |
+| SuperfluidPool | `@sfpro/sdk/abi` | `gdaPoolAbi` |
+| SuperToken | `@sfpro/sdk/abi` | `superTokenAbi` |
+| Superfluid (Host) | `@sfpro/sdk/abi/core` | `hostAbi` |
+| ConstantFlowAgreementV1 | `@sfpro/sdk/abi/core` | `cfaAbi` |
+| GeneralDistributionAgreementV1 | `@sfpro/sdk/abi/core` | `gdaAbi` |
+| InstantDistributionAgreementV1 | `@sfpro/sdk/abi/core` | `idaAbi` |
+| SuperTokenFactory | `@sfpro/sdk/abi/core` | `superTokenFactoryAbi` |
+| BatchLiquidator | `@sfpro/sdk/abi/core` | `batchLiquidatorAbi` |
+| TOGA | `@sfpro/sdk/abi/core` | `togaAbi` |
+| AutoWrapManager | `@sfpro/sdk/abi/automation` | `autoWrapManagerAbi` |
+| AutoWrapStrategy | `@sfpro/sdk/abi/automation` | `autoWrapStrategyAbi` |
+| FlowScheduler | `@sfpro/sdk/abi/automation` | `flowSchedulerAbi` |
+| VestingSchedulerV3 | `@sfpro/sdk/abi/automation` | `vestingSchedulerV3Abi` |
+
+CFASuperAppBase and SuperTokenV1Library are not in the SDK (abstract base /
+Solidity library).
+
+When writing application code, prefer importing from `@sfpro/sdk` over
+inlining ABI JSON. Use `scripts/abi.mjs` to inspect or inline ABIs when the
+SDK is not a dependency:
+
+```
+node abi.mjs <contract>               Full JSON ABI
+node abi.mjs <contract> <function>    Single fragment by name
+node abi.mjs list                     All contracts with SDK import info
+```
+
+Accepts YAML names (`CFAv1Forwarder`) and short aliases (`cfa`, `host`,
+`pool`, `token`, `vesting`, etc.).
 
 ### Token list — `scripts/tokenlist.mjs`
 
@@ -218,6 +270,23 @@ The `superTokenInfo.type` field determines which ABI patterns apply:
   Super Token functions always use 18 decimals.
 - **Native Asset** → use `upgradeByETH`/`downgradeToETH` instead.
 - **Pure** → `upgrade`/`downgrade` revert; no wrapping.
+
+### Super Token balance — `scripts/balance.mjs`
+
+Source: [Super API](https://superapi.kazpi.com) (real-time on-chain query).
+Retrieves the current Super Token balance, net flow rate, and underlying token
+balance for any account. No caching — balances are fetched live.
+
+```
+node balance.mjs balance <chain-id> <token-symbol-or-address> <account>
+```
+
+The output includes:
+- **connected/unconnected balance** — wei and human-readable formatted values.
+  Connected = streaming balance; unconnected = pending pool distributions.
+- **netFlow** — aggregate flow rate in wei/sec and tokens/month (30-day month).
+- **maybeCriticalAt** — estimated time when connected balance hits zero.
+- **underlyingToken** — the wrapped ERC-20 balance (for Wrapper Super Tokens).
 
 ### Network metadata — `scripts/metadata.mjs`
 

@@ -17,7 +17,7 @@ The skill exists to solve these problems by giving AI direct, structured knowled
 
 ## Current Focus
 
-v0.1.0 shipped the first layer: Rich ABI YAMLs for core contracts, protocol architecture, and runtime data scripts. Next layer is tooling knowledge (SDKs, subgraphs, APIs).
+v0.2.0 expanded the skill with a Solidity library reference, live balance/ABI scripts, and SDK integration knowledge. The next focus is broader tooling reference (subgraphs, APIs, deprecation notes), best practices, and task-oriented guides.
 
 ## Planned
 
@@ -32,4 +32,5 @@ v0.1.0 shipped the first layer: Rich ABI YAMLs for core contracts, protocol arch
 
 ## Completed
 
+- **v0.2.0** -- SuperTokenV1Library Rich ABI YAML (Solidity library reference). Source code links (raw GitHub URL arrays) across all 16 Rich ABI YAMLs. balance.mjs script for live Super Token balance lookups via Super API. abi.mjs script for JSON ABI fetching from @sfpro/sdk with SDK ABI index in SKILL.md. Improved SKILL.md trigger description for more reliable invocation.
 - **v0.1.0** -- Initial release. 16 Rich ABI YAMLs covering all core + automation + legacy contracts. 2 runtime scripts (token list resolver, network metadata resolver). SKILL.md with use-case routing and Rich ABI YAML reading instructions.

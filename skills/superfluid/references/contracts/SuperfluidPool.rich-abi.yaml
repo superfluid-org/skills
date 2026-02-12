@@ -9,7 +9,9 @@
 meta:
   name: SuperfluidPool
   version: v1
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/gdav1/SuperfluidPool.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/agreements/gdav1/ISuperfluidPool.sol
   implements: [ISuperfluidPool, IERC20, IERC20Metadata]
   inherits: [BeaconProxiable]
   # No fixed deployments — pools are created dynamically via GDA.createPool.

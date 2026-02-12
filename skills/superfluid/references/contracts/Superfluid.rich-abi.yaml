@@ -10,7 +10,9 @@
 meta:
   name: Superfluid
   version: v1
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/Superfluid.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol
   implements: [ISuperfluid]
   inherits: [UUPSProxiable, BaseRelayRecipient]
   deployments:

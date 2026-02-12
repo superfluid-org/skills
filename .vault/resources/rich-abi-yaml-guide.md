@@ -156,9 +156,12 @@ mappings come from source code analysis, not from the compiler.
 meta:
   name: ConstantFlowAgreementV1
   version: v1
-  source: https://github.com/superfluid-finance/ethereum-contracts
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/ConstantFlowAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/AgreementBase.sol
   implements: [IConstantFlowAgreementV1, ISuperAgreement]
-  inherits: [SuperfluidAgreementV1Base, UUPSProxiable]
+  inherits: [AgreementBase]
   deployments:
     mainnet:
       eth-mainnet: "0x..."
@@ -171,7 +174,7 @@ meta:
 Fields:
 - `name` — the Solidity contract name
 - `version` — protocol version (v1, v2, etc.)
-- `source` — link to the source repository
+- `source` — array of raw GitHub URLs to the Solidity source files (implementation first, interface second, base third). Filenames are self-documenting (`Foo.sol` = implementation, `IFoo.sol` = interface, `FooBase.sol` = base). Only include entries that exist for the contract.
 - `implements` — interfaces the contract fulfills (what callers can expect)
 - `inherits` — base contracts it extends (where shared logic comes from)
 - `deployments` — split into `mainnet` and `testnet` subgroups

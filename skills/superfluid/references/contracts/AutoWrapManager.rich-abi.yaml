@@ -45,7 +45,9 @@
 meta:
   name: AutoWrapManager
   version: v1
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/Manager.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/interfaces/IManager.sol
   implements: [IManager, Ownable]
   note: >
     Automates Super Token balance top-ups by wrapping underlying ERC-20 tokens.

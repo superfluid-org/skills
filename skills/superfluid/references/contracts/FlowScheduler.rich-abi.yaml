@@ -32,7 +32,9 @@
 meta:
   name: FlowScheduler
   version: v1
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/scheduler/contracts/FlowScheduler.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/scheduler/contracts/interface/IFlowScheduler.sol
   implements: [IFlowScheduler, SuperAppBase]
   note: >
     Enables scheduled stream start/stop at predetermined timestamps.
