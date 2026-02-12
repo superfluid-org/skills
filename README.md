@@ -2,7 +2,7 @@
 
 An AI agent skill for the [Superfluid Protocol](https://superfluid.finance) — the real-time finance protocol for streaming payments on EVM chains.
 
-This skill gives AI agents deep knowledge of Superfluid smart contract interfaces, enabling them to write integration code, debug reverts, and answer protocol questions accurately. It covers Super Tokens, CFA (1:1 streaming), GDA (1:many distribution pools), automation contracts (vesting, flow scheduling, auto-wrap), Super App development, and sentinel/liquidation mechanics.
+This skill gives AI agents deep knowledge of Superfluid smart contract interfaces, enabling them to write integration code, debug reverts, and answer protocol questions accurately. It covers Super Tokens, CFA (1:1 streaming), GDA (many-to-many distribution pools), automation contracts (vesting, flow scheduling, auto-wrap), Super App development, and sentinel/liquidation mechanics.
 
 ## Install
 

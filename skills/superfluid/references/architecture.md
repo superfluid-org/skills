@@ -82,7 +82,7 @@ Creates continuous money streams: one sender, one receiver, constant flow rate.
 
 ### GDA — General Distribution Agreement
 
-One-to-many distribution via **pools**:
+Many-to-many distribution via **pools**:
 
 - An admin creates a `SuperfluidPool` and assigns **units** to members
 - **Instant distribution**: `distribute(token, from, pool, amount)` — splits
@@ -91,12 +91,12 @@ One-to-many distribution via **pools**:
   creates a continuous flow that splits proportionally
 - Members must **connect** to receive distributions automatically; unconnected
   members can still **claim** accumulated distributions
-- Pool `transferability` setting controls whether only the admin can distribute
-  or anyone can
+- Pool `distributionFromAnyAddress` setting controls whether only the admin can
+  distribute or anyone can — enabling many-to-many patterns
 
 ### IDA — Instant Distribution Agreement (Deprecated)
 
-The original one-to-many mechanism, superseded by GDA. Notable differences:
+The original distribution mechanism (1-to-many only), superseded by GDA. Notable differences:
 - Uses "index" / "subscription" terminology instead of "pool" / "member"
 - Dual event pattern: every operation emits both an Index* variant (indexed by
   publisher) and a Subscription* variant (indexed by subscriber)
@@ -152,7 +152,7 @@ Each GDA pool is a separate contract deployed as a beacon proxy. Key mechanics:
   disconnected members accumulate claimable balances
 - **Admin**: Manages unit assignments, pool configuration
 - **Transfer restrictions**: `poolConfig.transferabilityForUnitsOwner` controls
-  whether only admin can distribute or if unit holders can too
+  whether members can transfer pool units via ERC-20 transfer
 
 ## Forwarders — Developer-Friendly Layer
 
