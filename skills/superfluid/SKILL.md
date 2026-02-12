@@ -24,7 +24,7 @@ explains how to read them.
 governance, and SuperTokenFactory.
 
 **Agreements** — stateless financial primitives that store data on the token:
-CFA (1:1 streams), GDA (1:many via pools), IDA (deprecated, replaced by GDA).
+CFA (1:1 streams), GDA (many-to-many via pools), IDA (deprecated, replaced by GDA).
 
 **Super Token** — ERC-20/ERC-777/ERC-2612 with real-time balance. Three
 variants: Wrapper (ERC-20 backed), Native Asset/SETH (ETH backed), Pure
@@ -34,7 +34,7 @@ variants: Wrapper (ERC-20 backed), Native Asset/SETH (ETH backed), Pure
 call is a standalone transaction with readable wallet descriptions. Cannot be
 batched — use `Host.batchCall` with raw agreement calls for atomicity.
 
-**Automation** (VestingSchedulerV3, FlowScheduler, AutoWrapManager) — schedule
+**Automation** (Vesting Scheduler, FlowScheduler, Auto-Wrap) — schedule
 on-chain intent, require off-chain keepers to trigger execution.
 
 ## Use-Case → Reference Map
