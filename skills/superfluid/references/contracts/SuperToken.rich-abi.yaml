@@ -18,7 +18,10 @@
 meta:
   name: SuperToken
   version: v1
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SuperToken.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SuperfluidToken.sol
   inherits: [SuperfluidToken, ISuperToken, UUPSProxiable]
   variants:
     wrapper: "Standard ERC-20 wrapper — upgrade() / downgrade()"

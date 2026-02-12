@@ -15,7 +15,8 @@
 meta:
   name: TOGA
   version: v3
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/TOGA.sol
   implements: [ITOGAv3, IERC777Recipient]
   note: >
     TOGA designates one PIC per Super Token via a continuous bond auction.

@@ -8,7 +8,10 @@
 meta:
   name: GeneralDistributionAgreementV1
   version: v1
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/gdav1/GeneralDistributionAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/agreements/gdav1/IGeneralDistributionAgreementV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/agreements/AgreementBase.sol
   implements: [IGeneralDistributionAgreementV1, ISuperAgreement]
   inherits: [AgreementBase, TokenMonad]
   deployments:

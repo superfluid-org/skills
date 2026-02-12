@@ -18,7 +18,10 @@
 meta:
   name: AutoWrapStrategy
   version: v1
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/strategies/WrapStrategy.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/interfaces/IStrategy.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/strategies/StrategyBase.sol
   implements: [IStrategy, Ownable]
   note: >
     Wraps underlying ERC-20 tokens into Super Tokens on behalf of a user.

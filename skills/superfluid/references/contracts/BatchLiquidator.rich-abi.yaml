@@ -19,7 +19,8 @@
 meta:
   name: BatchLiquidator
   version: v1
-  source: https://github.com/superfluid-org/protocol-monorepo/blob/dev/packages/ethereum-contracts/contracts/utils/BatchLiquidator.sol
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/BatchLiquidator.sol
   note: >
     Utility contract for sentinel bots that monitor and liquidate
     critical/insolvent Superfluid streams.  The constructor derives the

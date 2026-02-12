@@ -17,7 +17,9 @@
 meta:
   name: CFASuperAppBase
   version: v1
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/apps/CFASuperAppBase.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/apps/SuperAppBase.sol
   implements: [ISuperApp]
   abstract: true
   note: >

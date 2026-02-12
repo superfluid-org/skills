@@ -40,7 +40,9 @@
 meta:
   name: VestingSchedulerV3
   version: v3
-  source: https://github.com/superfluid-finance/protocol-monorepo
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/scheduler/contracts/VestingSchedulerV3.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/scheduler/contracts/interface/IVestingSchedulerV3.sol
   implements: [IVestingSchedulerV3, IRelayRecipient]
   note: >
     Automates token vesting via Superfluid streams. Sender creates a schedule,
