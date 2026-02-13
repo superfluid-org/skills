@@ -251,12 +251,28 @@ for use with viem / wagmi / ethers. ABIs are split across sub-paths:
 | FlowScheduler | `@sfpro/sdk/abi/automation` | `flowSchedulerAbi` |
 | VestingSchedulerV3 | `@sfpro/sdk/abi/automation` | `vestingSchedulerV3Abi` |
 
+The SDK also exports chain-indexed address objects alongside each ABI:
+
+| Import path | Address exports |
+|---|---|
+| `@sfpro/sdk/abi` | `cfaForwarderAddress`, `gdaForwarderAddress` |
+| `@sfpro/sdk/abi/core` | `hostAddress`, `cfaAddress`, `gdaAddress`, `idaAddress`, `superTokenFactoryAddress`, `batchLiquidatorAddress`, `togaAddress` |
+| `@sfpro/sdk/abi/automation` | `autoWrapManagerAddress`, `autoWrapStrategyAddress`, `flowSchedulerAddress`, `vestingSchedulerV3Address` |
+
+Each export is an object keyed by chain ID:
+
+```js
+import { hostAbi, hostAddress } from "@sfpro/sdk/abi/core";
+const host = hostAddress[8453]; // Base Mainnet
+```
+
 CFASuperAppBase and SuperTokenV1Library are not in the SDK (abstract base /
 Solidity library).
 
-When writing application code, prefer importing from `@sfpro/sdk` over
-inlining ABI JSON. Use `scripts/abi.mjs` to inspect or inline ABIs when the
-SDK is not a dependency:
+When writing application code, ALWAYS import ABIs and addresses from
+`@sfpro/sdk` — do NOT hand-craft ABI fragments (risk of phantom parameters)
+or hardcode contract addresses (they vary per network). Use `scripts/abi.mjs`
+to inspect or inline ABIs when the SDK is not a dependency:
 
 ```
 node abi.mjs <contract>               Full JSON ABI
@@ -362,12 +378,14 @@ Use `abi.mjs` to look up exact function signatures and `metadata.mjs` /
 
 ## Common Contract Addresses
 
-Forwarder addresses are uniform across most networks:
+Do NOT hardcode or fabricate addresses. Get them from the SDK address exports
+(see ABI section above) or from `node scripts/metadata.mjs contracts <chain>`.
+
+Forwarder addresses are the exception — uniform across most networks:
 - CFAv1Forwarder: `0xcfA132E353cB4E398080B9700609bb008eceB125`
 - GDAv1Forwarder: `0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08`
 
-Host and agreement addresses vary per network — check `meta.deployments` in
-each YAML or use `node scripts/metadata.mjs contracts <chain>`.
+Host and agreement addresses vary per network.
 
 ## Ecosystem
 
@@ -438,9 +456,11 @@ each YAML or use `node scripts/metadata.mjs contracts <chain>`.
   [Repo](https://github.com/superfluid-org/accounting-api)
 - **Allowlist** — `GET /api/allowlist/{account}/{chainId}`. Check if an
   account is allowlisted for automations (vesting, flow scheduling, auto-wrap).
-- **Whois** — `GET /api/resolve/{address}` ·
-  `GET /api/reverse-resolve/{handle}`. Resolves across ENS, AF, Farcaster,
-  Lens, etc.
+- **Whois** — Resolves across ENS, AF, Farcaster, Lens, etc.
+  - `GET /api/resolve/{address}` — address → profile/name
+  - `GET /api/reverse-resolve/{handle}` — name/handle → address
+  GOTCHA: despite the names, `resolve` takes an address and `reverse-resolve`
+  takes a name.
 
 ### Subgraphs
 
