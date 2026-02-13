@@ -74,7 +74,7 @@ public function, event, and error for one contract.
 
 | Intent | Read |
 |--------|------|
-| Token-centric Solidity API (`using SuperTokenV1Library for ISuperToken`) | `references/contracts/SuperTokenV1Library.rich-abi.yaml` |
+| Token-centric Solidity API (`using SuperTokenV1Library for ISuperToken`) | `references/libraries/SuperTokenV1Library.rich-abi.yaml` |
 
 The library wraps CFA and GDA agreement calls into ergonomic methods like
 `token.flow(receiver, flowRate)`. Use it for any Solidity contract that
@@ -87,8 +87,8 @@ callbacks. See the YAML header and glossary for Foundry testing gotchas.
 
 | Intent | Read |
 |--------|------|
-| CFA callback hooks (simplified base) | `references/contracts/CFASuperAppBase.rich-abi.yaml` |
-| Token-centric API for callback logic | also `references/contracts/SuperTokenV1Library.rich-abi.yaml` (use `WithCtx` variants) |
+| CFA callback hooks (simplified base) | `references/bases/CFASuperAppBase.rich-abi.yaml` |
+| Token-centric API for callback logic | also `references/libraries/SuperTokenV1Library.rich-abi.yaml` (use `WithCtx` variants) |
 | App registration, Host context, batch calls | `references/contracts/Superfluid.rich-abi.yaml` |
 
 Super Apps that relay incoming flows via app credit cause the **sender's deposit
