@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T013-add-code-generation-best-practices]] -- Add code generation best practices (SDK address exports, anti-hallucination guidance, Whois clarification)
 - [[T012-document-256-connection-limit]] -- Document 256 pool/index connection limit and gas implications
 - [[T011-add-ecosystem-section]] -- Add Ecosystem section (SDKs, APIs, subgraphs, apps, governance, processes)
 - [[T010-add-cast-call-guidance]] -- Add `cast call` guidance for on-chain reads
