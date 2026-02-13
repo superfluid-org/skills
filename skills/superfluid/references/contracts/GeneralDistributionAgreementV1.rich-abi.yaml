@@ -193,11 +193,16 @@ claimAll:
 # in real-time; disconnected members must claim manually.
 # connectPool/disconnectPool use ctx and are called through the Host.
 # setConnectPermission is called directly (no ctx).
+# Hard limit: 256 pool connections per account per token (SlotsBitmapLibrary bitmap).
+# The 4 autoconnect slots (tryConnectPoolFor) are a subset of the 256.
 
 connectPool:
   # Connect ctx.msgSender to a pool so distributions flow in real-time.
   # Anyone can call this; no check that the caller already holds units.
   # Connecting is meaningful only when the caller has (or will receive) units.
+  # GOTCHA: Hard limit of 256 pool connections per account per token
+  # (SlotsBitmapLibrary bitmap). Each connection also increases gas cost of
+  # balanceOf/realtimeBalanceOf, which loops over all connected pools.
   mutability: nonpayable
   access: anyone  # connects ctx.msgSender only
   inputs:
@@ -260,6 +265,10 @@ realtimeBalanceOf:
   # (or SuperToken.balanceOf for ERC-20 compatible, clamped to zero).
   # GOTCHA: The returned rtb is a delta, not an absolute balance. It includes
   # unsettled connected pool distributions that haven't been claimed yet.
+  # GOTCHA: Gas cost scales linearly with the number of connected pools —
+  # each connected pool triggers an external call to getUnsettledValue.
+  # At high connection counts (approaching the 256 bitmap limit), balance
+  # queries can become expensive.
   mutability: view
   inputs:
     - token: address
@@ -471,7 +480,10 @@ superfluidPoolBeacon:
     - address
 
 MAX_POOL_AUTO_CONNECT_SLOTS:
-  # Maximum autoconnect slots per member per token: 4
+  # Maximum autoconnect slots per member per token: 4.
+  # This is a subset of the 256-slot bitmap (see SLOTS_BITMAP_LIBRARY_ADDRESS).
+  # Self-connections via connectPool are not limited by this — only by the
+  # 256 bitmap ceiling.
   mutability: view
   outputs:
     - uint32
