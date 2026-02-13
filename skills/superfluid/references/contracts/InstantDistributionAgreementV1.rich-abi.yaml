@@ -286,6 +286,10 @@ realtimeBalanceOf:
   # To get an account's actual token balance, use SuperToken.realtimeBalanceOfNow
   # (or SuperToken.balanceOf for ERC-20 compatible, clamped to zero).
   # GOTCHA: The time parameter is ignored — IDA distributions are instant, not time-based.
+  # GOTCHA: Gas cost scales linearly with the number of approved subscriptions —
+  # each subscription requires reading the index and computing the delta.
+  # At high subscription counts (approaching the 256 bitmap limit), balance
+  # queries can become expensive.
   mutability: view
   inputs:
     - token: address
@@ -306,7 +310,9 @@ agreementType:
 
 MAX_NUM_SUBSCRIPTIONS:
   # Maximum number of approved subscriptions a subscriber can hold (256).
-  # Limited by the slots bitmap implementation.
+  # Limited by the slots bitmap implementation (uint256 = 256 bits).
+  # More subscriptions = higher gas cost on balanceOf/realtimeBalanceOf,
+  # which iterates all approved subscriptions.
   mutability: view
   outputs:
     - uint32
