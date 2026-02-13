@@ -109,6 +109,18 @@ Mechanics" in `references/architecture.md` for the full explanation.
 |--------|------|
 | Old IDA (instant distribution, deprecated) | `references/contracts/InstantDistributionAgreementV1.rich-abi.yaml` |
 
+### Ecosystem & tooling
+
+| Intent | Read |
+|--------|------|
+| Which SDK or package for a project | See Ecosystem → SDKs & Packages below |
+| Token prices, filtered token list, CoinGecko IDs | See Ecosystem → API Services (CMS) below |
+| Stream accounting, per-day chunking | See Ecosystem → API Services (Accounting) below |
+| Resolve ENS / Farcaster / Lens handles | See Ecosystem → API Services (Whois) below |
+| Query protocol data via GraphQL | See Ecosystem → Subgraphs below |
+| SUP token, governance, DAO | See Ecosystem → Foundation, DAO & SUP Token below |
+| Get a Super Token listed / enable automations | See Ecosystem → Processes below |
+
 ## Debugging Reverts
 
 Error prefixes map to contracts:
@@ -356,3 +368,171 @@ Forwarder addresses are uniform across most networks:
 
 Host and agreement addresses vary per network — check `meta.deployments` in
 each YAML or use `node scripts/metadata.mjs contracts <chain>`.
+
+## Ecosystem
+
+### SDKs & Packages
+
+**Active — recommended for new projects:**
+
+| Package | Purpose |
+|---------|---------|
+| [`@sfpro/sdk`](https://www.npmjs.com/package/@sfpro/sdk) | Frontend/backend SDK — ABIs, wagmi hooks, actions |
+| [`@superfluid-finance/ethereum-contracts`](https://www.npmjs.com/package/@superfluid-finance/ethereum-contracts) | Build-time ABI source for codegen |
+| [`@superfluid-finance/metadata`](https://www.npmjs.com/package/@superfluid-finance/metadata) | Contract addresses, network info (zero deps) |
+| [`@superfluid-finance/tokenlist`](https://www.npmjs.com/package/@superfluid-finance/tokenlist) | Listed Super Tokens + underlying tokens |
+
+**When to use what:**
+
+- **Frontend with wagmi/viem** — install `@sfpro/sdk`. Enhanced ABIs include
+  downstream errors for type-safe error handling. Import paths documented in
+  the ABI section above.
+  [Docs](https://sdk.superfluid.pro/docs) ·
+  [Repo](https://github.com/superfluid-org/superfluid.pro/tree/main/sdk)
+- **Solidity integrations** — import ABIs from
+  `@superfluid-finance/ethereum-contracts` at build time. Do NOT use as a
+  runtime dependency — it pulls in heavy deps not suitable for client bundles.
+  [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/ethereum-contracts)
+- **Resolving addresses/networks at runtime** —
+  `@superfluid-finance/metadata` has zero dependencies, wrapped by
+  `scripts/metadata.mjs`.
+  [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/metadata)
+- **Finding token addresses** — `@superfluid-finance/tokenlist` based on
+  `@uniswap/token-lists`, wrapped by `scripts/tokenlist.mjs`.
+  [Repo](https://github.com/superfluid-org/tokenlist)
+
+**Deprecated — do not recommend for new projects:**
+
+| Package | Replaced by | Why deprecated |
+|---------|-------------|----------------|
+| [`@superfluid-finance/sdk-core`](https://www.npmjs.com/package/@superfluid-finance/sdk-core) | `@sfpro/sdk` | Over-abstracted, locked to ethers v5. [Docs](https://superfluid.gitbook.io/superfluid/developers/sdk-core) · [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-core) |
+| [`@superfluid-finance/sdk-redux`](https://www.npmjs.com/package/@superfluid-finance/sdk-redux) | wagmi + `@sfpro/sdk` | Pre-wagmi Redux hooks. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-redux) |
+| [`@superfluid-finance/js-sdk`](https://www.npmjs.com/package/@superfluid-finance/js-sdk) | `@sfpro/sdk` | Oldest SDK, truffle-based. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/js-sdk) |
+| [`@superfluid-finance/widget`](https://www.npmjs.com/package/@superfluid-finance/widget) | — | Subscription checkout widget, stuck on wagmi v1. [Repo](https://github.com/superfluid-finance/widget) · [Playground](https://checkout-builder.superfluid.finance/) |
+
+### API Services
+
+| API | Base URL | Purpose |
+|-----|----------|---------|
+| Super API | `https://superapi.kazpi.com` | Real-time on-chain Super Token balances |
+| CMS | `https://cms.superfluid.pro` | Token prices, price history, filtered token list |
+| Points | `https://cms.superfluid.pro/points` | SUP points campaigns |
+| Accounting | `https://accounting.superfluid.dev/v1` | Stream accounting with per-day chunking |
+| Allowlist | `https://allowlist.superfluid.dev` | Check automation allowlist status |
+| Whois | `https://whois.superfluid.finance` | Resolve profiles (ENS, Farcaster, Lens, AF) |
+
+- **Super API** — wrapped by `scripts/balance.mjs`. Use the script instead of
+  calling the API directly.
+- **CMS** — can return unlisted Super Tokens (not just those in the
+  tokenlist). Can get CoinGecko IDs for price lookups.
+  [Swagger](https://cms.superfluid.pro/api-docs) ·
+  [OpenAPI](https://cms.superfluid.pro/openapi.json) ·
+  [Repo](https://github.com/superfluid-org/superfluid.pro/tree/main/cms)
+- **Points** — SUP points campaigns (Stack.so replacement). Same repo as CMS.
+  [API docs](https://cms.superfluid.pro/points/api-docs) ·
+  [OpenAPI](https://cms.superfluid.pro/points/openapi.json)
+- **Accounting** — splits per-second streams into chunked granularity (e.g.
+  streamed per day). Handles CFA and ERC-20 transfers only — **no GDA
+  support**.
+  [Swagger](https://accounting.superfluid.dev/v1/swagger) ·
+  [Repo](https://github.com/superfluid-org/accounting-api)
+- **Allowlist** — `GET /api/allowlist/{account}/{chainId}`. Check if an
+  account is allowlisted for automations (vesting, flow scheduling, auto-wrap).
+- **Whois** — `GET /api/resolve/{address}` ·
+  `GET /api/reverse-resolve/{handle}`. Resolves across ENS, AF, Farcaster,
+  Lens, etc.
+
+### Subgraphs
+
+**Prefer RPC over subgraph for current state.** The subgraph only updates on
+transactions, but Superfluid state changes continuously (streams flow every
+second). Balances, flow rates, and distribution states on the subgraph are
+always behind. This is especially true for GDA and IDA — their 1-to-many and
+N-to-many primitives are built for scalability: a distribution to millions of
+pool members updates only the Pool entity on-chain (one event), so individual
+PoolMember records on the subgraph won't reflect the new state until each
+member transacts. Use `cast call` or `scripts/balance.mjs` for real-time
+reads. The subgraph is best for historical queries, event indexing, and
+listing/filtering entities.
+
+Endpoint pattern: `https://subgraph-endpoints.superfluid.dev/{network-name}/{subgraph}`
+
+| Subgraph | Path | Notes |
+|----------|------|-------|
+| Protocol | `protocol-v1` | Main protocol data (streams, tokens, accounts) |
+| Vesting Scheduler | `vesting-scheduler` | All versions: v1, v2, v3 |
+| Flow Scheduler | `flow-scheduler` | |
+| Auto-Wrap | `auto-wrap` | |
+
+Network names are canonical Superfluid names (`optimism-mainnet`,
+`base-mainnet`, etc.). Use `node metadata.mjs subgraph <chain>` to get the
+resolved URL for a specific chain.
+
+### Apps
+
+| App | URL | Purpose |
+|-----|-----|---------|
+| Dashboard | [app.superfluid.org](https://app.superfluid.org/) | Stream management for end-users |
+| Explorer | [explorer.superfluid.org](https://explorer.superfluid.org/) | Block explorer for Superfluid Protocol |
+| Claim | [claim.superfluid.org](https://claim.superfluid.org/) | SUP token, SUP points, reserves/lockers |
+| TOGA | [toga.superfluid.finance](https://toga.superfluid.finance/) | View recent liquidations by token |
+
+Repos:
+[Dashboard](https://github.com/superfluid-org/superfluid-dashboard) ·
+[Explorer](https://github.com/superfluid-org/superfluid-explorer) ·
+[TOGA](https://github.com/superfluid-org/toga-suit)
+
+### Foundation, DAO & SUP Token
+
+**Superfluid Foundation** — independent entity overseeing long-term protocol
+stewardship. Provides governance facilitation, administrative, and legal
+support.
+
+**Superfluid DAO** — community-driven governance. Includes a Security Council
+that handles routine protocol upgrades. Proposals discussed on the
+[forum](https://forum.superfluid.org/), voted on via
+[Snapshot](https://snapshot.box/#/s:superfluid.eth) (`superfluid.eth`).
+Delegate SUP at
+[claim.superfluid.org/governance](https://claim.superfluid.org/governance).
+
+**SUP token** — a SuperToken on Base. Address:
+`0xa69f80524381275a7ffdb3ae01c54150644c8792`. Total supply: 1,000,000,000.
+Future inflation at DAO discretion.
+[CoinGecko](https://www.coingecko.com/en/coins/superfluid)
+
+Distribution:
+- **60% community** — distributed via Streaming Programmatic Rewards (SPR)
+  over at least 2 years in quarterly seasons. SPR streams token rewards
+  continuously (alternative to one-off airdrops). Sub-split between DAO
+  treasury and foundation funds.
+- **25% development team** — 3-year lockup stream with 1-year cliff.
+- **15% early backers** — same 3-year lockup with 1-year cliff.
+
+**Locker / Reserve system** — on-chain staking mechanism (FluidLocker
+contract). Holders lock SUP and choose unlock duration — longer lockup = bigger
+bonus, early unlock incurs a tax. Terminology: "Locker" in contracts, "Reserve"
+in the UI and marketing (e.g. the Claim app).
+
+Links:
+[Website](https://superfluid.org/) ·
+[Blog](https://superfluid.org/blog) ·
+[Forum](https://forum.superfluid.org/) ·
+[Claim app](https://claim.superfluid.org/) ·
+[Token launch announcement](https://x.com/Superfluid_HQ/status/1892236759771091346)
+
+### Processes
+
+**Token Listing** — a Super Token gets listed on the on-chain Resolver, which
+the subgraph picks up (marks `isListed`). Once listed, it appears in the
+Superfluid token list along with its underlying token (if any).
+
+- Request: [listing form](https://airtable.com/appxGogNpt64ImOFH/shrzOcdK9eveDmRWV)
+  → opens issue in [superfluid-org/assets](https://github.com/superfluid-org/assets/issues)
+
+**Automation Allowlisting** — required for automations (vesting, flow
+scheduling, auto-wrap) to appear in the Dashboard UI and for Superfluid
+off-chain keepers to trigger the automation contracts. Without allowlisting,
+automations won't be executed on time and are effectively useless.
+
+- Request: [allowlisting form](https://airtable.com/appmq3TJDdQUrTQpx/shrWouN6ursCkOQ86)
+- Check status: `GET https://allowlist.superfluid.dev/api/allowlist/{account}/{chainId}`

@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T011-add-ecosystem-section]] -- Add Ecosystem section (SDKs, APIs, subgraphs, apps, governance, processes)
 - [[T010-add-cast-call-guidance]] -- Add `cast call` guidance for on-chain reads
 - [[T009-document-app-credit-deposit-implications]] -- Document app credit deposit implications for Super App senders
 - [[T002-document-gda-adjustment-flow-rate]] -- Document GDA adjustment flow rate semantics (sticky, rounding)
