@@ -1,5 +1,5 @@
 ---
-updated: 2026-02-12
+updated: 2026-02-13
 ---
 
 # Roadmap
@@ -17,7 +17,7 @@ The skill exists to solve these problems by giving AI direct, structured knowled
 
 ## Current Focus
 
-v0.3.0 is in progress — ecosystem coverage (SDKs, APIs, subgraphs, apps, governance, processes) is done. Remaining focus is best practices and task-oriented guides.
+v0.3.0 released — ecosystem coverage and connection limit documentation. Next focus is tool selection guidance, best practices, and task-oriented guides.
 
 ## Planned
 
@@ -31,7 +31,7 @@ v0.3.0 is in progress — ecosystem coverage (SDKs, APIs, subgraphs, apps, gover
 
 ## Completed
 
-- **v0.3.0** -- Ecosystem section: SDKs & Packages (active/deprecated with guidance), API Services (CMS, Points, Accounting, Allowlist, Whois), Subgraphs (protocol, vesting, flow-scheduler, auto-wrap), Apps, Foundation/DAO/SUP Token, and Processes (token listing, automation allowlisting). Use-case routing for ecosystem topics (T011).
+- **v0.3.0** -- Ecosystem section: SDKs & Packages (active/deprecated with guidance), API Services (CMS, Points, Accounting, Allowlist, Whois), Subgraphs (protocol, vesting, flow-scheduler, auto-wrap), Apps, Foundation/DAO/SUP Token, and Processes (token listing, automation allowlisting). Use-case routing for ecosystem topics (T011). 256 pool/index connection limit and gas cost GOTCHAs in GDA and IDA ABIs (T012).
 - **v0.2.2** -- `cast call` guidance for on-chain reads (T010).
 - **v0.2.1** -- GDA adjustment flow rate & rounding documentation: sticky behavior GOTCHAs on updateMemberUnits and distributeFlow, architecture.md rounding subsection. App credit deposit implications: sender deposit doubling, fan-out amplification, architecture.md subsection, SKILL.md note, and contract-level GOTCHAs.
 - **v0.2.0** -- SuperTokenV1Library Rich ABI YAML (Solidity library reference). Source code links (raw GitHub URL arrays) across all 16 Rich ABI YAMLs. balance.mjs script for live Super Token balance lookups via Super API. abi.mjs script for JSON ABI fetching from @sfpro/sdk with SDK ABI index in SKILL.md. Improved SKILL.md trigger description for more reliable invocation.
