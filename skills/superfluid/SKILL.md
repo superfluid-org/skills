@@ -119,6 +119,8 @@ Mechanics" in `references/architecture.md` for the full explanation.
 | Resolve ENS / Farcaster / Lens handles | See Ecosystem → API Services (Whois) below |
 | Query protocol data via GraphQL | See Ecosystem → Subgraphs below |
 | SUP token, governance, DAO | See Ecosystem → Foundation, DAO & SUP Token below |
+| Token prices for Super Tokens (simple API) | See Ecosystem → API Services (Token Prices) below |
+| Run a sentinel / liquidation bot | See Ecosystem → Sentinels below |
 | Get a Super Token listed / enable automations | See Ecosystem → Processes below |
 
 ## Debugging Reverts
@@ -438,6 +440,7 @@ Host and agreement addresses vary per network.
 | Accounting | `https://accounting.superfluid.dev/v1` | Stream accounting with per-day chunking |
 | Allowlist | `https://allowlist.superfluid.dev` | Check automation allowlist status |
 | Whois | `https://whois.superfluid.finance` | Resolve profiles (ENS, Farcaster, Lens, AF) |
+| Token Prices | `https://token-prices-api.superfluid.dev/v1/{network}/{token}` | Super Token prices (CoinGecko-backed) |
 
 - **Super API** — wrapped by `scripts/balance.mjs`. Use the script instead of
   calling the API directly.
@@ -461,6 +464,10 @@ Host and agreement addresses vary per network.
   - `GET /api/reverse-resolve/{handle}` — name/handle → address
   GOTCHA: despite the names, `resolve` takes an address and `reverse-resolve`
   takes a name.
+- **Token Prices** — simpler alternative to CMS for price lookups. Provides
+  prices for all listed SuperTokens where the token (or underlying) is known to
+  CoinGecko. Endpoint: `GET /v1/{canonical-network-name}/{token-address}`.
+  [Repo](https://github.com/d10r/sf-token-prices-api/)
 
 ### Subgraphs
 
@@ -501,6 +508,15 @@ Repos:
 [Dashboard](https://github.com/superfluid-org/superfluid-dashboard) ·
 [Explorer](https://github.com/superfluid-org/superfluid-explorer) ·
 [TOGA](https://github.com/superfluid-org/toga-suit)
+
+### Sentinels
+
+Sentinels monitor streams and liquidate senders whose Super Token balance
+reaches zero, keeping the protocol solvent. Anyone can run one.
+
+| Tool | Purpose |
+|------|---------|
+| [Graphinator](https://github.com/superfluid-org/graphinator) | Lightweight subgraph-based sentinel |
 
 ### Foundation, DAO & SUP Token
 
