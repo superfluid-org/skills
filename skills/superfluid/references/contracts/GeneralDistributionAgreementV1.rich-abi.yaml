@@ -24,7 +24,7 @@ meta:
       arbitrum-one: "0x1e299701792a2aF01408B122419d65Fd2dF0Ba02"
       bsc-mainnet: "0x3bbFA4C406719424C7f66CD97A8Fe27Af383d3e2"
       avalanche-c: "0xA7b197cD5b0cEF6d62c4A0a851E3581f5E62e4D2"
-      celo-mainnet: "0x308b7405272d11494716e30C6E972DbF6fb89355"
+      celo-mainnet: "0x308b7405272d11494716e30C6E972DbF6fb89555"
       scroll-mainnet: "0x97a9f293d7eD13f3fbD499cE684Ed4F103295a28"
       degenchain: "0x210a01ad187003603B2287F78579ec103Eb70D9B"
     testnet:
