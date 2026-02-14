@@ -117,6 +117,16 @@ Mechanics" in `references/architecture.md` for the full explanation.
 | Batch liquidation of critical flows | `references/contracts/BatchLiquidator.abi.yaml` |
 | PIC auction, bond management, exit rates | `references/contracts/TOGA.abi.yaml` |
 
+### Querying indexed data (Subgraphs)
+
+| Intent | Read |
+|--------|------|
+| Understand how The Graph generates query schemas from entity definitions | `references/subgraphs/query-patterns.md` |
+| Query streams, pools, tokens, accounts, events | also `references/subgraphs/protocol-v1.graphql` |
+| Query vesting schedules and execution history | also `references/subgraphs/vesting-scheduler.graphql` |
+| Query scheduled flows and automation tasks | also `references/subgraphs/flow-scheduler.graphql` |
+| Query auto-wrap schedules and execution history | also `references/subgraphs/auto-wrap.graphql` |
+
 ### Legacy
 
 | Intent | Read |
@@ -495,6 +505,9 @@ PoolMember records on the subgraph won't reflect the new state until each
 member transacts. Use `cast call` or `scripts/balance.mjs` for real-time
 reads. The subgraph is best for historical queries, event indexing, and
 listing/filtering entities.
+
+For entity schemas and query construction patterns, see the
+"Querying indexed data" use-case section above.
 
 Endpoint pattern: `https://subgraph-endpoints.superfluid.dev/{network-name}/{subgraph}`
 
