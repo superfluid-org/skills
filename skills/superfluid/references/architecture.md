@@ -199,6 +199,19 @@ They internally use `ForwarderBase._forwardBatchCall()` which:
 Forwarders have almost no logic of their own — no events, minimal errors.
 They are the recommended entry point for most integrations.
 
+### MacroForwarder — Extensible Batch Executor
+
+MacroForwarder extends the forwarder pattern for **user-defined** operations.
+Instead of hardcoding specific agreement calls, it delegates to a **macro
+contract** implementing `IUserDefinedMacro`. The macro's `buildBatchOperations`
+returns an array of operations that MacroForwarder forwards to the Host via
+`forwardBatchCall`, preserving the original sender via EIP-2771.
+
+This enables developers to encapsulate complex multi-step batch operations
+(wrap tokens + approve + create stream + connect pool) in a reusable,
+permissionless contract. See `guides/macro-forwarders.md` for the full
+pattern, interface, and examples.
+
 ## TOGA — Sentinel Incentive Layer
 
 Liquidation requires someone to call `deleteFlow` on critical accounts. TOGA
