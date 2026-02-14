@@ -6,7 +6,7 @@
 # Each forwarder call is a standalone transaction — forwarder calls cannot be
 # combined in a Host.batchCall. To batch multiple operations atomically,
 # use Host.batchCall with the raw GDA agreement (operationType 201).
-# See Superfluid.rich-abi.yaml for batch operation details.
+# See Superfluid.abi.yaml for batch operation details.
 # Tradeoff: forwarder calls produce human-readable descriptions in wallets
 # (e.g. "createPool(token, admin, config)"), while Host.batchCall shows
 # encoded tuples that are difficult for users to verify.

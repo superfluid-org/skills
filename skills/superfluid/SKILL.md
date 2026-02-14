@@ -43,38 +43,38 @@ public function, event, and error for one contract.
 
 | Intent | Read |
 |--------|------|
-| Create/update/delete a stream (simple) | `references/contracts/CFAv1Forwarder.rich-abi.yaml` |
-| ACL, operator permissions, flow metadata | also `references/contracts/ConstantFlowAgreementV1.rich-abi.yaml` |
-| Batch streams with other ops atomically | also `references/contracts/Superfluid.rich-abi.yaml` (Host batch call) |
+| Create/update/delete a stream (simple) | `references/contracts/CFAv1Forwarder.abi.yaml` |
+| ACL, operator permissions, flow metadata | also `references/contracts/ConstantFlowAgreementV1.abi.yaml` |
+| Batch streams with other ops atomically | also `references/contracts/Superfluid.abi.yaml` (Host batch call) |
 
 ### Distributing to many recipients (GDA)
 
 | Intent | Read |
 |--------|------|
-| Create pools, distribute, stream to pool | `references/contracts/GDAv1Forwarder.rich-abi.yaml` |
-| Pool member management, units, claims | also `references/contracts/SuperfluidPool.rich-abi.yaml` |
-| Low-level agreement details | also `references/contracts/GeneralDistributionAgreementV1.rich-abi.yaml` |
+| Create pools, distribute, stream to pool | `references/contracts/GDAv1Forwarder.abi.yaml` |
+| Pool member management, units, claims | also `references/contracts/SuperfluidPool.abi.yaml` |
+| Low-level agreement details | also `references/contracts/GeneralDistributionAgreementV1.abi.yaml` |
 
 ### Token operations
 
 | Intent | Read |
 |--------|------|
-| Wrap/unwrap, balances, ERC-20/777, permit | `references/contracts/SuperToken.rich-abi.yaml` |
-| Deploy a new Super Token | `references/contracts/SuperTokenFactory.rich-abi.yaml` |
+| Wrap/unwrap, balances, ERC-20/777, permit | `references/contracts/SuperToken.abi.yaml` |
+| Deploy a new Super Token | `references/contracts/SuperTokenFactory.abi.yaml` |
 
 ### Automation
 
 | Intent | Read |
 |--------|------|
-| Vesting with cliffs and streams | `references/contracts/VestingSchedulerV3.rich-abi.yaml` |
-| Schedule future stream start/stop | `references/contracts/FlowScheduler.rich-abi.yaml` |
-| Auto-wrap when Super Token balance is low | `references/contracts/AutoWrapManager.rich-abi.yaml` and `references/contracts/AutoWrapStrategy.rich-abi.yaml` |
+| Vesting with cliffs and streams | `references/contracts/VestingSchedulerV3.abi.yaml` |
+| Schedule future stream start/stop | `references/contracts/FlowScheduler.abi.yaml` |
+| Auto-wrap when Super Token balance is low | `references/contracts/AutoWrapManager.abi.yaml` and `references/contracts/AutoWrapStrategy.abi.yaml` |
 
 ### Writing Solidity integrations (SuperTokenV1Library)
 
 | Intent | Read |
 |--------|------|
-| Token-centric Solidity API (`using SuperTokenV1Library for ISuperToken`) | `references/libraries/SuperTokenV1Library.rich-abi.yaml` |
+| Token-centric Solidity API (`using SuperTokenV1Library for ISuperToken`) | `references/libraries/SuperTokenV1Library.abi.yaml` |
 
 The library wraps CFA and GDA agreement calls into ergonomic methods like
 `token.flow(receiver, flowRate)`. Use it for any Solidity contract that
@@ -87,9 +87,9 @@ callbacks. See the YAML header and glossary for Foundry testing gotchas.
 
 | Intent | Read |
 |--------|------|
-| CFA callback hooks (simplified base) | `references/bases/CFASuperAppBase.rich-abi.yaml` |
-| Token-centric API for callback logic | also `references/libraries/SuperTokenV1Library.rich-abi.yaml` (use `WithCtx` variants) |
-| App registration, Host context, batch calls | `references/contracts/Superfluid.rich-abi.yaml` |
+| CFA callback hooks (simplified base) | `references/bases/CFASuperAppBase.abi.yaml` |
+| Token-centric API for callback logic | also `references/libraries/SuperTokenV1Library.abi.yaml` (use `WithCtx` variants) |
+| App registration, Host context, batch calls | `references/contracts/Superfluid.abi.yaml` |
 
 Super Apps that relay incoming flows via app credit cause the **sender's deposit
 to roughly double** (or more for fan-out patterns), because outgoing stream
@@ -100,14 +100,14 @@ Mechanics" in `references/architecture.md` for the full explanation.
 
 | Intent | Read |
 |--------|------|
-| Batch liquidation of critical flows | `references/contracts/BatchLiquidator.rich-abi.yaml` |
-| PIC auction, bond management, exit rates | `references/contracts/TOGA.rich-abi.yaml` |
+| Batch liquidation of critical flows | `references/contracts/BatchLiquidator.abi.yaml` |
+| PIC auction, bond management, exit rates | `references/contracts/TOGA.abi.yaml` |
 
 ### Legacy
 
 | Intent | Read |
 |--------|------|
-| Old IDA (instant distribution, deprecated) | `references/contracts/InstantDistributionAgreementV1.rich-abi.yaml` |
+| Old IDA (instant distribution, deprecated) | `references/contracts/InstantDistributionAgreementV1.abi.yaml` |
 
 ### Ecosystem & tooling
 

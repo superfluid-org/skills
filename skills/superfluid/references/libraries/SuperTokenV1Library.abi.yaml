@@ -10,9 +10,9 @@
 # GOTCHA: Foundry testing pitfalls — see meta.note for details.
 #
 # NOTE: For underlying agreement errors, events, and access control, see:
-#   ConstantFlowAgreementV1.rich-abi.yaml (CFA)
-#   GeneralDistributionAgreementV1.rich-abi.yaml (GDA)
-#   SuperfluidPool.rich-abi.yaml (pool operations)
+#   ConstantFlowAgreementV1.abi.yaml (CFA)
+#   GeneralDistributionAgreementV1.abi.yaml (GDA)
+#   SuperfluidPool.abi.yaml (pool operations)
 
 meta:
   name: SuperTokenV1Library
