@@ -17,7 +17,7 @@ The skill exists to solve these problems by giving AI direct, structured knowled
 
 ## Current Focus
 
-v0.3.1 released — code generation best practices and address fix. Next focus is tool selection guidance and task-oriented guides.
+v0.4.0 released — subgraph query support, MacroForwarder guide, ABI YAML rename. Next focus is tool selection guidance and task-oriented guides.
 
 ## Planned
 
@@ -31,6 +31,7 @@ v0.3.1 released — code generation best practices and address fix. Next focus i
 
 ## Completed
 
+- **v0.4.0** -- Subgraph query support: 4 GraphQL entity schemas (protocol-v1, vesting-scheduler, flow-scheduler, auto-wrap) and query-patterns guide in `references/subgraphs/` (T016). MacroForwarder guide with composable batch operations and EIP-712 signed macro example (T015). Renamed `.rich-abi.yaml` → `.abi.yaml` across all 17 reference files (T014). Added Graphinator sentinel and Token Prices API to ecosystem. Replaced marketplace install docs with skills.sh tutorial.
 - **v0.3.1** -- Code generation best practices: SDK address exports table, strengthened anti-hallucination ABI/address guidance, Whois endpoint clarification with GOTCHA (T013). Fix GDA celo-mainnet address typo (89355 → 89555).
 - **v0.3.0** -- Ecosystem section: SDKs & Packages (active/deprecated with guidance), API Services (CMS, Points, Accounting, Allowlist, Whois), Subgraphs (protocol, vesting, flow-scheduler, auto-wrap), Apps, Foundation/DAO/SUP Token, and Processes (token listing, automation allowlisting). Use-case routing for ecosystem topics (T011). 256 pool/index connection limit and gas cost GOTCHAs in GDA and IDA ABIs (T012).
 - **v0.2.2** -- `cast call` guidance for on-chain reads (T010).
