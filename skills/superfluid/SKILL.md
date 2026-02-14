@@ -31,6 +31,11 @@ variants: Wrapper (ERC-20 backed), Native Asset/SETH (ETH backed), Pure
 call is a standalone transaction with readable wallet descriptions. Cannot be
 batched — use `Host.batchCall` with raw agreement calls for atomicity.
 
+**MacroForwarder** — extensible batch executor. Developers deploy custom
+macro contracts (`IUserDefinedMacro`) and call `MacroForwarder.runMacro()`
+to execute complex multi-step operations atomically. See
+`references/guides/macro-forwarders.md`.
+
 **Automation** (Vesting Scheduler, FlowScheduler, Auto-Wrap) — schedule
 on-chain intent, require off-chain keepers to trigger execution.
 
@@ -95,6 +100,15 @@ Super Apps that relay incoming flows via app credit cause the **sender's deposit
 to roughly double** (or more for fan-out patterns), because outgoing stream
 deposits are backed by the sender as owed deposit. See "App Credit & Deposit
 Mechanics" in `references/architecture.md` for the full explanation.
+
+### Macro forwarders (composable batch operations)
+
+| Intent | Read |
+|--------|------|
+| Write a macro for complex batched operations | `references/guides/macro-forwarders.md` |
+| MacroForwarder contract address and interface | also `references/guides/macro-forwarders.md` |
+| Batch operation types and encoding rules | also `references/contracts/Superfluid.abi.yaml` (batch_operation_types) |
+| EIP-712 signed macro patterns | `references/guides/macro-forwarders-eip712-example.md` |
 
 ### Sentinels and liquidation
 

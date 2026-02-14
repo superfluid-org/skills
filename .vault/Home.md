@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T015-add-macro-forwarder-guide]] -- Add MacroForwarder guide (composable batch operations, EIP-712 example)
 - [[T014-rename-rich-abi-yaml-extensions]] -- Rename `.rich-abi.yaml` → `.abi.yaml`
 - [[T013-add-code-generation-best-practices]] -- Add code generation best practices (SDK address exports, anti-hallucination guidance, Whois clarification)
 - [[T012-document-256-connection-limit]] -- Document 256 pool/index connection limit and gas implications
@@ -41,5 +42,6 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 - **Skill entry**: `skills/superfluid/SKILL.md`
 - **Contracts**: `skills/superfluid/references/contracts/` (16 Rich ABI YAMLs)
+- **Guides**: `skills/superfluid/references/guides/` (macro-forwarders, eip712-example)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
 - **Plugin version**: `.claude-plugin/plugin.json`
