@@ -6,11 +6,14 @@ This skill gives AI agents deep knowledge of Superfluid smart contract interface
 
 ## Install
 
-Requires [Claude Code](https://docs.claude.com/en/docs/claude-code) v1.0.33+.
+```
+npx skills add https://github.com/superfluid-org/skills --skill superfluid
+```
+
+During install, you'll be prompted to choose which CLIs/IDEs to install the skill to (e.g. Claude Code, Cursor, Windsurf). The skill is symlinked across all selected targets, so a single update command refreshes everywhere:
 
 ```
-/plugin marketplace add superfluid-org/skills
-/plugin install superfluid@superfluid-skills
+npx skills update
 ```
 
 ## What's included
