@@ -23,7 +23,7 @@ skills/superfluid/
 
 ## Key Concepts
 
-**Rich ABI YAMLs** — The core content. Each `.rich-abi.yaml` file is a self-contained contract reference documenting every public function, event, and error with parameter descriptions, access control, gotchas, and deployment addresses. Root keys: `meta`, `events`, `errors` are reserved; all other root keys are functions.
+**Rich ABI YAMLs** — The core content. Each `.abi.yaml` file is a self-contained contract reference documenting every public function, event, and error with parameter descriptions, access control, gotchas, and deployment addresses. Root keys: `meta`, `events`, `errors` are reserved; all other root keys are functions.
 
 **SKILL.md** — The entry point Claude Code sees. It has YAML frontmatter (`name`, `description`) and maps use-cases to the correct reference files. It also documents the Rich ABI YAML format so Claude can parse them.
 

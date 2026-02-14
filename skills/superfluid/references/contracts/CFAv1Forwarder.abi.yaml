@@ -6,7 +6,7 @@
 # Each forwarder call is a standalone transaction — forwarder calls cannot be
 # combined in a Host.batchCall. To batch multiple operations atomically (e.g.
 # wrap tokens + create stream), use Host.batchCall with the raw CFA agreement
-# (operationType 201). See Superfluid.rich-abi.yaml for batch operation details.
+# (operationType 201). See Superfluid.abi.yaml for batch operation details.
 # Tradeoff: forwarder calls produce human-readable descriptions in wallets
 # (e.g. "setFlowrate(token, receiver, flowrate)"), while Host.batchCall
 # shows encoded tuples that are difficult for users to verify.

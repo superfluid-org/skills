@@ -159,7 +159,7 @@ Examples:
       const match = notInSdk.find(n => n.toLowerCase() === command.toLowerCase());
       if (match) {
         console.error(`Error: ${match} is not available in @sfpro/sdk (${match === "CFASuperAppBase" ? "abstract base contract" : "Solidity library"}).`);
-        console.error(`Refer to the Rich ABI YAML: references/contracts/${match}.rich-abi.yaml`);
+        console.error(`Refer to the Rich ABI YAML: references/contracts/${match}.abi.yaml`);
       } else {
         console.error(`Error: Unknown contract "${command}".`);
         console.error(`Run "node abi.mjs list" to see available contracts.`);
