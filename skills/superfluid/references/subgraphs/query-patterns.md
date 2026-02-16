@@ -405,7 +405,39 @@ const result = await execute(myQuery, { sender: "0xabc..." })
 
 ---
 
-## 13. References & Versioning
+## 13. Superfluid-Specific Gotchas
+
+These pitfalls apply across all Superfluid subgraphs.
+
+### Addresses Must Be Lowercased
+
+All subgraphs store addresses in lowercase. Queries are **case-sensitive**. Always `.toLowerCase()` addresses before using them in `where` clauses.
+
+```
+WRONG:  { sender: "0xAbC123..." }
+RIGHT:  { sender: "0xabc123..." }
+```
+
+### Do NOT Use `_nocase` Filter Suffix for Bytes Arrays
+
+The `_nocase` filter operators (e.g., `addresses_contains_nocase`) are **broken** on The Graph Network's decentralized indexer for `Bytes` array fields. Always use the case-sensitive variants and lowercase your input instead.
+
+```
+BROKEN: { addresses_contains_nocase: ["0xAbC..."] }
+RIGHT:  { addresses_contains: ["0xabc..."] }
+```
+
+### Timestamp Fields Are Safe for `Number()`
+
+Timestamp fields in all Superfluid subgraphs are Unix timestamps (seconds). They fit safely in JavaScript's `Number` type — no need for `BigInt` parsing.
+
+### Event `addresses` Field Is Ambiguous
+
+The `addresses` field on protocol events contains **both** account addresses and token addresses. When filtering by `addresses_contains`, you may match on either type. There is no way to filter only by account or only by token through this field alone.
+
+---
+
+## 14. References & Versioning
 
 This document describes the query API as implemented by **graph-node** (the reference Graph Protocol indexer). The auto-generated schema patterns are defined in the graph-node source code, not in a standalone spec document.
 
