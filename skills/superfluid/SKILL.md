@@ -124,11 +124,12 @@ See `references/guides/super-apps.md` for the full guide.
 
 | Intent | Read |
 |--------|------|
-| Understand how The Graph generates query schemas from entity definitions | `references/subgraphs/query-patterns.md` |
-| Query streams, pools, tokens, accounts, events | also `references/subgraphs/protocol-v1.graphql` |
-| Query vesting schedules and execution history | also `references/subgraphs/vesting-scheduler.graphql` |
-| Query scheduled flows and automation tasks | also `references/subgraphs/flow-scheduler.graphql` |
-| Query auto-wrap schedules and execution history | also `references/subgraphs/auto-wrap.graphql` |
+| Understand how The Graph generates query schemas, plus cross-cutting gotchas | `references/subgraphs/query-patterns.md` |
+| Query streams, pools, tokens, accounts (entities) | also `references/subgraphs/protocol-v1-guide.md` and `protocol-v1-entities.graphql` |
+| Query protocol events (flow updates, liquidations, distributions) | also `references/subgraphs/protocol-v1-guide.md` and `protocol-v1-events.graphql` |
+| Query vesting schedules and execution history | also `references/subgraphs/vesting-scheduler-guide.md` and `vesting-scheduler.graphql` |
+| Query scheduled flows and automation tasks | also `references/subgraphs/flow-scheduler-guide.md` and `flow-scheduler.graphql` |
+| Query auto-wrap schedules and execution history | also `references/subgraphs/auto-wrap-guide.md` and `auto-wrap.graphql` |
 
 ### Legacy
 
