@@ -48,7 +48,9 @@ meta:
 # context (ctx)         — encoded call metadata: msgSender, timestamp, userData, app credit
 # app credit            — temporary token allowance granted to a Super App during a callback
 # jailed                — a Super App that violated protocol rules; its callbacks are bypassed
-# configWord            — bitmask encoding a Super App's callback behaviour and noop flags
+# configWord            — bitmask encoding a Super App's app level and callback noop flags.
+#                          App level: APP_LEVEL_FINAL (1 << 1) or APP_LEVEL_SECOND (1 << 0).
+#                          Noop flags disable specific before/after callbacks per agreement type.
 # batch operation       — a single step in a batchCall array (see BatchOperation in Definitions.sol)
 # trusted forwarder     — a contract allowed to call forwardBatchCall for meta-transactions
 
@@ -334,6 +336,13 @@ isCompositeAppAllowed:
 # == Agreement Framework ==
 # Internal protocol functions called by registered agreement contracts (CFA, IDA, GDA)
 # to manage Super App callbacks and app credit. Only callable by agreements.
+#
+# Callback lifecycle (called by agreement during flow operations):
+#   1. appCallbackPush       — set up credit, push callback frame
+#   2. callAppBeforeCallback — staticcall app's before hook (read-only)
+#   3. (agreement executes core logic)
+#   4. callAppAfterCallback  — call app's after hook (state changes OK)
+#   5. appCallbackPop        — finalize credit accounting, pop frame
 
 callAppBeforeCallback:
   # StaticCall a Super App's before-callback. Returns the callback data.
@@ -678,7 +687,7 @@ events:
 
   Jail:
     # Emitted when a Super App is jailed for violating protocol rules.
-    # See SuperAppDefinitions in Definitions.sol for reason codes.
+    # See APP_RULE error below for reason code values.
     indexed:
       - app: address
     data:
@@ -730,6 +739,16 @@ errors:
   - HOST_NEED_MORE_GAS                # 0xd4f5d496 — insufficient gas for Super App callback
 
   # Super App rule violations (generic, carries a reason code)
+  # Reason codes (from SuperAppDefinitions.sol):
+  #   10 — NO_REVERT_ON_TERMINATION_CALLBACK (delete callback reverted)
+  #   11 — NO_CRITICAL_SENDER_ACCOUNT (callback made sender critical)
+  #   12 — NO_CRITICAL_RECEIVER_ACCOUNT (callback made receiver critical)
+  #   20 — CTX_IS_READONLY (state change in before-callback staticcall)
+  #   21 — CTX_IS_NOT_CLEAN (context not properly returned)
+  #   22 — CTX_IS_MALFORMATED (context bytes corrupted/fabricated)
+  #   30 — COMPOSITE_APP_IS_NOT_WHITELISTED (no allowCompositeApp)
+  #   31 — COMPOSITE_APP_IS_JAILED (downstream app is jailed)
+  #   40 — MAX_APP_LEVEL_REACHED (callback nesting exceeded limit)
   - APP_RULE:
       inputs:
         - _code: uint256

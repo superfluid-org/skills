@@ -92,14 +92,17 @@ callbacks. See the YAML header and glossary for Foundry testing gotchas.
 
 | Intent | Read |
 |--------|------|
+| App credit, callback lifecycle, jailing, app levels | `references/guides/super-apps.md` |
 | CFA callback hooks (simplified base) | `references/bases/CFASuperAppBase.abi.yaml` |
-| Token-centric API for callback logic | also `references/libraries/SuperTokenV1Library.abi.yaml` (use `WithCtx` variants) |
+| Token-centric API for callback logic | `references/libraries/SuperTokenV1Library.abi.yaml` (use `WithCtx` variants) |
 | App registration, Host context, batch calls | `references/contracts/Superfluid.abi.yaml` |
 
-Super Apps that relay incoming flows via app credit cause the **sender's deposit
-to roughly double** (or more for fan-out patterns), because outgoing stream
-deposits are backed by the sender as owed deposit. See "App Credit & Deposit
-Mechanics" in `references/architecture.md` for the full explanation.
+Super Apps that relay incoming flows use **app credit** — a temporary deposit
+allowance enabling zero-balance operation. A 1:1 relay (one in, one out at
+the same rate) always works without tokens. Fan-out (1:N) requires the app to
+hold tokens for extra deposits. The sender's locked capital roughly doubles
+because outgoing stream deposits are backed as owed deposit on the sender.
+See `references/guides/super-apps.md` for the full guide.
 
 ### Macro forwarders (composable batch operations)
 

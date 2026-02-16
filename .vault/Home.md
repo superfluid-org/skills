@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T017-add-super-apps-guide]] -- Add dedicated Super Apps guide (callback lifecycle, app credit, jailing, app levels)
 - [[T016-add-subgraph-schema-references]] -- Add subgraph entity schemas and query patterns
 - [[T015-add-macro-forwarder-guide]] -- Add MacroForwarder guide (composable batch operations, EIP-712 example)
 - [[T014-rename-rich-abi-yaml-extensions]] -- Rename `.rich-abi.yaml` → `.abi.yaml`
@@ -44,6 +45,6 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 - **Skill entry**: `skills/superfluid/SKILL.md`
 - **Contracts**: `skills/superfluid/references/contracts/` (16 Rich ABI YAMLs)
 - **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 4 `.graphql` schemas)
-- **Guides**: `skills/superfluid/references/guides/` (macro-forwarders, eip712-example)
+- **Guides**: `skills/superfluid/references/guides/` (super-apps, macro-forwarders, eip712-example)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
 - **Plugin version**: `.claude-plugin/plugin.json`

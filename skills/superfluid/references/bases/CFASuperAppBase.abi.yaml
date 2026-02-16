@@ -13,6 +13,8 @@
 #
 # Important: the "terminated" callbacks (delete) are NOT allowed to revert.
 # Reverting in a delete callback causes the SuperApp to be "jailed" (defunct).
+# Other jailing causes: corrupted context, exceeded app credit, non-whitelisted
+# composite apps. See guides/super-apps.md for the full list and explanation.
 #
 # GOTCHA: When a Super App relays an incoming flow by opening outgoing streams
 # in its callback, the deposits for those outgoing streams are covered by app
@@ -79,6 +81,9 @@ getConfigWord:
   #
   # The configWord encodes APP_LEVEL_FINAL and NOOP flags for disabled
   # callbacks.  BEFORE_AGREEMENT_CREATED is always disabled (set to NOOP).
+  # GOTCHA: CFASuperAppBase always uses APP_LEVEL_FINAL. FINAL apps cannot
+  # call other Super Apps downstream. To compose with other Super Apps,
+  # use APP_LEVEL_SECOND and call host.allowCompositeApp(targetApp).
   mutability: pure
   access: anyone
   inputs:
