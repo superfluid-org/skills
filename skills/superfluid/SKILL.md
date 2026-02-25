@@ -120,6 +120,19 @@ See `references/guides/super-apps.md` for the full guide.
 | Batch liquidation of critical flows | `references/contracts/BatchLiquidator.abi.yaml` |
 | PIC auction, bond management, exit rates | `references/contracts/TOGA.abi.yaml` |
 
+### SUP Token / Reserve System
+
+Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" and "Reserve".
+
+| Intent | Read |
+|--------|------|
+| Lock, stake, unstake SUP; provide LP; unlock | `references/contracts/FluidLocker.abi.yaml` |
+| Create a Reserve (Locker) for a user | `references/contracts/FluidLockerFactory.abi.yaml` |
+| Claim from emission programs (signed messages) | `references/contracts/FluidLocker.abi.yaml` and `references/contracts/FluidEPProgramManager.abi.yaml` |
+| Create / fund / stop emission programs | `references/contracts/FluidEPProgramManager.abi.yaml` |
+| Understand tax distribution to stakers and LPs | `references/contracts/StakingRewardController.abi.yaml` |
+| Unlock SUP via time-delayed stream (Fontaine) | `references/contracts/FluidLocker.abi.yaml` and `references/contracts/Fontaine.abi.yaml` |
+
 ### Querying indexed data (Subgraphs)
 
 | Intent | Read |
@@ -167,6 +180,11 @@ Error prefixes map to contracts:
 | `HOST_*` | Superfluid (Host) |
 | `IDA_*` | InstantDistributionAgreementV1 |
 | `APP_RULE` | Superfluid (Host) — Super App callback violation |
+| `NOT_LOCKER_OWNER`, `FORBIDDEN`, `INSUFFICIENT_*`, `STAKING_*`, `LP_*`, `TTE_*` | FluidLocker |
+| `LOCKER_CREATION_PAUSED`, `NOT_GOVERNOR` | FluidLockerFactory |
+| `PROGRAM_*`, `INVALID_SIGNATURE`, `NOT_PROGRAM_ADMIN` | FluidEPProgramManager |
+| `NOT_APPROVED_LOCKER`, `NOT_LOCKER_FACTORY`, `NOT_PROGRAM_MANAGER` | StakingRewardController |
+| `NOT_CONNECTED_LOCKER`, `NO_ACTIVE_UNLOCK`, `TOO_EARLY_TO_TERMINATE_UNLOCK` | Fontaine |
 
 Each YAML's `errors:` section is the complete error index for that contract,
 with selector hashes and descriptions. Per-function `errors:` fields show
