@@ -552,6 +552,7 @@ resolved URL for a specific chain.
 | Explorer | [explorer.superfluid.org](https://explorer.superfluid.org/) | Block explorer for Superfluid Protocol |
 | Claim | [claim.superfluid.org](https://claim.superfluid.org/) | SUP token, SUP points, reserves/lockers |
 | TOGA | [toga.superfluid.finance](https://toga.superfluid.finance/) | View recent liquidations by token |
+| Dune | [dune.com/superfluid_hq](https://dune.com/superfluid_hq/superfluid-overview) | Official protocol analytics dashboards |
 
 Repos:
 [Dashboard](https://github.com/superfluid-org/superfluid-dashboard) ·
@@ -566,6 +567,7 @@ reaches zero, keeping the protocol solvent. Anyone can run one.
 | Tool | Purpose |
 |------|---------|
 | [Graphinator](https://github.com/superfluid-org/graphinator) | Lightweight subgraph-based sentinel |
+| [Superfluid Sentinel](https://github.com/superfluid-org/superfluid-sentinel) | Legacy RPC-based sentinel |
 
 ### Foundation, DAO & SUP Token
 
