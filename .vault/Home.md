@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T020-add-sup-reserve-system-abis]] -- Add SUP Token / Reserve System Rich ABI YAMLs (5 contracts)
 - [[T019-split-protocol-schema-add-entity-summaries]] -- Split protocol-v1.graphql into events/entities, add entity summaries to guides
 - [[T018-add-subgraph-usage-guides]] -- Add per-subgraph usage guides (vesting status tree, example queries, gotchas)
 - [[T017-add-super-apps-guide]] -- Add dedicated Super Apps guide (callback lifecycle, app credit, jailing, app levels)
@@ -45,7 +46,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 ## Quick Reference
 
 - **Skill entry**: `skills/superfluid/SKILL.md`
-- **Contracts**: `skills/superfluid/references/contracts/` (16 Rich ABI YAMLs)
+- **Contracts**: `skills/superfluid/references/contracts/` (21 Rich ABI YAMLs)
 - **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 5 `.graphql` schemas, 4 usage guides)
 - **Guides**: `skills/superfluid/references/guides/` (super-apps, macro-forwarders, eip712-example)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
