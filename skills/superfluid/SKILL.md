@@ -487,6 +487,7 @@ Host and agreement addresses vary per network.
 | Allowlist | `https://allowlist.superfluid.dev` | Check automation allowlist status |
 | Whois | `https://whois.superfluid.finance` | Resolve profiles (ENS, Farcaster, Lens, AF) |
 | Token Prices | `https://token-prices-api.superfluid.dev/v1/{network}/{token}` | Super Token prices (CoinGecko-backed) |
+| Claim Programs | `https://claim.superfluid.org/api/programs` | SUP reward programs — seasons, allocations, pool addresses, flow rates |
 
 - **Super API** — wrapped by `scripts/balance.mjs`. Use the script instead of
   calling the API directly.
@@ -514,6 +515,13 @@ Host and agreement addresses vary per network.
   prices for all listed SuperTokens where the token (or underlying) is known to
   CoinGecko. Endpoint: `GET /v1/{canonical-network-name}/{token-address}`.
   [Repo](https://github.com/d10r/sf-token-prices-api/)
+- **Claim Programs** — returns all SUP reward programs across seasons.
+  Each entry has `appId`, `name`, `season`, `category`, `url`, and a
+  nested `program.onchainInfo` with `poolAddress`, `fundingFlowRate`,
+  `totalAllocated`, `totalClaimed`, `totalMembers`, and funding
+  timestamps. The response uses tRPC's `superjson` format (top-level
+  `json` + `meta` keys). Filter by `program.onchainInfo.isFundingFinished`
+  to find active campaigns.
 
 ### Subgraphs
 
