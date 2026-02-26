@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T021-fix-claude-md-script-count]] -- Fix CLAUDE.md script count (two → four) and add missing scripts to tree
 - [[T020-add-sup-reserve-system-abis]] -- Add SUP Token / Reserve System Rich ABI YAMLs (5 contracts)
 - [[T019-split-protocol-schema-add-entity-summaries]] -- Split protocol-v1.graphql into events/entities, add entity summaries to guides
 - [[T018-add-subgraph-usage-guides]] -- Add per-subgraph usage guides (vesting status tree, example queries, gotchas)

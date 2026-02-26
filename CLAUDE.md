@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A Claude Code plugin that provides an AI agent skill for the [Superfluid Protocol](https://superfluid.finance). It's published to the Claude Code marketplace as `superfluid-org/skills`. There is no build step, test suite, or package manager — the repo is purely documentation and two standalone scripts.
+A Claude Code plugin that provides an AI agent skill for the [Superfluid Protocol](https://superfluid.finance). It's published to the Claude Code marketplace as `superfluid-org/skills`. There is no build step, test suite, or package manager — the repo is purely documentation and four standalone scripts.
 
 ## Repository Structure
 
@@ -14,9 +14,12 @@ A Claude Code plugin that provides an AI agent skill for the [Superfluid Protoco
 skills/superfluid/
   SKILL.md               # Main skill file — loaded by Claude Code on trigger
   references/
-    architecture.md      # Protocol architecture overview
-    contracts/           # 16 Rich ABI YAML files (one per contract)
+    contracts/           # 22 Rich ABI YAML files + _rich-abi-yaml-format.md (format spec)
+    guides/              # architecture.md + topic guides (super-apps, SDKs, etc.)
+    subgraphs/           # _query-patterns.md + GraphQL schemas + per-subgraph guides
   scripts/
+    abi.mjs              # Fetch and cache raw contract ABIs
+    balance.mjs          # Check Super Token balances
     metadata.mjs         # Resolve contract addresses, subgraph endpoints, network info
     tokenlist.mjs        # Resolve Super Token addresses, symbols, and types
 ```
