@@ -10,9 +10,23 @@ description: >
 # Superfluid Protocol Skill
 
 Complete interface documentation for Superfluid Protocol smart contracts via
-Rich ABI YAML references. Read `references/architecture.md` for the full
-protocol architecture. This file maps use-cases to the right references and
-explains how to read them.
+Rich ABI YAML references. Read `references/guides/architecture.md` for the full
+protocol architecture. This file maps use-cases to the right references.
+
+## Developer Tracks
+
+Determine the track first, then follow the Use-Case Map below.
+
+| | Smart Contract dev | App (frontend/backend) dev | Investigating (one-off) |
+|---|---|---|---|
+| **Primary tools** | SuperTokenV1Library, CFASuperAppBase, MacroForwarder, raw agreements via Host | `@sfpro/sdk` (ABIs, wagmi hooks, addresses), subgraphs, API services | Scripts (`tokenlist.mjs`, `metadata.mjs`, `balance.mjs`, `cast call`) |
+| **ABI source** | `@superfluid-finance/ethereum-contracts` (build-time) | `@sfpro/sdk` (runtime) | `scripts/abi.mjs` |
+| **Token/address resolution** | `@superfluid-finance/metadata` + `tokenlist` packages | `@superfluid-finance/metadata` + `tokenlist` packages | `scripts/metadata.mjs` + `tokenlist.mjs` |
+| **Data queries** | On-chain via contract calls | Subgraphs + API services | `cast call` + `scripts/balance.mjs` |
+| **Key references** | `.abi.yaml` files, `super-apps.md`, `macro-forwarders.md` | `sdks.md`, `api-services.md`, subgraph guides | `scripts.md` |
+
+For SDK import paths, ABI tables, and deprecated package warnings, see `references/guides/sdks.md`.
+For script command syntax and examples, see `references/guides/scripts.md`.
 
 ## Architecture Summary
 
@@ -79,7 +93,7 @@ public function, event, and error for one contract.
 
 | Intent | Read |
 |--------|------|
-| Token-centric Solidity API (`using SuperTokenV1Library for ISuperToken`) | `references/libraries/SuperTokenV1Library.abi.yaml` |
+| Token-centric Solidity API (`using SuperTokenV1Library for ISuperToken`) | `references/contracts/SuperTokenV1Library.abi.yaml` |
 
 The library wraps CFA and GDA agreement calls into ergonomic methods like
 `token.flow(receiver, flowRate)`. Use it for any Solidity contract that
@@ -93,8 +107,8 @@ callbacks. See the YAML header and glossary for Foundry testing gotchas.
 | Intent | Read |
 |--------|------|
 | App credit, callback lifecycle, jailing, app levels | `references/guides/super-apps.md` |
-| CFA callback hooks (simplified base) | `references/bases/CFASuperAppBase.abi.yaml` |
-| Token-centric API for callback logic | `references/libraries/SuperTokenV1Library.abi.yaml` (use `WithCtx` variants) |
+| CFA callback hooks (simplified base) | `references/contracts/CFASuperAppBase.abi.yaml` |
+| Token-centric API for callback logic | `references/contracts/SuperTokenV1Library.abi.yaml` (use `WithCtx` variants) |
 | App registration, Host context, batch calls | `references/contracts/Superfluid.abi.yaml` |
 
 Super Apps that relay incoming flows use **app credit** — a temporary deposit
@@ -137,12 +151,13 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 
 | Intent | Read |
 |--------|------|
-| Understand how The Graph generates query schemas, plus cross-cutting gotchas | `references/subgraphs/query-patterns.md` |
+| Understand how The Graph generates query schemas, plus cross-cutting gotchas | `references/subgraphs/_query-patterns.md` |
 | Query streams, pools, tokens, accounts (entities) | also `references/subgraphs/protocol-v1-guide.md` and `protocol-v1-entities.graphql` |
 | Query protocol events (flow updates, liquidations, distributions) | also `references/subgraphs/protocol-v1-guide.md` and `protocol-v1-events.graphql` |
 | Query vesting schedules and execution history | also `references/subgraphs/vesting-scheduler-guide.md` and `vesting-scheduler.graphql` |
 | Query scheduled flows and automation tasks | also `references/subgraphs/flow-scheduler-guide.md` and `flow-scheduler.graphql` |
 | Query auto-wrap schedules and execution history | also `references/subgraphs/auto-wrap-guide.md` and `auto-wrap.graphql` |
+| Query SUP lockers, staking, emission programs, unlock history | also `references/subgraphs/sup-subgraph-guide.md` and `sup-subgraph.graphql` |
 
 ### Legacy
 
@@ -154,15 +169,16 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 
 | Intent | Read |
 |--------|------|
-| Which SDK or package for a project | See Ecosystem → SDKs & Packages below |
-| Token prices, filtered token list, CoinGecko IDs | See Ecosystem → API Services (CMS) below |
-| Stream accounting, per-day chunking | See Ecosystem → API Services (Accounting) below |
-| Resolve ENS / Farcaster / Lens handles | See Ecosystem → API Services (Whois) below |
-| Query protocol data via GraphQL | See Ecosystem → Subgraphs below |
-| SUP token, governance, DAO | See Ecosystem → Foundation, DAO & SUP Token below |
-| Token prices for Super Tokens (simple API) | See Ecosystem → API Services (Token Prices) below |
-| Run a sentinel / liquidation bot | See Ecosystem → Sentinels below |
-| Get a Super Token listed / enable automations | See Ecosystem → Processes below |
+| SDK import paths, ABI tables, package choice | `references/guides/sdks.md` |
+| Script command syntax and examples | `references/guides/scripts.md` |
+| API endpoint details, Swagger links, gotchas | `references/guides/api-services.md` |
+| SUP token, governance, DAO, distribution | `references/guides/sup-and-dao.md` |
+| Token prices, filtered token list, CoinGecko IDs | See API Services table below (CMS) |
+| Stream accounting, per-day chunking | See API Services table below (Accounting) |
+| Resolve ENS / Farcaster / Lens handles | See API Services table below (Whois) |
+| Query protocol data via GraphQL | See Subgraphs below |
+| Run a sentinel / liquidation bot | See Sentinels below |
+| Get a Super Token listed / enable automations | See Processes below |
 
 ## Debugging Reverts
 
@@ -192,242 +208,37 @@ which errors a specific function can throw.
 
 ## Reading the Rich ABI YAMLs
 
-Each YAML is a self-contained contract reference. Here's how to parse them.
+Essential conventions for parsing the YAML files:
 
-### Root structure
+- **Reserved root keys:** `meta`, `events`, `errors` — every other root key is a **function**.
+- **`ctx: bytes` parameter** = function is called through the Host (`callAgreement` / `batchCall`), never directly.
+- **`# GOTCHA:` prefix** flags non-obvious behavior or common mistakes.
+- **`access` labels:** `anyone`, `host`, `self`, `admin`, `governance`, `sender`, `receiver`, `operator`, `manager`, `pic`, etc. Combine with `|`.
+- **`emits` and `errors` ordering** matches execution flow (not alphabetical). First errors = most likely.
+- **Field order:** description comment, `mutability`, `access`, `inputs`, `outputs`, `emits`, `errors`.
 
-```
-# Header comment — contract name, description, key notes
-meta:             # name, version, source, implements, inherits, deployments
-# == Section ==   # Grouped functions (these are the core content)
-events:           # All events the contract emits
-errors:           # Complete error index
-```
-
-Three root keys are reserved: `meta`, `events`, `errors`. Every other
-root-level key is a **function**.
-
-### Function entries
-
-```yaml
-createFlow:
-  # Description of what the function does.
-  # GOTCHA: Non-obvious behavior or edge cases.
-  mutability: nonpayable     # view | pure | nonpayable | payable
-  access: sender | operator  # who can call (omitted for view/pure)
-  inputs:
-    - token: address
-    - receiver: address
-    - flowRate: int96        # inline comments for non-obvious params
-    - ctx: bytes
-  outputs:
-    - newCtx: bytes
-  emits: [FlowUpdated, FlowUpdatedExtension]   # ordered by emission sequence
-  errors: [CFA_FLOW_ALREADY_EXISTS, CFA_INVALID_FLOW_RATE]  # ordered by check sequence
-```
-
-Fields appear in this order: description comment, `mutability`, `access`,
-`inputs`, `outputs`, `emits`, `errors`. All are omitted when not applicable.
-
-### Key conventions
-
-- **`ctx: bytes` parameter** = function is called through the Host
-  (`callAgreement` / `batchCall`), never directly.
-- **`access` labels**: `anyone`, `host`, `self`, `admin`, `governance`,
-  `sender`, `receiver`, `operator`, `manager`, `pic`, `agreement`,
-  `trusted-forwarder`, `factory`, `super-app`. Combine with `|`. Conditional:
-  `anyone(if-critical-or-jailed)`.
-- **`emits` and `errors` ordering** carries meaning: matches execution flow,
-  not alphabetical. First errors in the list are the most likely causes.
-- **`# GOTCHA:`** prefix flags non-obvious behavior, common mistakes, or edge
-  cases. Pay close attention to these.
-- **`meta.source`** is an array of raw GitHub URLs to the Solidity source files
-  (implementation, interface, base — filenames are self-documenting).
-- **`meta.deployments`** has per-network addresses split into `mainnet` and
-  `testnet` subgroups.
-
-### Events section
-
-```yaml
-events:
-  FlowUpdated:
-    indexed:              # log topics (filterable)
-      - token: address
-      - sender: address
-    data:                 # log payload
-      - flowRate: int96
-```
-
-### Errors section
-
-```yaml
-errors:
-  # -- Category --
-  - SIMPLE_ERROR                    # 0xabcd1234 — description
-  - PARAMETERIZED_ERROR:            # errors with diagnostic data
-      inputs:
-        - value: uint256
-```
+For the full format spec with examples (function entries, events, errors sections), see `references/contracts/_rich-abi-yaml-format.md`.
 
 ## Runtime Data (Scripts)
 
-The Rich ABIs document **interfaces** (what to call and how). Scripts provide
-**runtime data** (what to call it on) by wrapping canonical npm packages with
-local caching for offline use. No npm install required — the scripts fetch
-from CDN equivalents of the packages.
+Scripts provide runtime data (addresses, balances, ABIs) for one-off lookups.
+When writing application code, use the npm packages instead (see Developer
+Tracks above).
 
-### ABI JSON — `@sfpro/sdk` package + `scripts/abi.mjs`
+| Script | Purpose | When to use |
+|--------|---------|-------------|
+| `scripts/abi.mjs` | JSON ABI lookup, function signatures | Need to inspect ABIs outside an app project |
+| `scripts/tokenlist.mjs` | Super Token addresses, symbols, types | Need to find a token address or check its type |
+| `scripts/balance.mjs` | Real-time balances, flow rates | Need current balance or net flow for an account |
+| `scripts/metadata.mjs` | Contract addresses, subgraph endpoints, network info | Need addresses for a specific chain |
+| `cast call` | Direct on-chain reads | Need live contract state not covered by scripts |
 
-The [`@sfpro/sdk`](https://sdk.superfluid.pro/docs) package provides typed JSON ABIs
-for use with viem / wagmi / ethers. ABIs are split across sub-paths:
-
-| Contract (YAML name) | Import path | Export name |
-|---|---|---|
-| CFAv1Forwarder | `@sfpro/sdk/abi` | `cfaForwarderAbi` |
-| GDAv1Forwarder | `@sfpro/sdk/abi` | `gdaForwarderAbi` |
-| SuperfluidPool | `@sfpro/sdk/abi` | `gdaPoolAbi` |
-| SuperToken | `@sfpro/sdk/abi` | `superTokenAbi` |
-| Superfluid (Host) | `@sfpro/sdk/abi/core` | `hostAbi` |
-| ConstantFlowAgreementV1 | `@sfpro/sdk/abi/core` | `cfaAbi` |
-| GeneralDistributionAgreementV1 | `@sfpro/sdk/abi/core` | `gdaAbi` |
-| InstantDistributionAgreementV1 | `@sfpro/sdk/abi/core` | `idaAbi` |
-| SuperTokenFactory | `@sfpro/sdk/abi/core` | `superTokenFactoryAbi` |
-| BatchLiquidator | `@sfpro/sdk/abi/core` | `batchLiquidatorAbi` |
-| TOGA | `@sfpro/sdk/abi/core` | `togaAbi` |
-| AutoWrapManager | `@sfpro/sdk/abi/automation` | `autoWrapManagerAbi` |
-| AutoWrapStrategy | `@sfpro/sdk/abi/automation` | `autoWrapStrategyAbi` |
-| FlowScheduler | `@sfpro/sdk/abi/automation` | `flowSchedulerAbi` |
-| VestingSchedulerV3 | `@sfpro/sdk/abi/automation` | `vestingSchedulerV3Abi` |
-
-The SDK also exports chain-indexed address objects alongside each ABI:
-
-| Import path | Address exports |
-|---|---|
-| `@sfpro/sdk/abi` | `cfaForwarderAddress`, `gdaForwarderAddress` |
-| `@sfpro/sdk/abi/core` | `hostAddress`, `cfaAddress`, `gdaAddress`, `idaAddress`, `superTokenFactoryAddress`, `batchLiquidatorAddress`, `togaAddress` |
-| `@sfpro/sdk/abi/automation` | `autoWrapManagerAddress`, `autoWrapStrategyAddress`, `flowSchedulerAddress`, `vestingSchedulerV3Address` |
-
-Each export is an object keyed by chain ID:
-
-```js
-import { hostAbi, hostAddress } from "@sfpro/sdk/abi/core";
-const host = hostAddress[8453]; // Base Mainnet
-```
-
-CFASuperAppBase and SuperTokenV1Library are not in the SDK (abstract base /
-Solidity library).
-
-When writing application code, ALWAYS import ABIs and addresses from
-`@sfpro/sdk` — do NOT hand-craft ABI fragments (risk of phantom parameters)
-or hardcode contract addresses (they vary per network). Use `scripts/abi.mjs`
-to inspect or inline ABIs when the SDK is not a dependency:
-
-```
-node abi.mjs <contract>               Full JSON ABI
-node abi.mjs <contract> <function>    Single fragment by name
-node abi.mjs list                     All contracts with SDK import info
-```
-
-Accepts YAML names (`CFAv1Forwarder`) and short aliases (`cfa`, `host`,
-`pool`, `token`, `vesting`, etc.).
-
-### Token list — `scripts/tokenlist.mjs`
-
-Source: `@superfluid-finance/tokenlist` npm package.
-Resolves Super Token addresses, symbols, and types. Use when you need to find
-a specific token address or determine a Super Token's type.
-
-```
-node tokenlist.mjs super-token <chain-id> <symbol-or-address>
-node tokenlist.mjs by-chain <chain-id> --super
-node tokenlist.mjs by-symbol <symbol> [--chain-id <id>]
-node tokenlist.mjs by-address <address>
-node tokenlist.mjs stats
-```
-
-The `superTokenInfo.type` field determines which ABI patterns apply:
-- **Wrapper** → `upgrade`/`downgrade` work; `underlyingTokenAddress` is
-  provided. Underlying ERC-20 approval uses underlying's native decimals;
-  Super Token functions always use 18 decimals.
-- **Native Asset** → use `upgradeByETH`/`downgradeToETH` instead.
-- **Pure** → `upgrade`/`downgrade` revert; no wrapping.
-
-### Super Token balance — `scripts/balance.mjs`
-
-Source: [Super API](https://superapi.kazpi.com) (real-time on-chain query).
-Retrieves the current Super Token balance, net flow rate, and underlying token
-balance for any account. No caching — balances are fetched live.
-
-```
-node balance.mjs balance <chain-id> <token-symbol-or-address> <account>
-```
-
-The output includes:
-- **connected/unconnected balance** — wei and human-readable formatted values.
-  Connected = streaming balance; unconnected = pending pool distributions.
-- **netFlow** — aggregate flow rate in wei/sec and tokens/month (30-day month).
-- **maybeCriticalAt** — estimated time when connected balance hits zero.
-- **underlyingToken** — the wrapped ERC-20 balance (for Wrapper Super Tokens).
-
-### Network metadata — `scripts/metadata.mjs`
-
-Source: `@superfluid-finance/metadata` npm package.
-Resolves contract addresses, subgraph endpoints, and network info for any
-Superfluid-supported chain. Use when `meta.deployments` in a YAML doesn't
-cover the target chain, or when you need automation/subgraph endpoints.
-
-```
-node metadata.mjs contracts <chain-id-or-name>
-node metadata.mjs contract <chain-id-or-name> <key>
-node metadata.mjs automation <chain-id-or-name>
-node metadata.mjs subgraph <chain-id-or-name>
-node metadata.mjs networks [--mainnets|--testnets]
-```
-
-Contract keys match the field names in the metadata: `host`, `cfaV1`,
-`cfaV1Forwarder`, `gdaV1`, `gdaV1Forwarder`, `superTokenFactory`, `toga`,
-`vestingSchedulerV3`, `flowScheduler`, `autowrap`, `batchLiquidator`, etc.
-
-### On-chain reads — `cast call`
-
-[`cast`](https://www.getfoundry.sh/cast) performs read-only `eth_call` queries against
-any contract. If `cast` is not installed locally, use `bunx @foundry-rs/cast` instead.
-
-**Never use `cast send` or any write/transaction command — read calls only.**
-
-```
-cast call <address> "functionName(inputTypes)(returnTypes)" [args] --rpc-url <url>
-```
-
-The return types in the second set of parentheses tell cast how to decode the
-output. Without them you get raw hex.
-
-**RPC endpoint:** `https://rpc-endpoints.superfluid.dev/{network-name}` — network
-names are the canonical Superfluid names from `node metadata.mjs networks`
-(e.g. `optimism-mainnet`, `base-mainnet`, `eth-mainnet`).
-
-**Examples:**
-
-```bash
-# Total supply of USDCx on Optimism
-cast call 0x35adeb0638eb192755b6e52544650603fe65a006 \
-  "totalSupply()(uint256)" \
-  --rpc-url https://rpc-endpoints.superfluid.dev/optimism-mainnet
-
-# Flow rate via CFAv1Forwarder (address from Common Contract Addresses below)
-cast call 0xcfA132E353cB4E398080B9700609bb008eceB125 \
-  "getAccountFlowrate(address,address)(int96)" \
-  <superTokenAddress> <account> \
-  --rpc-url https://rpc-endpoints.superfluid.dev/optimism-mainnet
-```
-
-Use `abi.mjs` to look up exact function signatures and `metadata.mjs` /
-`tokenlist.mjs` for contract and token addresses.
+For command syntax, arguments, and examples, see `references/guides/scripts.md`.
 
 ## Common Contract Addresses
 
-Do NOT hardcode or fabricate addresses. Get them from the SDK address exports
-(see ABI section above) or from `node scripts/metadata.mjs contracts <chain>`.
+Do NOT hardcode or fabricate addresses. Get them from `@sfpro/sdk` address
+exports (see `references/guides/sdks.md`) or `node scripts/metadata.mjs contracts <chain>`.
 
 Forwarder addresses are the exception — uniform across most networks:
 - CFAv1Forwarder: `0xcfA132E353cB4E398080B9700609bb008eceB125`
@@ -444,37 +255,26 @@ Host and agreement addresses vary per network.
 | Package | Purpose |
 |---------|---------|
 | [`@sfpro/sdk`](https://www.npmjs.com/package/@sfpro/sdk) | Frontend/backend SDK — ABIs, wagmi hooks, actions |
-| [`@superfluid-finance/ethereum-contracts`](https://www.npmjs.com/package/@superfluid-finance/ethereum-contracts) | Build-time ABI source for codegen |
+| [`@superfluid-finance/ethereum-contracts`](https://www.npmjs.com/package/@superfluid-finance/ethereum-contracts) | Solidity build-time ABI source |
 | [`@superfluid-finance/metadata`](https://www.npmjs.com/package/@superfluid-finance/metadata) | Contract addresses, network info (zero deps) |
 | [`@superfluid-finance/tokenlist`](https://www.npmjs.com/package/@superfluid-finance/tokenlist) | Listed Super Tokens + underlying tokens |
 
-**When to use what:**
-
-- **Frontend with wagmi/viem** — install `@sfpro/sdk`. Enhanced ABIs include
-  downstream errors for type-safe error handling. Import paths documented in
-  the ABI section above.
-  [Docs](https://sdk.superfluid.pro/docs) ·
-  [Repo](https://github.com/superfluid-org/superfluid.pro/tree/main/sdk)
-- **Solidity integrations** — import ABIs from
-  `@superfluid-finance/ethereum-contracts` at build time. Do NOT use as a
-  runtime dependency — it pulls in heavy deps not suitable for client bundles.
-  [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/ethereum-contracts)
-- **Resolving addresses/networks at runtime** —
-  `@superfluid-finance/metadata` has zero dependencies, wrapped by
-  `scripts/metadata.mjs`.
-  [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/metadata)
-- **Finding token addresses** — `@superfluid-finance/tokenlist` based on
-  `@uniswap/token-lists`, wrapped by `scripts/tokenlist.mjs`.
-  [Repo](https://github.com/superfluid-org/tokenlist)
+- `@sfpro/sdk` — for frontend/backend with wagmi/viem
+- `ethereum-contracts` — for Solidity integrations (build-time only, not runtime)
+- `metadata` — for resolving addresses/networks at runtime
+- `tokenlist` — for finding token addresses
 
 **Deprecated — do not recommend for new projects:**
 
-| Package | Replaced by | Why deprecated |
-|---------|-------------|----------------|
-| [`@superfluid-finance/sdk-core`](https://www.npmjs.com/package/@superfluid-finance/sdk-core) | `@sfpro/sdk` | Over-abstracted, locked to ethers v5. [Docs](https://superfluid.gitbook.io/superfluid/developers/sdk-core) · [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-core) |
-| [`@superfluid-finance/sdk-redux`](https://www.npmjs.com/package/@superfluid-finance/sdk-redux) | wagmi + `@sfpro/sdk` | Pre-wagmi Redux hooks. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-redux) |
-| [`@superfluid-finance/js-sdk`](https://www.npmjs.com/package/@superfluid-finance/js-sdk) | `@sfpro/sdk` | Oldest SDK, truffle-based. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/js-sdk) |
-| [`@superfluid-finance/widget`](https://www.npmjs.com/package/@superfluid-finance/widget) | — | Subscription checkout widget, stuck on wagmi v1. [Repo](https://github.com/superfluid-finance/widget) · [Playground](https://checkout-builder.superfluid.finance/) |
+| Package | Replaced by |
+|---------|-------------|
+| `@superfluid-finance/sdk-core` | `@sfpro/sdk` |
+| `@superfluid-finance/sdk-redux` | wagmi + `@sfpro/sdk` |
+| `@superfluid-finance/js-sdk` | `@sfpro/sdk` |
+| `@superfluid-finance/widget` | — |
+
+For ABI import tables, address exports, detailed SDK guidance, and deprecated
+package details, see `references/guides/sdks.md`.
 
 ### API Services
 
@@ -489,55 +289,15 @@ Host and agreement addresses vary per network.
 | Token Prices | `https://token-prices-api.superfluid.dev/v1/{network}/{token}` | Super Token prices (CoinGecko-backed) |
 | Claim Programs | `https://claim.superfluid.org/api/programs` | SUP reward programs — seasons, allocations, pool addresses, flow rates |
 
-- **Super API** — wrapped by `scripts/balance.mjs`. Use the script instead of
-  calling the API directly.
-- **CMS** — can return unlisted Super Tokens (not just those in the
-  tokenlist). Can get CoinGecko IDs for price lookups.
-  [Swagger](https://cms.superfluid.pro/api-docs) ·
-  [OpenAPI](https://cms.superfluid.pro/openapi.json) ·
-  [Repo](https://github.com/superfluid-org/superfluid.pro/tree/main/cms)
-- **Points** — SUP points campaigns (Stack.so replacement). Same repo as CMS.
-  [API docs](https://cms.superfluid.pro/points/api-docs) ·
-  [OpenAPI](https://cms.superfluid.pro/points/openapi.json)
-- **Accounting** — splits per-second streams into chunked granularity (e.g.
-  streamed per day). Handles CFA and ERC-20 transfers only — **no GDA
-  support**.
-  [Swagger](https://accounting.superfluid.dev/v1/swagger) ·
-  [Repo](https://github.com/superfluid-org/accounting-api)
-- **Allowlist** — `GET /api/allowlist/{account}/{chainId}`. Check if an
-  account is allowlisted for automations (vesting, flow scheduling, auto-wrap).
-- **Whois** — Resolves across ENS, AF, Farcaster, Lens, etc.
-  - `GET /api/resolve/{address}` — address → profile/name
-  - `GET /api/reverse-resolve/{handle}` — name/handle → address
-  GOTCHA: despite the names, `resolve` takes an address and `reverse-resolve`
-  takes a name.
-- **Token Prices** — simpler alternative to CMS for price lookups. Provides
-  prices for all listed SuperTokens where the token (or underlying) is known to
-  CoinGecko. Endpoint: `GET /v1/{canonical-network-name}/{token-address}`.
-  [Repo](https://github.com/d10r/sf-token-prices-api/)
-- **Claim Programs** — returns all SUP reward programs across seasons.
-  Each entry has `appId`, `name`, `season`, `category`, `url`, and a
-  nested `program.onchainInfo` with `poolAddress`, `fundingFlowRate`,
-  `totalAllocated`, `totalClaimed`, `totalMembers`, and funding
-  timestamps. The response uses tRPC's `superjson` format (top-level
-  `json` + `meta` keys). Filter by `program.onchainInfo.isFundingFinished`
-  to find active campaigns.
+For per-API endpoints, query patterns, Swagger/OpenAPI links, and gotchas,
+see `references/guides/api-services.md`.
 
 ### Subgraphs
 
-**Prefer RPC over subgraph for current state.** The subgraph only updates on
-transactions, but Superfluid state changes continuously (streams flow every
-second). Balances, flow rates, and distribution states on the subgraph are
-always behind. This is especially true for GDA and IDA — their 1-to-many and
-N-to-many primitives are built for scalability: a distribution to millions of
-pool members updates only the Pool entity on-chain (one event), so individual
-PoolMember records on the subgraph won't reflect the new state until each
-member transacts. Use `cast call` or `scripts/balance.mjs` for real-time
-reads. The subgraph is best for historical queries, event indexing, and
-listing/filtering entities.
-
-For entity schemas and query construction patterns, see the
-"Querying indexed data" use-case section above.
+**Prefer RPC over subgraph for current state.** Subgraphs only update on
+transactions, but streams flow every second. Use `cast call` or
+`scripts/balance.mjs` for real-time reads. Subgraphs are best for historical
+queries, event indexing, and listing/filtering entities.
 
 Endpoint pattern: `https://subgraph-endpoints.superfluid.dev/{network-name}/{subgraph}`
 
@@ -547,6 +307,7 @@ Endpoint pattern: `https://subgraph-endpoints.superfluid.dev/{network-name}/{sub
 | Vesting Scheduler | `vesting-scheduler` | All versions: v1, v2, v3 |
 | Flow Scheduler | `flow-scheduler` | |
 | Auto-Wrap | `auto-wrap` | |
+| SUP (Locker / Reserve) | Goldsky-hosted (Base only) | Staking, unlocks, emission programs, LP positions |
 
 Network names are canonical Superfluid names (`optimism-mainnet`,
 `base-mainnet`, etc.). Use `node metadata.mjs subgraph <chain>` to get the
@@ -579,41 +340,13 @@ reaches zero, keeping the protocol solvent. Anyone can run one.
 
 ### Foundation, DAO & SUP Token
 
-**Superfluid Foundation** — independent entity overseeing long-term protocol
-stewardship. Provides governance facilitation, administrative, and legal
-support.
+**SUP** — a SuperToken on Base (`0xa69f80524381275a7ffdb3ae01c54150644c8792`).
+1B total supply. Governed by Superfluid DAO via
+[Snapshot](https://snapshot.box/#/s:superfluid.eth). **Locker / Reserve** is
+the on-chain staking mechanism (longer lockup = bigger bonus).
 
-**Superfluid DAO** — community-driven governance. Includes a Security Council
-that handles routine protocol upgrades. Proposals discussed on the
-[forum](https://forum.superfluid.org/), voted on via
-[Snapshot](https://snapshot.box/#/s:superfluid.eth) (`superfluid.eth`).
-Delegate SUP at
-[claim.superfluid.org/governance](https://claim.superfluid.org/governance).
-
-**SUP token** — a SuperToken on Base. Address:
-`0xa69f80524381275a7ffdb3ae01c54150644c8792`. Total supply: 1,000,000,000.
-Future inflation at DAO discretion.
-[CoinGecko](https://www.coingecko.com/en/coins/superfluid)
-
-Distribution:
-- **60% community** — distributed via Streaming Programmatic Rewards (SPR)
-  over at least 2 years in quarterly seasons. SPR streams token rewards
-  continuously (alternative to one-off airdrops). Sub-split between DAO
-  treasury and foundation funds.
-- **25% development team** — 3-year lockup stream with 1-year cliff.
-- **15% early backers** — same 3-year lockup with 1-year cliff.
-
-**Locker / Reserve system** — on-chain staking mechanism (FluidLocker
-contract). Holders lock SUP and choose unlock duration — longer lockup = bigger
-bonus, early unlock incurs a tax. Terminology: "Locker" in contracts, "Reserve"
-in the UI and marketing (e.g. the Claim app).
-
-Links:
-[Website](https://superfluid.org/) ·
-[Blog](https://superfluid.org/blog) ·
-[Forum](https://forum.superfluid.org/) ·
-[Claim app](https://claim.superfluid.org/) ·
-[Token launch announcement](https://x.com/Superfluid_HQ/status/1892236759771091346)
+For distribution breakdown, Foundation vs DAO roles, governance details, and
+links, see `references/guides/sup-and-dao.md`.
 
 ### Processes
 
