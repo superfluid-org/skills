@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T022-slim-skill-md-extract-guides]] -- Slim SKILL.md, extract content to dedicated guides for on-demand loading
 - [[T021-fix-claude-md-script-count]] -- Fix CLAUDE.md script count (two → four) and add missing scripts to tree
 - [[T020-add-sup-reserve-system-abis]] -- Add SUP Token / Reserve System Rich ABI YAMLs (5 contracts)
 - [[T019-split-protocol-schema-add-entity-summaries]] -- Split protocol-v1.graphql into events/entities, add entity summaries to guides
@@ -47,8 +48,8 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 ## Quick Reference
 
 - **Skill entry**: `skills/superfluid/SKILL.md`
-- **Contracts**: `skills/superfluid/references/contracts/` (21 Rich ABI YAMLs)
-- **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 5 `.graphql` schemas, 4 usage guides)
-- **Guides**: `skills/superfluid/references/guides/` (super-apps, macro-forwarders, eip712-example)
+- **Contracts**: `skills/superfluid/references/contracts/` (22 Rich ABI YAMLs + format spec)
+- **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 6 `.graphql` schemas, 5 usage guides)
+- **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, macro-forwarders, sdks, scripts, api-services, sup-and-dao)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
 - **Plugin version**: `.claude-plugin/plugin.json`

@@ -4,6 +4,21 @@ This document describes everything The Graph's graph-node auto-generates from a 
 
 ---
 
+## When to use subgraphs vs RPC
+
+**Prefer RPC over subgraph for current state.** The subgraph only updates on
+transactions, but Superfluid state changes continuously (streams flow every
+second). Balances, flow rates, and distribution states on the subgraph are
+always behind. This is especially true for GDA and IDA — their 1-to-many and
+N-to-many primitives are built for scalability: a distribution to millions of
+pool members updates only the Pool entity on-chain (one event), so individual
+PoolMember records on the subgraph won't reflect the new state until each
+member transacts. Use `cast call` or `scripts/balance.mjs` for real-time
+reads. The subgraph is best for historical queries, event indexing, and
+listing/filtering entities.
+
+---
+
 ## 1. Scalar Types
 
 The Graph supports these scalar types (beyond standard GraphQL `String`, `Int`, `Boolean`, `ID`):
