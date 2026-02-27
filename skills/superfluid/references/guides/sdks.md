@@ -71,7 +71,7 @@ or hardcode contract addresses (they vary per network).
 
 | Package | Replaced by | Why deprecated |
 |---------|-------------|----------------|
-| [`@superfluid-finance/sdk-core`](https://www.npmjs.com/package/@superfluid-finance/sdk-core) | `@sfpro/sdk` | Over-abstracted, locked to ethers v5. [Docs](https://superfluid.gitbook.io/superfluid/developers/sdk-core) · [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-core) |
-| [`@superfluid-finance/sdk-redux`](https://www.npmjs.com/package/@superfluid-finance/sdk-redux) | wagmi + `@sfpro/sdk` | Pre-wagmi Redux hooks. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-redux) |
-| [`@superfluid-finance/js-sdk`](https://www.npmjs.com/package/@superfluid-finance/js-sdk) | `@sfpro/sdk` | Oldest SDK, truffle-based. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/js-sdk) |
-| [`@superfluid-finance/widget`](https://www.npmjs.com/package/@superfluid-finance/widget) | — | Subscription checkout widget, stuck on wagmi v1. [Repo](https://github.com/superfluid-finance/widget) · [Playground](https://checkout-builder.superfluid.finance/) |
+| `@superfluid-finance/sdk-core` | `@sfpro/sdk` | Over-abstracted, locked to ethers v5. [Docs](https://superfluid.gitbook.io/superfluid/developers/sdk-core) · [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-core) |
+| `@superfluid-finance/sdk-redux` | wagmi + `@sfpro/sdk` | Pre-wagmi Redux hooks. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-redux) |
+| `@superfluid-finance/js-sdk` | `@sfpro/sdk` | Oldest SDK, truffle-based. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/js-sdk) |
+| `@superfluid-finance/widget` | — | Subscription checkout widget, stuck on wagmi v1. [Repo](https://github.com/superfluid-finance/widget) · [Playground](https://checkout-builder.superfluid.finance/) |
