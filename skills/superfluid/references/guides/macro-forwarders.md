@@ -125,18 +125,16 @@ struct Operation {
 
 Cross-reference: `batch_operation_types` in `Superfluid.abi.yaml`
 
-| Type | Name | target | data encoding |
-|------|------|--------|---------------|
-| 1 | ERC20_APPROVE | SuperToken | `abi.encode(spender, amount)` |
-| 2 | ERC20_TRANSFER_FROM | SuperToken | `abi.encode(sender, recipient, amount)` |
-| 4 | ERC20_INCREASE_ALLOWANCE | SuperToken | `abi.encode(spender, addedValue)` |
-| 5 | ERC20_DECREASE_ALLOWANCE | SuperToken | `abi.encode(spender, subtractedValue)` |
-| 101 | SUPERTOKEN_UPGRADE | SuperToken | `abi.encode(amount)` |
-| 102 | SUPERTOKEN_DOWNGRADE | SuperToken | `abi.encode(amount)` |
-| 201 | SUPERFLUID_CALL_AGREEMENT | agreement | `abi.encode(callData, userData)` — see below |
-| 202 | CALL_APP_ACTION | Super App | `abi.encode(callData)` |
-| 301 | SIMPLE_FORWARD_CALL | any contract | full encodeFunctionData, or `0x` for pure value transfers |
-| 302 | ERC2771_FORWARD_CALL | ERC-2771 recipient | full encodeFunctionData (sender appended per ERC-2771) |
+- Type 1 `ERC20_APPROVE` — target: SuperToken, data: `abi.encode(spender, amount)`
+- Type 2 `ERC20_TRANSFER_FROM` — target: SuperToken, data: `abi.encode(sender, recipient, amount)`
+- Type 4 `ERC20_INCREASE_ALLOWANCE` — target: SuperToken, data: `abi.encode(spender, addedValue)`
+- Type 5 `ERC20_DECREASE_ALLOWANCE` — target: SuperToken, data: `abi.encode(spender, subtractedValue)`
+- Type 101 `SUPERTOKEN_UPGRADE` — target: SuperToken, data: `abi.encode(amount)`
+- Type 102 `SUPERTOKEN_DOWNGRADE` — target: SuperToken, data: `abi.encode(amount)`
+- Type 201 `SUPERFLUID_CALL_AGREEMENT` — target: agreement, data: `abi.encode(callData, userData)` — see below
+- Type 202 `CALL_APP_ACTION` — target: Super App, data: `abi.encode(callData)`
+- Type 301 `SIMPLE_FORWARD_CALL` — target: any contract, data: full encodeFunctionData, or `0x` for pure value transfers
+- Type 302 `ERC2771_FORWARD_CALL` — target: ERC-2771 recipient, data: full encodeFunctionData (sender appended per ERC-2771)
 
 Types 301-302 are less common in macros but available for advanced use cases
 (e.g., calling arbitrary contracts within a batch).

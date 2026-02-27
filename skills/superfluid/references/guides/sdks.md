@@ -69,9 +69,7 @@ or hardcode contract addresses (they vary per network).
 
 ## Deprecated packages — do not recommend for new projects
 
-| Package | Replaced by | Why deprecated |
-|---------|-------------|----------------|
-| `@superfluid-finance/sdk-core` | `@sfpro/sdk` | Over-abstracted, locked to ethers v5. [Docs](https://superfluid.gitbook.io/superfluid/developers/sdk-core) · [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-core) |
-| `@superfluid-finance/sdk-redux` | wagmi + `@sfpro/sdk` | Pre-wagmi Redux hooks. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-redux) |
-| `@superfluid-finance/js-sdk` | `@sfpro/sdk` | Oldest SDK, truffle-based. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/js-sdk) |
-| `@superfluid-finance/widget` | — | Subscription checkout widget, stuck on wagmi v1. [Repo](https://github.com/superfluid-finance/widget) · [Playground](https://checkout-builder.superfluid.finance/) |
+- `@superfluid-finance/sdk-core` → replaced by `@sfpro/sdk`. Over-abstracted, locked to ethers v5. [Docs](https://superfluid.gitbook.io/superfluid/developers/sdk-core) · [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-core)
+- `@superfluid-finance/sdk-redux` → replaced by wagmi + `@sfpro/sdk`. Pre-wagmi Redux hooks. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/sdk-redux)
+- `@superfluid-finance/js-sdk` → replaced by `@sfpro/sdk`. Oldest SDK, truffle-based. [Repo](https://github.com/superfluid-org/protocol-monorepo/tree/dev/packages/js-sdk)
+- `@superfluid-finance/widget` → no replacement. Subscription checkout widget, stuck on wagmi v1. [Repo](https://github.com/superfluid-finance/widget) · [Playground](https://checkout-builder.superfluid.finance/)

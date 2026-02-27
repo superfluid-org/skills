@@ -108,17 +108,15 @@ reverts with `APP_RULE` code 30 (`COMPOSITE_APP_IS_NOT_WHITELISTED`).
 A Super App is **jailed** when it violates any protocol rule. The `APP_RULE`
 error and `Jail` event carry a reason code (from `SuperAppDefinitions.sol`):
 
-| Code | Name | Meaning |
-|------|------|---------|
-| 10 | `NO_REVERT_ON_TERMINATION_CALLBACK` | Delete/termination callback reverted |
-| 11 | `NO_CRITICAL_SENDER_ACCOUNT` | Callback made the flow sender critical |
-| 12 | `NO_CRITICAL_RECEIVER_ACCOUNT` | Callback made the flow receiver critical |
-| 20 | `CTX_IS_READONLY` | State change during a `staticcall` (before) callback |
-| 21 | `CTX_IS_NOT_CLEAN` | Context was not properly returned after callback |
-| 22 | `CTX_IS_MALFORMATED` | Context bytes were corrupted or fabricated |
-| 30 | `COMPOSITE_APP_IS_NOT_WHITELISTED` | Called downstream Super App without `allowCompositeApp` |
-| 31 | `COMPOSITE_APP_IS_JAILED` | Called a downstream Super App that is jailed |
-| 40 | `MAX_APP_LEVEL_REACHED` | Callback nesting exceeded `MAX_APP_CALLBACK_LEVEL` |
+- 10 `NO_REVERT_ON_TERMINATION_CALLBACK` — Delete/termination callback reverted
+- 11 `NO_CRITICAL_SENDER_ACCOUNT` — Callback made the flow sender critical
+- 12 `NO_CRITICAL_RECEIVER_ACCOUNT` — Callback made the flow receiver critical
+- 20 `CTX_IS_READONLY` — State change during a `staticcall` (before) callback
+- 21 `CTX_IS_NOT_CLEAN` — Context was not properly returned after callback
+- 22 `CTX_IS_MALFORMATED` — Context bytes were corrupted or fabricated
+- 30 `COMPOSITE_APP_IS_NOT_WHITELISTED` — Called downstream Super App without `allowCompositeApp`
+- 31 `COMPOSITE_APP_IS_JAILED` — Called a downstream Super App that is jailed
+- 40 `MAX_APP_LEVEL_REACHED` — Callback nesting exceeded `MAX_APP_CALLBACK_LEVEL`
 
 ### Consequences
 
