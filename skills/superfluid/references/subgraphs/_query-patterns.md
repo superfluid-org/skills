@@ -23,17 +23,15 @@ listing/filtering entities.
 
 The Graph supports these scalar types (beyond standard GraphQL `String`, `Int`, `Boolean`, `ID`):
 
-| Scalar | Description | GraphQL value format |
-|---|---|---|
-| `Bytes` | Hex-encoded byte string (e.g. Ethereum address) | `"0xabc123..."` |
-| `BigInt` | Arbitrary-precision integer | `"1000000000000000000"` (string) |
-| `BigDecimal` | Arbitrary-precision decimal | `"10.99"` (string) |
-| `Int` | 32-bit signed integer | `42` |
-| `Int8` | 8-bit signed integer (stored as Int8 in DB) | `127` |
-| `Timestamp` | Nanosecond-precision timestamp | `"1609459200000000000"` (string) |
-| `String` | UTF-8 text | `"hello"` |
-| `Boolean` | True/false | `true` / `false` |
-| `ID` | Unique entity identifier | `"0x..."` or any string |
+- `Bytes` — Hex-encoded byte string (e.g. Ethereum address). Value: `"0xabc123..."`
+- `BigInt` — Arbitrary-precision integer. Value: `"1000000000000000000"` (string)
+- `BigDecimal` — Arbitrary-precision decimal. Value: `"10.99"` (string)
+- `Int` — 32-bit signed integer. Value: `42`
+- `Int8` — 8-bit signed integer (stored as Int8 in DB). Value: `127`
+- `Timestamp` — Nanosecond-precision timestamp. Value: `"1609459200000000000"` (string)
+- `String` — UTF-8 text. Value: `"hello"`
+- `Boolean` — True/false. Value: `true` / `false`
+- `ID` — Unique entity identifier. Value: `"0x..."` or any string
 
 > **Note**: `BigInt`, `BigDecimal`, `Bytes`, and `Timestamp` are always passed as **quoted strings** in queries.
 
@@ -75,11 +73,9 @@ type Query {
 
 ### Naming Convention
 
-| Schema entity | Singular query | Plural query | Filter input | OrderBy enum |
-|---|---|---|---|---|
-| `Token` | `token(id: ...)` | `tokens(...)` | `Token_filter` | `Token_orderBy` |
-| `Stream` | `stream(id: ...)` | `streams(...)` | `Stream_filter` | `Stream_orderBy` |
-| `FlowUpdatedEvent` | `flowUpdatedEvent(id: ...)` | `flowUpdatedEvents(...)` | `FlowUpdatedEvent_filter` | `FlowUpdatedEvent_orderBy` |
+- `Token` → singular: `token(id: ...)`, plural: `tokens(...)`, filter: `Token_filter`, orderBy: `Token_orderBy`
+- `Stream` → singular: `stream(id: ...)`, plural: `streams(...)`, filter: `Stream_filter`, orderBy: `Stream_orderBy`
+- `FlowUpdatedEvent` → singular: `flowUpdatedEvent(id: ...)`, plural: `flowUpdatedEvents(...)`, filter: `FlowUpdatedEvent_filter`, orderBy: `FlowUpdatedEvent_orderBy`
 
 The plural form follows standard English pluralization (entity → entities, etc.), but for most camelCase names it simply appends `s`.
 
@@ -127,43 +123,27 @@ For each field on an entity, graph-node generates filter input fields on the `En
 
 ### Complete Operator Reference
 
-| Suffix | Meaning | Available on |
-|---|---|---|
-| _(none)_ | Equals | All types |
-| `_not` | Not equals | All types |
-| `_gt` | Greater than | Numeric¹, String, Bytes, ID |
-| `_lt` | Less than | Numeric¹, String, Bytes, ID |
-| `_gte` | Greater than or equal | Numeric¹, String, Bytes, ID |
-| `_lte` | Less than or equal | Numeric¹, String, Bytes, ID |
-| `_in` | Value in list | All types |
-| `_not_in` | Value not in list | All types |
-| `_contains` | Contains substring (case-sensitive) | String, Bytes |
-| `_contains_nocase` | Contains substring (case-insensitive) | String |
-| `_not_contains` | Does not contain (case-sensitive) | String, Bytes |
-| `_not_contains_nocase` | Does not contain (case-insensitive) | String |
-| `_starts_with` | Starts with (case-sensitive) | String, Bytes |
-| `_starts_with_nocase` | Starts with (case-insensitive) | String |
-| `_not_starts_with` | Does not start with (case-sensitive) | String, Bytes |
-| `_not_starts_with_nocase` | Does not start with (case-insensitive) | String |
-| `_ends_with` | Ends with (case-sensitive) | String, Bytes |
-| `_ends_with_nocase` | Ends with (case-insensitive) | String |
-| `_not_ends_with` | Does not end with (case-sensitive) | String, Bytes |
-| `_not_ends_with_nocase` | Does not end with (case-insensitive) | String |
-| `_` | Nested entity filter | Entity/interface references only |
+**All types:** _(none)_ = equals, `_not`, `_in`, `_not_in`
+
+**Numeric¹, String, Bytes, ID:** `_gt`, `_lt`, `_gte`, `_lte`
+
+**String, Bytes:** `_contains` (case-sensitive), `_not_contains`, `_starts_with`, `_not_starts_with`, `_ends_with`, `_not_ends_with`
+
+**String only (+ `_nocase` variants):** `_contains_nocase`, `_not_contains_nocase`, `_starts_with_nocase`, `_not_starts_with_nocase`, `_ends_with_nocase`, `_not_ends_with_nocase`
+
+**Entity/interface refs:** `_` (nested filter using the referenced entity's `_filter` type)
 
 ¹ Numeric = `Int`, `Int8`, `BigInt`, `BigDecimal`, `Timestamp`
 
 ### Per-Type Summary
 
-| Scalar type | Suffixes |
-|---|---|
-| **Boolean** | `_not`, `_in`, `_not_in` |
-| **Int / Int8** | `_not`, `_gt`, `_lt`, `_gte`, `_lte`, `_in`, `_not_in` |
-| **BigInt / BigDecimal / Timestamp** | `_not`, `_gt`, `_lt`, `_gte`, `_lte`, `_in`, `_not_in` |
-| **String / ID** | `_not`, `_gt`, `_lt`, `_gte`, `_lte`, `_in`, `_not_in`, `_contains`, `_contains_nocase`, `_not_contains`, `_not_contains_nocase`, `_starts_with`, `_starts_with_nocase`, `_not_starts_with`, `_not_starts_with_nocase`, `_ends_with`, `_ends_with_nocase`, `_not_ends_with`, `_not_ends_with_nocase` |
-| **Bytes** | `_not`, `_gt`, `_lt`, `_gte`, `_lte`, `_in`, `_not_in`, `_contains`, `_not_contains`, `_starts_with`, `_not_starts_with`, `_ends_with`, `_not_ends_with` |
-| **Entity ref** | `_` (nested filter using the referenced entity's `_filter` type) |
-| **List/Array** | `_contains`, `_contains_nocase`, `_not_contains`, `_not_contains_nocase` (checks list membership) |
+- **Boolean** — `_not`, `_in`, `_not_in`
+- **Int / Int8** — `_not`, `_gt`, `_lt`, `_gte`, `_lte`, `_in`, `_not_in`
+- **BigInt / BigDecimal / Timestamp** — `_not`, `_gt`, `_lt`, `_gte`, `_lte`, `_in`, `_not_in`
+- **String / ID** — `_not`, `_gt`, `_lt`, `_gte`, `_lte`, `_in`, `_not_in`, `_contains`, `_contains_nocase`, `_not_contains`, `_not_contains_nocase`, `_starts_with`, `_starts_with_nocase`, `_not_starts_with`, `_not_starts_with_nocase`, `_ends_with`, `_ends_with_nocase`, `_not_ends_with`, `_not_ends_with_nocase`
+- **Bytes** — `_not`, `_gt`, `_lt`, `_gte`, `_lte`, `_in`, `_not_in`, `_contains`, `_not_contains`, `_starts_with`, `_not_starts_with`, `_ends_with`, `_not_ends_with`
+- **Entity ref** — `_` (nested filter using the referenced entity's `_filter` type)
+- **List/Array** — `_contains`, `_contains_nocase`, `_not_contains`, `_not_contains_nocase` (checks list membership)
 
 > **Bytes note**: `Bytes` gets the string-like prefix/suffix/contains operators, but **not** the `_nocase` variants, since hex comparisons are inherently case-insensitive in graph-node (addresses are normalized to lowercase).
 
@@ -280,12 +260,11 @@ tokenSearch(text: String!, first: Int, skip: Int): [TokenSearch!]!
 ```
 
 Full-text operators (used within the `text` argument string):
-| Operator | Symbol | Example |
-|---|---|---|
-| AND | `&` | `"super & fluid"` |
-| OR | `\|` | `"super \| fluid"` |
-| Follow by (proximity) | `<->` | `"super <-> fluid"` |
-| Prefix match | `:*` | `"super:*"` |
+
+- AND `&` — `"super & fluid"`
+- OR `|` — `"super | fluid"`
+- Follow by (proximity) `<->` — `"super <-> fluid"`
+- Prefix match `:*` — `"super:*"`
 
 ---
 
@@ -458,14 +437,12 @@ This document describes the query API as implemented by **graph-node** (the refe
 
 ### Key Sources
 
-| Resource | URL |
-|---|---|
-| **Official GraphQL API docs** | https://thegraph.com/docs/en/subgraphs/querying/graphql-api/ |
-| **Graph Client CLI docs** | https://thegraph.com/docs/en/subgraphs/querying/graph-client/README/ |
-| **graph-node repository** | https://github.com/graphprotocol/graph-node |
-| **Schema generation source** | `graph-node/graphql/src/schema/api.rs` — this is where filter suffixes, orderBy enums, and query field signatures are generated from entity definitions |
-| **Subgraph spec (GraphQL schema)** | https://github.com/graphprotocol/graph-node/blob/master/docs/subgraph-manifest.md |
-| **AssemblyScript API (scalar types)** | https://thegraph.com/docs/en/developing/assemblyscript-api/ |
+- **Official GraphQL API docs** — https://thegraph.com/docs/en/subgraphs/querying/graphql-api/
+- **Graph Client CLI docs** — https://thegraph.com/docs/en/subgraphs/querying/graph-client/README/
+- **graph-node repository** — https://github.com/graphprotocol/graph-node
+- **Schema generation source** — `graph-node/graphql/src/schema/api.rs` — this is where filter suffixes, orderBy enums, and query field signatures are generated from entity definitions
+- **Subgraph spec (GraphQL schema)** — https://github.com/graphprotocol/graph-node/blob/master/docs/subgraph-manifest.md
+- **AssemblyScript API (scalar types)** — https://thegraph.com/docs/en/developing/assemblyscript-api/
 
 ### Version Context
 
@@ -475,12 +452,10 @@ This document describes the query API as implemented by **graph-node** (the refe
 
 ### Notable Changes Over Time
 
-| Version / Date | Change |
-|---|---|
-| graph-node v0.30.0 | Added `and` / `or` logical operators in `where` filters |
-| graph-node v0.30.0 | Added nested entity filtering (`_` suffix) |
-| graph-node v0.32.0+ | Added `Int8` scalar type |
-| graph-node v0.34.0+ | Added `Timestamp` scalar type |
-| Ongoing | `_nocase` string filter variants added incrementally |
+- graph-node v0.30.0 — Added `and` / `or` logical operators in `where` filters
+- graph-node v0.30.0 — Added nested entity filtering (`_` suffix)
+- graph-node v0.32.0+ — Added `Int8` scalar type
+- graph-node v0.34.0+ — Added `Timestamp` scalar type
+- Ongoing — `_nocase` string filter variants added incrementally
 
 > **If the generated schema ever changes**: Run an introspection query against a live subgraph endpoint to verify. The authoritative source of truth is always the `api.rs` file in graph-node, which programmatically builds the schema from entity definitions.

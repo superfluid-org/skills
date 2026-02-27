@@ -8,10 +8,8 @@ Companion to `sup-subgraph.graphql`. Covers entity overview, endpoints, filter p
 
 Base Mainnet and Base Sepolia **only**. These are Goldsky-hosted endpoints (not the standard `subgraph-endpoints.superfluid.dev` pattern):
 
-| Network | Endpoint |
-|---------|----------|
-| Base Mainnet (8453) | `https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/sup/v2/gn` |
-| Base Sepolia (84532) | `https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/sup_test/latest/gn` |
+- Base Mainnet (8453): `https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/sup/v2/gn`
+- Base Sepolia (84532): `https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/sup_test/latest/gn`
 
 ---
 

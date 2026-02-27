@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T023-replace-tables-with-lists]] -- Replace markdown tables with bullet lists for token efficiency
 - [[T022-slim-skill-md-extract-guides]] -- Slim SKILL.md, extract content to dedicated guides for on-demand loading
 - [[T021-fix-claude-md-script-count]] -- Fix CLAUDE.md script count (two → four) and add missing scripts to tree
 - [[T020-add-sup-reserve-system-abis]] -- Add SUP Token / Reserve System Rich ABI YAMLs (5 contracts)

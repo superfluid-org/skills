@@ -79,20 +79,18 @@ If cliffAndFlowExecutedAt < endDate AND endExecutedAt > endDate:
 
 Status is **computed client-side**, not stored in the subgraph. Fetch the schedule fields and apply the following decision tree in priority order (first match wins):
 
-| # | Status | UI Title | Condition | Key Flags |
-|---|--------|----------|-----------|-----------|
-| 1 | `DeletedAfterStart` | Deleted | `deletedAt` exists AND `deletedAt > startDate` | isFinished, isDeleted |
-| 2 | `DeletedBeforeStart` | Deleted | `deletedAt` exists AND `deletedAt <= startDate` | isFinished, isDeleted |
-| 3 | `EndFailed` | Cancel Error | `failedAt` exists | isFinished, isError |
-| 4 | `EndCompensationFailed` | Transfer Error | `didEarlyEndCompensationFail` is true | isFinished, isError |
-| 5 | `EndOverflowed` | Overflow Error | `endExecutedAt` exists AND `claimedAt !== endExecutedAt` AND `endExecutedAt > endDate` | isFinished, isError |
-| 6 | `EndExecuted` | Vested | `endExecutedAt` exists (and #5 conditions not met) | isFinished |
-| 7 | `CliffAndFlowExecuted` | Vesting | `cliffAndFlowExecutedAt` exists | isStreaming |
-| 8 | `ClaimExpired` | Claim Expired | `claimValidityDate > 0` AND `now > claimValidityDate` | isFinished, isError |
-| 9 | `Claimable` | Unclaimed | `claimValidityDate > 0` AND `now > cliffAndFlowDate` AND `now < claimValidityDate` | canClaim |
-| 10 | `CliffAndFlowExpired` | Stream Error | `now > cliffAndFlowExpirationAt` | isStreaming, isError |
-| 11 | `CliffPeriod` | Cliff | `cliffDate` exists AND `startDate < now < cliffAndFlowExpirationAt` | isCliff |
-| 12 | `ScheduledStart` | Scheduled | Default — none of the above matched | — |
+1. **DeletedAfterStart** "Deleted" — `deletedAt` exists AND `deletedAt > startDate`. Flags: isFinished, isDeleted.
+2. **DeletedBeforeStart** "Deleted" — `deletedAt` exists AND `deletedAt <= startDate`. Flags: isFinished, isDeleted.
+3. **EndFailed** "Cancel Error" — `failedAt` exists. Flags: isFinished, isError.
+4. **EndCompensationFailed** "Transfer Error" — `didEarlyEndCompensationFail` is true. Flags: isFinished, isError.
+5. **EndOverflowed** "Overflow Error" — `endExecutedAt` exists AND `claimedAt !== endExecutedAt` AND `endExecutedAt > endDate`. Flags: isFinished, isError.
+6. **EndExecuted** "Vested" — `endExecutedAt` exists (and #5 conditions not met). Flags: isFinished.
+7. **CliffAndFlowExecuted** "Vesting" — `cliffAndFlowExecutedAt` exists. Flags: isStreaming.
+8. **ClaimExpired** "Claim Expired" — `claimValidityDate > 0` AND `now > claimValidityDate`. Flags: isFinished, isError.
+9. **Claimable** "Unclaimed" — `claimValidityDate > 0` AND `now > cliffAndFlowDate` AND `now < claimValidityDate`. Flags: canClaim.
+10. **CliffAndFlowExpired** "Stream Error" — `now > cliffAndFlowExpirationAt`. Flags: isStreaming, isError.
+11. **CliffPeriod** "Cliff" — `cliffDate` exists AND `startDate < now < cliffAndFlowExpirationAt`. Flags: isCliff.
+12. **ScheduledStart** "Scheduled" — Default, none of the above matched.
 
 Since status depends on the current timestamp (`now`), you cannot filter for time-dependent statuses like `CliffPeriod`, `Claimable`, or `CliffAndFlowExpired` purely through subgraph filters. Fetch schedules and apply the decision tree in your application.
 
