@@ -254,10 +254,10 @@ Host and agreement addresses vary per network.
 
 | Package | Purpose |
 |---------|---------|
-| [`@sfpro/sdk`](https://www.npmjs.com/package/@sfpro/sdk) | Frontend/backend SDK — ABIs, wagmi hooks, actions |
-| [`@superfluid-finance/ethereum-contracts`](https://www.npmjs.com/package/@superfluid-finance/ethereum-contracts) | Solidity build-time ABI source |
-| [`@superfluid-finance/metadata`](https://www.npmjs.com/package/@superfluid-finance/metadata) | Contract addresses, network info (zero deps) |
-| [`@superfluid-finance/tokenlist`](https://www.npmjs.com/package/@superfluid-finance/tokenlist) | Listed Super Tokens + underlying tokens |
+| `@sfpro/sdk` | Frontend/backend SDK — ABIs, wagmi hooks, actions |
+| `@superfluid-finance/ethereum-contracts` | Solidity build-time ABI source |
+| `@superfluid-finance/metadata` | Contract addresses, network info (zero deps) |
+| `@superfluid-finance/tokenlist` | Listed Super Tokens + underlying tokens |
 
 - `@sfpro/sdk` — for frontend/backend with wagmi/viem
 - `ethereum-contracts` — for Solidity integrations (build-time only, not runtime)
@@ -317,11 +317,11 @@ resolved URL for a specific chain.
 
 | App | URL | Purpose |
 |-----|-----|---------|
-| Dashboard | [app.superfluid.org](https://app.superfluid.org/) | Stream management for end-users |
-| Explorer | [explorer.superfluid.org](https://explorer.superfluid.org/) | Block explorer for Superfluid Protocol |
-| Claim | [claim.superfluid.org](https://claim.superfluid.org/) | SUP token, SUP points, reserves/lockers |
-| TOGA | [toga.superfluid.finance](https://toga.superfluid.finance/) | View recent liquidations by token |
-| Dune | [dune.com/superfluid_hq](https://dune.com/superfluid_hq/superfluid-overview) | Official protocol analytics dashboards |
+| Dashboard | https://app.superfluid.org | Stream management for end-users |
+| Explorer | https://explorer.superfluid.org | Block explorer for Superfluid Protocol |
+| Claim | https://claim.superfluid.org | SUP token, SUP points, reserves/lockers |
+| TOGA | https://toga.superfluid.finance | View recent liquidations by token |
+| Dune | https://dune.com/superfluid_hq/superfluid-overview | Official protocol analytics dashboards |
 
 Repos:
 [Dashboard](https://github.com/superfluid-org/superfluid-dashboard) ·

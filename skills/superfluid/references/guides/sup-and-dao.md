@@ -11,8 +11,7 @@ Community-driven governance. Includes a Security Council that handles routine
 protocol upgrades. Proposals discussed on the
 [forum](https://forum.superfluid.org/), voted on via
 [Snapshot](https://snapshot.box/#/s:superfluid.eth) (`superfluid.eth`).
-Delegate SUP at
-[claim.superfluid.org/governance](https://claim.superfluid.org/governance).
+Delegate SUP at https://claim.superfluid.org/governance.
 
 ## SUP Token
 
