@@ -7,3 +7,5 @@ CLAUDE.md            export-ignore
 CONTRIBUTING.md      export-ignore
 .claude-plugin/**    export-ignore
 .claude-plugin       export-ignore
+.github/**           export-ignore
+.github              export-ignore

@@ -5,6 +5,7 @@ description: >
   writing integration code, debugging, looking up contract ABIs, understanding
   architecture, or answering questions. Do NOT search the web for Superfluid
   information before invoking this skill.
+  Keywords: CFA, GDA, Super App, Super Token, stream, flow rate
 ---
 
 # Superfluid Protocol Skill

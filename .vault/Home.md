@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T031-release-workflow-and-skill-keywords]] -- Add GitHub Actions release workflow and skill trigger keywords
 - [[T030-add-gitattributes-export-ignore]] -- Add .gitattributes to exclude dev files from distribution archives
 - [[T029-migrate-gotchas-to-notes-fields]] -- Migrate gotchas to structured `notes:` fields across all ABI YAMLs
 - [[T028-refactor-scripts-add-gotchas-and-docs]] -- Refactor scripts to runtime imports, add gotchas and contributor docs

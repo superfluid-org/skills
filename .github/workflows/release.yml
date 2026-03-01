@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Validate version matches plugin.json
+        run: |
+          PLUGIN_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
+          MARKETPLACE_VERSION=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
+          TAG_VERSION="${{ steps.tag.outputs.version }}"
+
+          MISMATCH=0
+
+          if [ "$TAG_VERSION" != "$PLUGIN_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match plugin.json version ($PLUGIN_VERSION)"
+            MISMATCH=1
+          fi
+
+          if [ "$TAG_VERSION" != "$MARKETPLACE_VERSION" ]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match marketplace.json version ($MARKETPLACE_VERSION)"
+            MISMATCH=1
+          fi
+
+          if [ "$MISMATCH" -eq 1 ]; then
+            echo "Fix: update both .claude-plugin/plugin.json and .claude-plugin/marketplace.json"
+            echo "to version $TAG_VERSION, commit, delete the tag, and re-tag."
+            exit 1
+          fi
+
+      - name: Build archive
+        run: |
+          ARCHIVE_NAME="superfluid-skill-v${{ steps.tag.outputs.version }}.zip"
+          git archive --format=zip -o "$ARCHIVE_NAME" HEAD -- skills/superfluid/
+          echo "archive_name=$ARCHIVE_NAME" >> "$GITHUB_ENV"
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "${{ env.archive_name }}" \
+            --title "v${{ steps.tag.outputs.version }}" \
+            --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
