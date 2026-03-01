@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -17,47 +17,48 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract version from tag
-        id: tag
+      - name: Read version
+        id: version
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
+          VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Validate version matches plugin.json
+      - name: Check if release exists
+        id: check
         run: |
-          PLUGIN_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
+          if gh release view "v${{ steps.version.outputs.version }}" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate marketplace.json version
+        if: steps.check.outputs.exists == 'false'
+        run: |
           MARKETPLACE_VERSION=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
-          TAG_VERSION="${{ steps.tag.outputs.version }}"
+          PLUGIN_VERSION="${{ steps.version.outputs.version }}"
 
-          MISMATCH=0
-
-          if [ "$TAG_VERSION" != "$PLUGIN_VERSION" ]; then
-            echo "::error::Tag version ($TAG_VERSION) does not match plugin.json version ($PLUGIN_VERSION)"
-            MISMATCH=1
-          fi
-
-          if [ "$TAG_VERSION" != "$MARKETPLACE_VERSION" ]; then
-            echo "::error::Tag version ($TAG_VERSION) does not match marketplace.json version ($MARKETPLACE_VERSION)"
-            MISMATCH=1
-          fi
-
-          if [ "$MISMATCH" -eq 1 ]; then
-            echo "Fix: update both .claude-plugin/plugin.json and .claude-plugin/marketplace.json"
-            echo "to version $TAG_VERSION, commit, delete the tag, and re-tag."
+          if [ "$PLUGIN_VERSION" != "$MARKETPLACE_VERSION" ]; then
+            echo "::error::plugin.json version ($PLUGIN_VERSION) does not match marketplace.json version ($MARKETPLACE_VERSION)"
             exit 1
           fi
 
       - name: Build archive
+        if: steps.check.outputs.exists == 'false'
         run: |
-          ARCHIVE_NAME="superfluid-skill-v${{ steps.tag.outputs.version }}.zip"
+          ARCHIVE_NAME="superfluid-skill-v${{ steps.version.outputs.version }}.zip"
           git archive --format=zip -o "$ARCHIVE_NAME" HEAD -- skills/superfluid/
           echo "archive_name=$ARCHIVE_NAME" >> "$GITHUB_ENV"
 
       - name: Create GitHub Release
+        if: steps.check.outputs.exists == 'false'
         run: |
-          gh release create "$GITHUB_REF_NAME" \
+          gh release create "v${{ steps.version.outputs.version }}" \
             "${{ env.archive_name }}" \
-            --title "v${{ steps.tag.outputs.version }}" \
+            --target "$GITHUB_SHA" \
+            --title "v${{ steps.version.outputs.version }}" \
             --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
