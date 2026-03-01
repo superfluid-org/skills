@@ -50,7 +50,7 @@ Good: # Net flow rate (inflows - outflows)
 
 **Rich ABI YAMLs** (`references/contracts/*.abi.yaml`) — The core content. One
 file per contract documenting every public function, event, and error with
-access control, gotchas, and deployment addresses. Format spec:
+access control, notes, and deployment addresses. Format spec:
 `references/contracts/_rich-abi-yaml-format.md`. Detailed authoring guide:
 `.vault/resources/rich-abi-yaml-guide.md`.
 
@@ -96,9 +96,10 @@ No `npm install` or local cache needed.
 - Errors: SCREAMING_SNAKE_CASE
 - Network names: canonical Superfluid names — `eth-mainnet`, `polygon-mainnet`,
   `base-mainnet`, `optimism-mainnet`, `arbitrum-one`, etc.
-- Function field order: description comment, `mutability`, `access`, `inputs`,
-  `outputs`, `emits`, `errors`
-- `# GOTCHA:` prefix for non-obvious behavior or common mistakes
+- Function field order: description comment, `notes`, `mutability`, `access`,
+  `inputs`, `outputs`, `emits`, `errors`
+- `notes:` field (YAML list) for non-obvious behavior or common mistakes.
+  Prefix gotcha items with "Gotcha: " inside quotes: `- "Gotcha: ..."`
 - `ctx: bytes` parameter means the function is called through the Host, never
   directly
 - `emits` and `errors` ordered by execution flow, not alphabetically
