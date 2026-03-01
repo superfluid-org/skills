@@ -20,14 +20,16 @@ npx skills update
 
 **SKILL.md** — The main skill file that Claude loads when a Superfluid-related task is detected. Maps use-cases to the right reference files and explains how to read them.
 
-**Rich ABI references** — Self-contained YAML files documenting every public function, event, and error for each Superfluid contract, including parameter descriptions, access control, gotchas, and deployment addresses.
+**Rich ABI references** — Self-contained YAML files documenting every public function, event, and error for each Superfluid contract, including parameter descriptions, access control, notes, and deployment addresses.
 
-Covered contracts: CFAv1Forwarder, GDAv1Forwarder, ConstantFlowAgreementV1, GeneralDistributionAgreementV1, SuperToken, SuperTokenFactory, SuperfluidPool, Superfluid (Host), CFASuperAppBase, VestingSchedulerV3, FlowScheduler, AutoWrapManager, AutoWrapStrategy, BatchLiquidator, TOGA, and InstantDistributionAgreementV1 (legacy).
+Covered contracts: CFAv1Forwarder, GDAv1Forwarder, ConstantFlowAgreementV1, GeneralDistributionAgreementV1, SuperToken, SuperTokenV1Library, SuperTokenFactory, SuperfluidPool, Superfluid (Host), CFASuperAppBase, VestingSchedulerV3, FlowScheduler, AutoWrapManager, AutoWrapStrategy, BatchLiquidator, TOGA, InstantDistributionAgreementV1 (legacy), FluidLocker, FluidLockerFactory, FluidEPProgramManager, Fontaine, and StakingRewardController.
 
-**Runtime scripts** — Node.js scripts for looking up token addresses and contract deployments across all Superfluid-supported chains:
+**Runtime scripts** — Node.js scripts for looking up token addresses, contract deployments, and ABIs across all Superfluid-supported chains:
 
 - `tokenlist.mjs` — Resolve Super Token addresses, symbols, and types
 - `metadata.mjs` — Look up contract addresses, subgraph endpoints, and network info
+- `balance.mjs` — Check Super Token balances (real-time balance, deposits, net flow)
+- `abi.mjs` — Resolve raw contract ABIs from the Superfluid SDK
 
 ## License
 
