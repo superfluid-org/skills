@@ -1,0 +1,49 @@
+[
+  {
+    "id": "codegen-create-stream-wagmi",
+    "description": "Generated TypeScript should use SDK imports, not fabricated ABIs",
+    "prompt": "Write TypeScript code using wagmi and @sfpro/sdk to create a stream of 100 USDC per month from the connected wallet to a receiver address on Base. Show the complete code with all imports.",
+    "criteria": [
+      { "criterion": "imports_from_sdk", "description": "Imports ABI from @sfpro/sdk (e.g. cfaForwarderAbi)", "weight": 3 },
+      { "criterion": "uses_correct_address", "description": "Uses the documented CFAv1Forwarder address or SDK address export", "weight": 3 },
+      { "criterion": "correct_flowrate_calc", "description": "Converts 100 USDC/month to wei/second correctly (accounts for 18 decimals)", "weight": 2 },
+      { "criterion": "correct_function_name", "description": "Calls setFlowrate or createFlow (actual function names from the ABI)", "weight": 2 },
+      { "criterion": "no_hallucinated_params", "description": "Function parameters match the real ABI (no phantom parameters)", "weight": 3 }
+    ],
+    "golden_facts": [
+      "import { cfaForwarderAbi } from '@sfpro/sdk/abi'",
+      "CFAv1Forwarder address: 0xcfA132E353cB4E398080B9700609bb008eceB125",
+      "flowrate calculation: (100 * 1e18) / (30 * 24 * 60 * 60) for 100 tokens/month in 18-decimal wei/sec",
+      "setFlowrate takes (token, receiver, flowrate) — no sender parameter for msg.sender flows"
+    ],
+    "anti_patterns": [
+      "Hand-crafting an ABI array literal instead of importing from SDK",
+      "Fabricating contract addresses",
+      "Using deprecated @superfluid-finance/sdk-core",
+      "Adding a nonexistent sender parameter to setFlowrate"
+    ],
+    "tags": ["code-generation", "cfa", "core"]
+  },
+  {
+    "id": "codegen-subgraph-query",
+    "description": "Generated GraphQL query should use real entity and field names",
+    "prompt": "Write a GraphQL query to get the top 10 streams by flow rate on Optimism, including the sender, receiver, and token info.",
+    "criteria": [
+      { "criterion": "correct_entity", "description": "Queries the Stream entity (or 'streams' collection)", "weight": 3 },
+      { "criterion": "correct_fields", "description": "Uses real fields: currentFlowRate, sender, receiver, token", "weight": 3 },
+      { "criterion": "correct_sorting", "description": "Orders by currentFlowRate descending with first: 10", "weight": 2 },
+      { "criterion": "no_hallucinated_fields", "description": "Does not use fields that don't exist in the schema", "weight": 3 }
+    ],
+    "golden_facts": [
+      "Entity: Stream (collection: streams)",
+      "Fields: currentFlowRate, sender { id }, receiver { id }, token { id symbol }",
+      "Endpoint: https://subgraph-endpoints.superfluid.dev/optimism-mainnet/protocol-v1",
+      "orderBy: currentFlowRate, orderDirection: desc, first: 10"
+    ],
+    "anti_patterns": [
+      "Fabricating entity names like 'Flow' or 'StreamEvent'",
+      "Using field names not in the GraphQL schema"
+    ],
+    "tags": ["code-generation", "subgraph"]
+  }
+]

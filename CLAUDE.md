@@ -11,6 +11,10 @@ A Claude Code plugin that provides an AI agent skill for the [Superfluid Protoco
 ```
 .claude-plugin/          # Plugin + marketplace metadata (plugin.json, marketplace.json)
 .vault/                  # Obsidian vault — project management (see below)
+evals/                   # Evaluation tests — see evals/README.md
+  runners/               # script-runner.mjs (deterministic), skill-eval-runner.mjs (AI judge)
+  cases/                 # Test cases: scripts/ (24 cases) and skill/ (12 cases)
+  configs/               # model-comparison.json for multi-model runs
 skills/superfluid/
   SKILL.md               # Main skill file — loaded by Claude Code on trigger
   references/
@@ -18,7 +22,7 @@ skills/superfluid/
     guides/              # architecture.md + topic guides (super-apps, SDKs, etc.)
     subgraphs/           # _query-patterns.md + GraphQL schemas + per-subgraph guides
   scripts/
-    abi.mjs              # Fetch and cache raw contract ABIs
+    abi.mjs              # Resolve raw contract ABIs from @sfpro/sdk
     balance.mjs          # Check Super Token balances
     metadata.mjs         # Resolve contract addresses, subgraph endpoints, network info
     tokenlist.mjs        # Resolve Super Token addresses, symbols, and types
@@ -30,11 +34,12 @@ skills/superfluid/
 
 **SKILL.md** — The entry point Claude Code sees. It has YAML frontmatter (`name`, `description`) and maps use-cases to the correct reference files. It also documents the Rich ABI YAML format so Claude can parse them.
 
-**Scripts** — Standalone Node.js (ESM) scripts requiring no `npm install`. They fetch data from CDN (`jsdelivr`) on first run and cache locally in `scripts/.cache/` (gitignored). Run with `node`:
+**Scripts** — Standalone ESM scripts requiring no `npm install`. They import data from their respective npm packages at runtime via `bunx -p`:
 
 ```bash
-node skills/superfluid/scripts/metadata.mjs contracts 10        # contract addresses on Optimism
-node skills/superfluid/scripts/tokenlist.mjs super-token 10 USDCx  # find USDCx on Optimism
+bunx -p @superfluid-finance/metadata bun skills/superfluid/scripts/metadata.mjs contracts 10
+bunx -p @superfluid-finance/tokenlist bun skills/superfluid/scripts/tokenlist.mjs super-token 10 USDCx
+bunx -p @sfpro/sdk bun skills/superfluid/scripts/abi.mjs SuperToken transfer
 ```
 
 ## Conventions

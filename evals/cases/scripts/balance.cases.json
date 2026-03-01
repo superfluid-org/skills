@@ -1,0 +1,50 @@
+[
+  {
+    "id": "balance-missing-args",
+    "description": "Error when arguments are missing",
+    "command": ["balance.mjs", "balance", "10"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "Usage:" }
+    },
+    "tags": ["error-handling", "balance"]
+  },
+  {
+    "id": "balance-invalid-chain",
+    "description": "Error when chain-id is not a number",
+    "command": ["balance.mjs", "balance", "notanumber", "USDCx", "0x0000000000000000000000000000000000000001"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "chain-id must be a number" }
+    },
+    "tags": ["error-handling", "balance"]
+  },
+  {
+    "id": "balance-unknown-token",
+    "description": "Error for unknown token symbol",
+    "command": ["balance.mjs", "balance", "10", "NONEXISTENT_TOKEN_XYZ", "0x0000000000000000000000000000000000000001"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "No Super Token found" }
+    },
+    "tags": ["error-handling", "balance"]
+  },
+  {
+    "id": "balance-happy-path",
+    "description": "Returns balance above 75 for known funded account on Polygon",
+    "command": ["balance.mjs", "balance", "137", "0xcaa7349cea390f89641fe306d93591f87595dc1f", "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.chain", "equals": 137 },
+          { "path": "$.superToken.symbol", "equals": "USDC.ex" },
+          { "path": "$.superToken.type", "equals": "Wrapper" },
+          { "path": "$.balance.connected.formatted", "matches": "^(7[5-9]|[89]\\d|\\d{3,})\\." }
+        ]
+      }
+    },
+    "tags": ["smoke", "balance"]
+  }
+]

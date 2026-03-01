@@ -1,22 +1,14 @@
 #!/usr/bin/env node
 // Superfluid ABI Resolver
-// Self-contained — no npm install required. Fetches JSON ABIs from the @sfpro/sdk
-// package via CDN, caches locally for offline use.
+// Self-contained — no npm install required. Imports JSON ABIs from the @sfpro/sdk
+// package at runtime.
 //
 // Usage:
-//   node abi.mjs <contract>                 Full JSON ABI for a contract
-//   node abi.mjs <contract> <function>      Single function/event/error fragment
-//   node abi.mjs list                       List all available contracts
+//   bunx -p @sfpro/sdk bun abi.mjs <contract>                 Full JSON ABI for a contract
+//   bunx -p @sfpro/sdk bun abi.mjs <contract> <function>      Single function/event/error fragment
+//   bunx -p @sfpro/sdk bun abi.mjs list                       List all available contracts
 //
 // Output: JSON to stdout. Errors to stderr.
-
-import { writeFileSync, readFileSync, mkdirSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath, pathToFileURL } from "url";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const CACHE_DIR = join(__dirname, ".cache");
-const CDN_BASE = "https://cdn.jsdelivr.net/npm/@sfpro/sdk/dist/abi";
 
 // Contract name → SDK module + export name.
 // Module "main" = @sfpro/sdk/abi, others = @sfpro/sdk/abi/<module>.
@@ -77,34 +69,8 @@ function resolveContract(query) {
   return ALIASES[query.toLowerCase()] ?? null;
 }
 
-function cdnUrl(module) {
-  return module === "main"
-    ? `${CDN_BASE}/generated.js`
-    : `${CDN_BASE}/${module}/generated.js`;
-}
-
-function cacheFile(module) {
-  return join(CACHE_DIR, `abi-${module}.mjs`);
-}
-
 async function loadModule(module) {
-  const url = cdnUrl(module);
-  const cached = cacheFile(module);
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const code = await res.text();
-    try { mkdirSync(CACHE_DIR, { recursive: true }); writeFileSync(cached, code); } catch {}
-    return import(pathToFileURL(cached).href);
-  } catch (fetchErr) {
-    try {
-      return import(pathToFileURL(cached).href);
-    } catch {}
-    console.error(`Error: Could not fetch ABI module "${module}" from CDN and no local cache found.`);
-    console.error(`CDN URL: ${url}`);
-    console.error(`Fetch error: ${fetchErr.message}`);
-    process.exit(1);
-  }
+  return import(sdkImportPath(module));
 }
 
 function sdkImportPath(module) {
@@ -129,7 +95,7 @@ switch (command) {
   case "help":
   case "--help":
   case "-h": {
-    console.error(`Superfluid ABI Resolver — fetches JSON ABIs from @sfpro/sdk
+    console.error(`Superfluid ABI Resolver — imports JSON ABIs from @sfpro/sdk
 
 Commands:
   <contract>               Full JSON ABI for a contract
@@ -143,10 +109,10 @@ Aliases:
   cfa, gda, ida, host, pool, token, factory, toga, autowrap, vesting, liquidator, ...
 
 Examples:
-  node abi.mjs CFAv1Forwarder
-  node abi.mjs cfa
-  node abi.mjs SuperToken transfer
-  node abi.mjs list`);
+  bunx -p @sfpro/sdk bun abi.mjs CFAv1Forwarder
+  bunx -p @sfpro/sdk bun abi.mjs cfa
+  bunx -p @sfpro/sdk bun abi.mjs SuperToken transfer
+  bunx -p @sfpro/sdk bun abi.mjs list`);
     process.exit(0);
     break;
   }
@@ -162,7 +128,7 @@ Examples:
         console.error(`Refer to the Rich ABI YAML: references/contracts/${match}.abi.yaml`);
       } else {
         console.error(`Error: Unknown contract "${command}".`);
-        console.error(`Run "node abi.mjs list" to see available contracts.`);
+        console.error(`Run "bunx -p @sfpro/sdk bun abi.mjs list" to see available contracts.`);
       }
       process.exit(1);
     }

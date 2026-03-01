@@ -16,6 +16,11 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T028-refactor-scripts-add-gotchas-and-docs]] -- Refactor scripts to runtime imports, add gotchas and contributor docs
+- [[T027-remove-llm-eval-runner]] -- Remove LLM eval runner in favor of skill-eval-runner
+- [[T026-skill-eval-runner]] -- Custom Skills API eval runner for realistic skill traversal
+- [[T025-model-comparison-evals]] -- Add model comparison and extended thinking support to LLM eval runner
+- [[T024-add-evaluation-tests]] -- Add evaluation tests (script tests + skill evals)
 - [[T023-replace-tables-with-lists]] -- Replace markdown tables with bullet lists for token efficiency
 - [[T022-slim-skill-md-extract-guides]] -- Slim SKILL.md, extract content to dedicated guides for on-demand loading
 - [[T021-fix-claude-md-script-count]] -- Fix CLAUDE.md script count (two → four) and add missing scripts to tree
@@ -53,4 +58,5 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 - **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 6 `.graphql` schemas, 5 usage guides)
 - **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, macro-forwarders, sdks, scripts, api-services, sup-and-dao)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
+- **Evals**: `evals/` (script tests + skill evals)
 - **Plugin version**: `.claude-plugin/plugin.json`

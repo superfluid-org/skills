@@ -1,0 +1,194 @@
+[
+  {
+    "id": "gotcha-autowrap-ignores-gda",
+    "description": "Auto-Wrap monitors only CFA flows — GDA flows are invisible to it",
+    "prompt": "I set up Auto-Wrap for my account but my balance keeps draining to zero even though I have underlying tokens. I'm distributing via a GDA pool. Why isn't Auto-Wrap kicking in?",
+    "criteria": [
+      { "criterion": "identifies_cfa_only", "description": "Explains Auto-Wrap only monitors CFA net flow rate (cfaV1.getNetFlow), not GDA flows", "weight": 3 },
+      { "criterion": "explains_legacy_reason", "description": "Notes GDA was introduced after Auto-Wrap was built (legacy limitation)", "weight": 1 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate workaround functions or GDA-aware auto-wrap features", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Auto-Wrap uses cfaV1.getNetFlow — only CFA flows are considered",
+      "GDA was introduced after Auto-Wrap, so GDA flows are a blind spot",
+      "If distributing exclusively through GDA pools, Auto-Wrap never triggers"
+    ],
+    "anti_patterns": [
+      "Suggesting Auto-Wrap supports GDA flows",
+      "Fabricating a GDA-aware auto-wrap function or configuration"
+    ],
+    "tags": ["gotchas", "automation", "gda"]
+  },
+  {
+    "id": "gotcha-gda-pool-connection-limit",
+    "description": "Pool membership is unlimited, but connected pools (auto-reflected balance) capped at 256 per account per token",
+    "prompt": "Is there a limit to how many GDA pools an account can be a member of? I'm building a system where users subscribe to many pools. Will their balance always reflect distributions from all pools?",
+    "criteria": [
+      { "criterion": "states_256_connection_limit", "description": "Mentions the 256 connected pool limit per account per token", "weight": 3 },
+      { "criterion": "explains_connected_vs_member", "description": "Distinguishes connected pools (balance auto-reflected) from unconnected membership (must claimAll to receive)", "weight": 2 },
+      { "criterion": "mentions_gas_scaling", "description": "Notes gas cost of balanceOf/realtimeBalanceOf scales linearly with connected pools", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate configuration options to increase the limit", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Pool membership is unlimited — an account can hold units in any number of pools",
+      "Connected pools (auto-reflected in SuperToken balance) are capped at 256 per account per token (SlotsBitmapLibrary bitmap)",
+      "Unconnected pool members must call claimAll() to receive their tokens",
+      "Gas cost of balanceOf/realtimeBalanceOf scales linearly with connected pools"
+    ],
+    "anti_patterns": [
+      "Saying there is no limit on pool connections",
+      "Conflating pool membership with pool connection",
+      "Fabricating a way to increase the 256 limit"
+    ],
+    "tags": ["gotchas", "gda"]
+  },
+  {
+    "id": "gotcha-supertoken-upgrade-decimals",
+    "description": "SuperToken.upgrade() amount is always in 18 decimals regardless of underlying",
+    "prompt": "I want to wrap 100 USDC into USDCx. USDC has 6 decimals. What value do I pass to SuperToken.upgrade()?",
+    "criteria": [
+      { "criterion": "correct_decimals", "description": "States the amount must be in 18-decimal SuperToken units (100e18 or 100 * 10^18)", "weight": 3 },
+      { "criterion": "explains_internal_scaling", "description": "Notes the contract handles downscaling to underlying decimals internally", "weight": 2 },
+      { "criterion": "mentions_allowance_decimals", "description": "Notes ERC-20 approval on the underlying must use the underlying's native decimals (approve 100e6 for USDC)", "weight": 1 },
+      { "criterion": "no_hallucination", "description": "Does not say to pass the amount in underlying decimals (100e6)", "weight": 2 }
+    ],
+    "golden_facts": [
+      "upgrade() amount is always in SuperToken decimals (18), regardless of underlying token decimals",
+      "Pass 100 * 10^18 (not 100 * 10^6) to wrap 100 USDC",
+      "The contract handles downscaling internally when pulling from the underlying via transferFrom",
+      "ERC-20 approval on the underlying must use the underlying's native decimals (approve 100e6 for USDC, then upgrade(100e18))"
+    ],
+    "anti_patterns": [
+      "Saying to pass the amount in underlying token decimals (100e6 for USDC)",
+      "Confusing upgrade amount with ERC-20 transfer amount"
+    ],
+    "tags": ["gotchas", "super-tokens"]
+  },
+  {
+    "id": "gotcha-gda-distribute-flow-rounding",
+    "description": "distributeFlow rounding causes loss; difference goes to admin as adjustment flow",
+    "prompt": "I called distributeFlow with a rate of 1000 wei/sec but my pool has 7 members with 1 unit each. Will each member get exactly 1000/7 per second?",
+    "criteria": [
+      { "criterion": "explains_rounding", "description": "Explains per-unit rate is integer division (requestedFlowRate / totalUnits), causing rounding loss", "weight": 3 },
+      { "criterion": "explains_adjustment_flow", "description": "States the rounding difference goes to the pool admin as an adjustment flow", "weight": 2 },
+      { "criterion": "mentions_truncation_to_zero", "description": "Notes that if requestedFlowRate < totalUnits, per-unit rate truncates to 0", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not claim members receive exactly proportional amounts", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Per-unit rate = requestedFlowRate / totalUnits (integer division, rounds down)",
+      "With 1000 / 7 = 142 wei/sec per member, 6 wei/sec is lost to rounding",
+      "The rounding difference becomes an adjustment flow to the pool admin",
+      "Pools hold no balance — tokens flow through directly to members",
+      "For instant distribute(), rounding remainder stays with the distributor (actual < requested)",
+      "If requestedFlowRate < totalUnits, per-unit rate truncates to 0 and the entire flow goes to admin"
+    ],
+    "anti_patterns": [
+      "Claiming members receive exactly proportional amounts",
+      "Claiming pools accumulate or hold rounding dust as balance",
+      "Not mentioning the adjustment flow to admin"
+    ],
+    "tags": ["gotchas", "gda"]
+  },
+  {
+    "id": "gotcha-super-app-final-level",
+    "description": "CFASuperAppBase uses APP_LEVEL_FINAL — cannot call downstream Super Apps",
+    "prompt": "I have a Super App built with CFASuperAppBase. In its callback, I want to call another Super App downstream. Is this possible?",
+    "criteria": [
+      { "criterion": "identifies_final_level", "description": "States CFASuperAppBase uses APP_LEVEL_FINAL which blocks downstream Super App calls", "weight": 3 },
+      { "criterion": "explains_workaround", "description": "Mentions using APP_LEVEL_SECOND and host.allowCompositeApp(targetApp) as the solution", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate a setAppLevel function or configuration on CFASuperAppBase", "weight": 2 }
+    ],
+    "golden_facts": [
+      "CFASuperAppBase always uses APP_LEVEL_FINAL",
+      "FINAL apps cannot call other Super Apps downstream",
+      "To compose with other Super Apps, use APP_LEVEL_SECOND and call host.allowCompositeApp(targetApp)"
+    ],
+    "anti_patterns": [
+      "Saying CFASuperAppBase supports calling downstream Super Apps out of the box",
+      "Fabricating a configuration method to change the app level on CFASuperAppBase"
+    ],
+    "tags": ["gotchas", "super-apps"]
+  },
+  {
+    "id": "gotcha-stv1lib-address-this-foundry",
+    "description": "SuperTokenV1Library convenience functions use address(this), not msg.sender — prank doesn't work",
+    "prompt": "I'm writing Foundry tests for my Superfluid integration. I use vm.prank(alice) then call token.flow(receiver, flowrate) from the SuperTokenV1Library, but the sender is my test contract, not Alice. What's wrong?",
+    "criteria": [
+      { "criterion": "identifies_address_this", "description": "Explains these functions use address(this) as sender, not msg.sender, so vm.prank doesn't affect the sender", "weight": 3 },
+      { "criterion": "recommends_explicit_sender", "description": "Suggests using CFA/GDA-specific functions with explicit sender parameter for Foundry tests", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate a prank-compatible wrapper or library function", "weight": 2 }
+    ],
+    "golden_facts": [
+      "SuperTokenV1Library flow/flowX/transferX use address(this) as sender — not overridable by prank",
+      "Use CFA/GDA-specific functions with explicit sender for Foundry tests",
+      "The WithCtx variants are for Super App callbacks, not for testing"
+    ],
+    "anti_patterns": [
+      "Suggesting vm.prank should work with these convenience functions",
+      "Not mentioning the address(this) behavior"
+    ],
+    "tags": ["gotchas", "testing", "solidity"]
+  },
+  {
+    "id": "gotcha-cfa-delete-flow-liquidation",
+    "description": "Third parties can only delete CFA flows if sender is critical or jailed",
+    "prompt": "Can anyone delete a Superfluid CFA stream, or only the sender and receiver? What happens during liquidation?",
+    "criteria": [
+      { "criterion": "identifies_third_party_condition", "description": "Explains third-party callers only succeed if sender is critical (negative available balance) or either party is jailed", "weight": 3 },
+      { "criterion": "mentions_reward_distribution", "description": "Mentions that reward distribution during liquidation depends on the solvency period timing", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate specific liquidation reward amounts or fixed periods", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Sender, receiver, and flow operators can always delete a flow",
+      "Third-party callers only succeed if the sender is critical (negative available balance) or either party is jailed",
+      "Reward distribution during liquidation depends on the solvency period timing"
+    ],
+    "anti_patterns": [
+      "Saying only sender and receiver can ever delete a flow",
+      "Saying anyone can delete any flow at any time"
+    ],
+    "tags": ["gotchas", "cfa", "liquidation"]
+  },
+  {
+    "id": "gotcha-locker-unlock-penalty",
+    "description": "FluidLocker instant unlock (unlockPeriod=0) triggers 80% penalty + ETH fee",
+    "prompt": "I want to unlock my staked FLUID tokens immediately. What happens if I set unlockPeriod to 0?",
+    "criteria": [
+      { "criterion": "explains_80_percent_penalty", "description": "States unlockPeriod=0 triggers 80% penalty — only 20% transferred immediately, 80% redistributed to stakers/LPs", "weight": 3 },
+      { "criterion": "mentions_eth_fee", "description": "Notes the 0.0001 ETH msg.value requirement (UNLOCKING_FEE)", "weight": 2 },
+      { "criterion": "mentions_alternative_periods", "description": "Mentions 7-365 day range as alternative with proportional tax via Fontaine", "weight": 1 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate penalty percentages or fee amounts", "weight": 2 }
+    ],
+    "golden_facts": [
+      "unlockPeriod=0 triggers instant unlock with 80% penalty",
+      "Only 20% transferred immediately, 80% redistributed to stakers/LPs",
+      "unlock is payable — msg.value must equal 0.0001 ETH (UNLOCKING_FEE sent to DAO_TREASURY)",
+      "7-365 day periods deploy a Fontaine beacon proxy that streams SUP over the unlock period with proportional tax"
+    ],
+    "anti_patterns": [
+      "Saying instant unlock has no penalty",
+      "Not mentioning the ETH fee requirement"
+    ],
+    "tags": ["gotchas", "fluid-locker"]
+  },
+  {
+    "id": "gotcha-gda-no-nested-pools",
+    "description": "A GDA pool cannot be a member of another pool — no hierarchical/nested distribution",
+    "prompt": "I want to build a hierarchical distribution system where a top-level GDA pool distributes to sub-pools, and each sub-pool distributes to end users. Can a pool be a member of another pool?",
+    "criteria": [
+      { "criterion": "states_no_nesting", "description": "States pools cannot be members of other pools", "weight": 3 },
+      { "criterion": "mentions_error", "description": "References SUPERFLUID_POOL_NO_POOL_MEMBERS error or the explicit protocol restriction", "weight": 1 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate a workaround that enables pool nesting", "weight": 2 }
+    ],
+    "golden_facts": [
+      "A pool cannot be a member of another pool — updateMemberUnits reverts with SUPERFLUID_POOL_NO_POOL_MEMBERS",
+      "Pool addresses also cannot be pool admins (GDA_ADMIN_CANNOT_BE_POOL)",
+      "Pools cannot connect to other pools (GDA_CANNOT_CONNECT_POOL)"
+    ],
+    "anti_patterns": [
+      "Saying pools can be nested or used as members of other pools",
+      "Fabricating a mechanism to enable hierarchical pool distribution"
+    ],
+    "tags": ["gotchas", "gda"]
+  }
+]

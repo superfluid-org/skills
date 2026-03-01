@@ -1,52 +1,27 @@
 #!/usr/bin/env node
 // Superfluid Protocol Metadata Resolver
-// Self-contained — no npm install required. Fetches data from CDN on first run,
-// caches locally for offline use.
+// Self-contained — no npm install required. Uses @superfluid-finance/metadata
+// package for network data.
 //
 // Usage:
-//   node metadata.mjs networks                          # List all networks (summary)
-//   node metadata.mjs networks --mainnets               # Only mainnets
-//   node metadata.mjs networks --testnets               # Only testnets
-//   node metadata.mjs network <chain-id-or-name>        # Full metadata for a network
-//   node metadata.mjs contracts <chain-id-or-name>      # All contract addresses for a network
-//   node metadata.mjs contract <chain-id-or-name> <key> # Single contract address
-//   node metadata.mjs subgraph <chain-id-or-name>       # Subgraph endpoint for a network
-//   node metadata.mjs automation <chain-id-or-name>     # Automation contract addresses
+//   bunx -p @superfluid-finance/metadata bun metadata.mjs networks              # List all networks (summary)
+//   bunx -p @superfluid-finance/metadata bun metadata.mjs networks --mainnets   # Only mainnets
+//   bunx -p @superfluid-finance/metadata bun metadata.mjs networks --testnets   # Only testnets
+//   bunx -p @superfluid-finance/metadata bun metadata.mjs network <chain-id-or-name>
+//   bunx -p @superfluid-finance/metadata bun metadata.mjs contracts <chain-id-or-name>
+//   bunx -p @superfluid-finance/metadata bun metadata.mjs contract <chain-id-or-name> <key>
+//   bunx -p @superfluid-finance/metadata bun metadata.mjs subgraph <chain-id-or-name>
+//   bunx -p @superfluid-finance/metadata bun metadata.mjs automation <chain-id-or-name>
 //
 // Output: JSON to stdout. Errors to stderr.
 
-import { writeFileSync, readFileSync, mkdirSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const CACHE_DIR = join(__dirname, ".cache");
-const CACHE_FILE = join(CACHE_DIR, "networks.json");
-const CDN_URL = "https://cdn.jsdelivr.net/npm/@superfluid-finance/metadata/networks.json";
-
-async function loadNetworks() {
-  try {
-    const res = await fetch(CDN_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    try { mkdirSync(CACHE_DIR, { recursive: true }); writeFileSync(CACHE_FILE, JSON.stringify(data)); } catch {}
-    return data;
-  } catch (fetchErr) {
-    try { return JSON.parse(readFileSync(CACHE_FILE, "utf-8")); } catch {}
-    console.error(`Error: Could not fetch metadata from CDN and no local cache found.`);
-    console.error(`CDN URL: ${CDN_URL}`);
-    console.error(`Fetch error: ${fetchErr.message}`);
-    process.exit(1);
-  }
-}
-
-const networks = await loadNetworks();
+import metadata from "@superfluid-finance/metadata";
+const { networks } = metadata;
 
 function resolveNetwork(idOrName) {
   const asNum = Number(idOrName);
-  if (!isNaN(asNum)) return networks.find(n => n.chainId === asNum);
-  const lower = idOrName.toLowerCase();
-  return networks.find(n => n.name === lower || n.shortName === lower);
+  if (!isNaN(asNum)) return metadata.getNetworkByChainId(asNum);
+  return metadata.getNetworkByName(idOrName) || metadata.getNetworkByShortName(idOrName);
 }
 
 function requireNetwork(idOrName) {
@@ -142,9 +117,9 @@ Commands:
   automation <chain-id-or-name>        Automation contracts + subgraphs
 
 Examples:
-  node metadata.mjs networks --mainnets
-  node metadata.mjs contracts 10
-  node metadata.mjs contract optimism-mainnet host
-  node metadata.mjs automation base-mainnet`);
+  bunx -p @superfluid-finance/metadata bun metadata.mjs networks --mainnets
+  bunx -p @superfluid-finance/metadata bun metadata.mjs contracts 10
+  bunx -p @superfluid-finance/metadata bun metadata.mjs contract optimism-mainnet host
+  bunx -p @superfluid-finance/metadata bun metadata.mjs automation base-mainnet`);
     process.exit(command ? 1 : 0);
 }

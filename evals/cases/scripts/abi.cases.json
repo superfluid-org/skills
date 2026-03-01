@@ -1,0 +1,102 @@
+[
+  {
+    "id": "abi-list",
+    "description": "Lists all available contracts with SDK import info",
+    "command": ["abi.mjs", "list"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$", "isArray": true },
+          { "path": "$", "minLength": 15 },
+          { "path": "$[0]", "hasKey": "contract" },
+          { "path": "$[0]", "hasKey": "sdkImport" },
+          { "path": "$[0]", "hasKey": "sdkExport" }
+        ]
+      }
+    },
+    "tags": ["smoke", "abi"]
+  },
+  {
+    "id": "abi-cfa-forwarder-full",
+    "description": "Fetches full ABI for CFAv1Forwarder",
+    "command": ["abi.mjs", "CFAv1Forwarder"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.contract", "equals": "CFAv1Forwarder" },
+          { "path": "$.sdkExport", "equals": "cfaForwarderAbi" },
+          { "path": "$.abi", "isArray": true },
+          { "path": "$.abi", "minLength": 5 }
+        ]
+      }
+    },
+    "tags": ["smoke", "abi"]
+  },
+  {
+    "id": "abi-alias-cfa",
+    "description": "Alias 'cfa' resolves to ConstantFlowAgreementV1",
+    "command": ["abi.mjs", "cfa"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.contract", "equals": "ConstantFlowAgreementV1" },
+          { "path": "$.sdkExport", "equals": "cfaAbi" }
+        ]
+      }
+    },
+    "tags": ["abi"]
+  },
+  {
+    "id": "abi-single-function",
+    "description": "Fetches function fragment(s) from SuperToken by name",
+    "command": ["abi.mjs", "SuperToken", "transfer"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$", "isArray": true },
+          { "path": "$", "minLength": 1 },
+          { "path": "$[0].name", "matches": "^[Tt]ransfer$" }
+        ]
+      }
+    },
+    "tags": ["abi"]
+  },
+  {
+    "id": "abi-unknown-contract",
+    "description": "Error for unknown contract name",
+    "command": ["abi.mjs", "NonexistentContract"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "Unknown contract" }
+    },
+    "tags": ["error-handling", "abi"]
+  },
+  {
+    "id": "abi-not-in-sdk",
+    "description": "Helpful error for contracts not in SDK",
+    "command": ["abi.mjs", "CFASuperAppBase"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "not available in @sfpro/sdk" }
+    },
+    "tags": ["error-handling", "abi"]
+  },
+  {
+    "id": "abi-unknown-function",
+    "description": "Error for unknown function name within a valid contract",
+    "command": ["abi.mjs", "SuperToken", "nonexistentFunction"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "No ABI entry named" }
+    },
+    "tags": ["error-handling", "abi"]
+  }
+]
