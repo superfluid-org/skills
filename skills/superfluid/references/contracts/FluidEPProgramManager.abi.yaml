@@ -87,10 +87,9 @@ createProgram:
 startFunding:
   # Starts a CFA flow from the treasury into the program's distribution pool.
   # Also starts a subsidy GDA flow from the tax distribution pool.
-  # GOTCHA: Requires the program admin to have pre-approved SUP ERC-20 allowance
-  # and Superfluid ACL flow rate permissions. Use calculateAllowances to compute
-  # the exact amounts, or use MacroForwarder with paramsGivePermission.
-  # GOTCHA: The pool must have at least one member with units > 0 before funding.
+  notes:
+    - "Gotcha: Requires the program admin to have pre-approved SUP ERC-20 allowance and Superfluid ACL flow rate permissions. Use calculateAllowances to compute the exact amounts, or use MacroForwarder with paramsGivePermission."
+    - "Gotcha: The pool must have at least one member with units > 0 before funding."
   mutability: nonpayable
   access: owner
   inputs:
@@ -105,8 +104,9 @@ startFunding:
 stopFunding:
   # Stops funding by deleting the treasury flow and subsidy flow.
   # Compensates for unused funds by transferring remaining amounts back.
-  # GOTCHA: Can only be called within the EARLY_PROGRAM_END window before the end date.
   # Anyone can call this — no access restriction.
+  notes:
+    - "Gotcha: Can only be called within the EARLY_PROGRAM_END window before the end date."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -134,8 +134,9 @@ cancelProgram:
 updateUnits:
   # Updates the caller's units in a program's distribution pool.
   # Delegates to updateUserUnits with msg.sender as the user.
-  # GOTCHA: Requires a valid signature from the program's off-chain signer.
-  # GOTCHA: The nonce must be strictly greater than the last used nonce (use getNextValidNonce).
+  notes:
+    - "Gotcha: Requires a valid signature from the program's off-chain signer."
+    - "Gotcha: The nonce must be strictly greater than the last used nonce (use getNextValidNonce)."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -170,8 +171,9 @@ updateUserUnits:
 batchUpdateUnits:
   # Updates the caller's units across multiple programs in one transaction.
   # Delegates to batchUpdateUserUnits with msg.sender as the user.
-  # GOTCHA: programIds and newUnits arrays must have equal length.
-  # GOTCHA: All programs in the batch must share the same signer.
+  notes:
+    - "Gotcha: programIds and newUnits arrays must have equal length."
+    - "Gotcha: All programs in the batch must share the same signer."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -188,8 +190,9 @@ batchUpdateUnits:
 
 batchUpdateUserUnits:
   # Updates a specific user's units across multiple programs in one transaction.
-  # GOTCHA: All programs in the batch must share the same signer.
-  # GOTCHA: programIds and newUnits arrays must have equal length and be non-empty.
+  notes:
+    - "Gotcha: All programs in the batch must share the same signer."
+    - "Gotcha: programIds and newUnits arrays must have equal length and be non-empty."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -224,7 +227,8 @@ batchUpdateUserUnits:
 
 "manualPoolUpdate(uint256,uint256[],address[])":
   # Batch version — updates pool units for multiple users directly.
-  # GOTCHA: stackPoints and users arrays must have equal length and be non-empty.
+  notes:
+    - "Gotcha: stackPoints and users arrays must have equal length and be non-empty."
   mutability: nonpayable
   access: program-admin
   inputs:

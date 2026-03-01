@@ -84,8 +84,6 @@ meta:
 # Category 301: simple forward
 #   target: any contract
 #   data:   full encodeFunctionData (selector included), or "0x" for pure value transfers
-#   GOTCHA: target sees msg.sender as the SimpleForwarder contract, NOT the
-#   original caller. Use only when the target doesn't need to identify the sender.
 #
 # Category 302: ERC-2771 forward
 #   target: any contract (must be an ERC-2771 recipient to extract the real sender)
@@ -108,12 +106,10 @@ batch_operation_types:
 
 batchCall:
   # Execute an array of operations in a single transaction as msg.sender.
-  # GOTCHA: ERC-20 ops (types 1–5) route through SuperToken.operation* methods,
-  # NOT arbitrary ERC-20 contracts. The target must be a SuperToken address.
-  # To approve an underlying ERC-20 (e.g. for wrapping), use a separate transaction.
-  # GOTCHA: If msg.value > 0, the entire amount is forwarded to the first
-  # CALL_APP_ACTION, SIMPLE_FORWARD, or ERC2771_FORWARD operation. If none exist,
-  # the native tokens are returned to the sender.
+  notes:
+    - "Gotcha: For SIMPLE_FORWARD_CALL (type 301), target sees msg.sender as the SimpleForwarder contract, NOT the original caller. Use only when the target doesn't need to identify the sender."
+    - "Gotcha: ERC-20 ops (types 1-5) route through SuperToken.operation* methods, NOT arbitrary ERC-20 contracts. The target must be a SuperToken address. To approve an underlying ERC-20 (e.g. for wrapping), use a separate transaction."
+    - "Gotcha: If msg.value > 0, the entire amount is forwarded to the first CALL_APP_ACTION, SIMPLE_FORWARD, or ERC2771_FORWARD operation. If none exist, the native tokens are returned to the sender."
   mutability: payable
   access: anyone
   inputs:
@@ -375,10 +371,8 @@ callAppAfterCallback:
 appCallbackPush:
   # Push a new callback frame onto the context stack before invoking a Super App.
   # Sets up app credit and tracks the callback nesting level.
-  # GOTCHA: The appCreditGranted is backed by the flow sender's deposit as
-  # "owed deposit". If the Super App opens outgoing streams using this credit,
-  # the sender's total locked capital increases accordingly (roughly doubles
-  # for 1:1 relay, more for fan-out patterns).
+  notes:
+    - "Gotcha: The appCreditGranted is backed by the flow sender's deposit as \"owed deposit\". If the Super App opens outgoing streams using this credit, the sender's total locked capital increases accordingly (roughly doubles for 1:1 relay, more for fan-out patterns)."
   mutability: nonpayable
   access: agreement
   inputs:

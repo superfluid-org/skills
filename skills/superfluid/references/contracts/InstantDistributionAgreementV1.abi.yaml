@@ -74,9 +74,9 @@ createIndex:
 
 updateIndex:
   # Set the index value directly. Must not decrease.
-  # GOTCHA: Immediately settles distributions for approved subscribers (adjusts their
-  # static balance). For pending subscribers, the delta is added to the publisher's deposit.
   # Reverts if the publisher becomes critical after distributing.
+  notes:
+    - "Gotcha: Immediately settles distributions for approved subscribers (adjusts their static balance). For pending subscribers, the delta is added to the publisher's deposit."
   mutability: nonpayable
   access: publisher
   inputs:
@@ -91,10 +91,10 @@ updateIndex:
 
 distribute:
   # Convenience wrapper around updateIndex. Advances indexValue by amount / totalUnits.
-  # GOTCHA: The actual distributed amount may be less than requested due to integer
-  # division rounding (amount / totalUnits * totalUnits <= amount).
   # Use calculateDistribution to preview the actual amount.
   # No-ops silently if totalUnits == 0 (no subscribers).
+  notes:
+    - "Gotcha: The actual distributed amount may be less than requested due to integer division rounding (amount / totalUnits * totalUnits <= amount)."
   mutability: nonpayable
   access: publisher
   inputs:
@@ -151,7 +151,8 @@ revokeSubscription:
 updateSubscription:
   # Set a subscriber's units in the publisher's index. Only the publisher can call this.
   # If the subscription does not exist, creates it as pending (unapproved) with the given units.
-  # GOTCHA: Also settles any accumulated distributions before updating units.
+  notes:
+    - "Gotcha: Also settles any accumulated distributions before updating units."
   mutability: nonpayable
   access: publisher
   inputs:
@@ -168,7 +169,8 @@ updateSubscription:
 deleteSubscription:
   # Delete a subscriber's subscription entirely. Only the publisher can call this.
   # Settles pending distributions, removes units, and terminates the agreement data.
-  # GOTCHA: Emits 4 events — revoke + units-zeroed for both publisher and subscriber views.
+  notes:
+    - "Gotcha: Emits 4 events — revoke + units-zeroed for both publisher and subscriber views."
   mutability: nonpayable
   access: publisher
   inputs:
@@ -185,8 +187,9 @@ deleteSubscription:
 claim:
   # Claim pending distributions for an unapproved subscription.
   # Can be called by anyone for any subscriber. Does not approve the subscription.
-  # GOTCHA: Only works for pending (unapproved) subscriptions. Reverts if already approved.
   # No-ops (without reverting) if pendingDistribution is 0.
+  notes:
+    - "Gotcha: Only works for pending (unapproved) subscriptions. Reverts if already approved."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -264,8 +267,9 @@ getSubscriptionByID:
 
 listSubscriptions:
   # List all approved subscriptions for a subscriber.
-  # GOTCHA: Only returns approved subscriptions (those with an allocated slot).
   # Pending (unapproved) subscriptions are not included.
+  notes:
+    - "Gotcha: Only returns approved subscriptions (those with an allocated slot)."
   mutability: view
   inputs:
     - token: address
@@ -282,14 +286,12 @@ realtimeBalanceOf:
   # As a subscriber: sums up (currentIndexValue - snapshotIndexValue) * units
   # across all approved subscriptions.
   # As a publisher: returns the deposit held for pending subscriptions (owedDeposit is always 0).
-  # GOTCHA: Returns only the IDA portion of the balance, not the total.
   # To get an account's actual token balance, use SuperToken.realtimeBalanceOfNow
   # (or SuperToken.balanceOf for ERC-20 compatible, clamped to zero).
-  # GOTCHA: The time parameter is ignored — IDA distributions are instant, not time-based.
-  # GOTCHA: Gas cost scales linearly with the number of approved subscriptions —
-  # each subscription requires reading the index and computing the delta.
-  # At high subscription counts (approaching the 256 bitmap limit), balance
-  # queries can become expensive.
+  notes:
+    - "Gotcha: Returns only the IDA portion of the balance, not the total."
+    - "Gotcha: The time parameter is ignored — IDA distributions are instant, not time-based."
+    - "Gotcha: Gas cost scales linearly with the number of approved subscriptions — each subscription requires reading the index and computing the delta. At high subscription counts (approaching the 256 bitmap limit), balance queries can become expensive."
   mutability: view
   inputs:
     - token: address

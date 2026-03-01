@@ -7,7 +7,6 @@
 # There is no ABI, no events, and no errors defined by the library itself —
 # it delegates to the underlying agreements via host.callAgreement().
 #
-# GOTCHA: Foundry testing pitfalls — see meta.note for details.
 #
 # NOTE: For underlying agreement errors, events, and access control, see:
 #   ConstantFlowAgreementV1.abi.yaml (CFA)
@@ -16,6 +15,8 @@
 
 meta:
   name: SuperTokenV1Library
+  notes:
+    - "Gotcha: Foundry testing pitfalls — see meta.note for details."
   version: v1
   source:
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol
@@ -58,10 +59,11 @@ meta:
 
 flowX:
   # Set a flow to an account or pool. Routes to CFA or GDA automatically.
-  # GOTCHA: Uses address(this) as sender — not overridable by prank.
   # Use CFA/GDA-specific functions with explicit sender for Foundry tests.
   # Note: if GDA is used, the effective flowRate may differ from requested
   # due to rounding across pool members.
+  notes:
+    - "Gotcha: Uses address(this) as sender — vm.prank/startPrank cannot override this. For Foundry tests, use CFA/GDA-specific overloads with an explicit sender parameter."
   mutability: nonpayable
   visibility: internal
   inputs:
@@ -74,8 +76,9 @@ flowX:
 transferX:
   # Transfer tokens to an account or distribute to pool members.
   # Routes to token.transfer() for accounts, distribute() for pools.
-  # GOTCHA: Uses address(this) as sender — not overridable by prank.
   # Note: for pools, the effective amount may be less than requested.
+  notes:
+    - "Gotcha: Uses address(this) as sender — vm.prank/startPrank cannot override this. For Foundry tests, use CFA/GDA-specific overloads with an explicit sender parameter."
   mutability: nonpayable
   visibility: internal
   inputs:
@@ -144,7 +147,8 @@ getBufferAmountByFlowRate:
   # Calculate the buffer (deposit) needed for a flow at the given rate.
   # Exact for new flows only. For updates, compute buffer at new total
   # rate and subtract the previous buffer (not linearly proportional).
-  # GOTCHA: Slightly overestimates for GDA flows due to CFA rounding.
+  notes:
+    - "Gotcha: Slightly overestimates for GDA flows due to CFA rounding."
   mutability: view
   visibility: internal
   inputs:
@@ -166,7 +170,8 @@ flow:
   # - no change needed: no-op
   # On creation, a buffer deposit is auto-deducted from sender balance.
   # Also available without userData (omit last parameter).
-  # GOTCHA: Uses address(this) as sender — not overridable by prank.
+  notes:
+    - "Gotcha: Uses address(this) as sender — vm.prank/startPrank cannot override this. For Foundry tests, use CFA/GDA-specific overloads with an explicit sender parameter."
   mutability: nonpayable
   visibility: internal
   inputs:
@@ -367,13 +372,11 @@ deleteFlowFrom:
 # Same operations as CFA Base and CFA ACL, but accept and return ctx for
 # use inside Super App callbacks. Always use these inside callbacks —
 # using non-ctx versions breaks context propagation and causes reverts.
-#
-# GOTCHA: Always chain ctx through sequential operations:
-#   newCtx = token.flowWithCtx(receiver1, rate1, ctx);
-#   newCtx = token.flowWithCtx(receiver2, rate2, newCtx);
 
 flowWithCtx:
   # Like flow(), with context for Super App callbacks.
+  notes:
+    - "Gotcha: Always chain ctx through sequential operations: newCtx = token.flowWithCtx(receiver1, rate1, ctx); newCtx = token.flowWithCtx(receiver2, rate2, newCtx);"
   mutability: nonpayable
   visibility: internal
   inputs:
@@ -578,7 +581,8 @@ createPool:
   # Also available as createPool(token, admin) with default config
   # (units not transferable, anyone can distribute), and
   # createPool(token) with default config + address(this) as admin.
-  # GOTCHA: The single-arg overload uses address(this) as admin.
+  notes:
+    - "Gotcha: The single-arg overload uses address(this) as admin."
   mutability: nonpayable
   visibility: internal
   inputs:
@@ -604,7 +608,8 @@ claimAll:
   # Claim all pending tokens from a pool for a member.
   # Also available as claimAll(token, pool) with address(this) as member,
   # and claimAll(token, pool, memberAddress) without userData.
-  # GOTCHA: The 2-arg overload uses address(this) as memberAddress.
+  notes:
+    - "Gotcha: The 2-arg overload uses address(this) as memberAddress."
   mutability: nonpayable
   visibility: internal
   inputs:
@@ -657,9 +662,8 @@ distribute:
   # actualAmount may be less than requested due to rounding across units.
   # Also available as distribute(token, pool, requestedAmount) with
   # address(this) as sender, and without userData.
-  # GOTCHA: The overload without `from` uses address(this). In Foundry
-  # tests you may get GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED — use the
-  # overload with explicit `from` instead.
+  notes:
+    - "Gotcha: The overload without `from` uses address(this). In Foundry tests you may get GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED — use the overload with explicit `from` instead."
   mutability: nonpayable
   visibility: internal
   inputs:
@@ -676,8 +680,8 @@ distributeFlow:
   # actualFlowRate may be less than requested due to rounding across units.
   # Also available as distributeFlow(token, pool, requestedFlowRate) with
   # address(this) as sender, and without userData.
-  # GOTCHA: Same address(this) issue as distribute() — use explicit `from`
-  # in Foundry tests.
+  notes:
+    - "Gotcha: Same address(this) issue as distribute() — use explicit `from` in Foundry tests."
   mutability: nonpayable
   visibility: internal
   inputs:

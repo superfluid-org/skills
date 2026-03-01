@@ -13,10 +13,6 @@
 # Off-chain keepers call executeWrap when conditions are met.
 # The owner manages approved strategies and global minimum limits.
 #
-# GOTCHA: Auto-Wrap monitors only CFA net flow rate (cfaV1.getNetFlow), NOT GDA
-# flows. If an account streams exclusively through GDA pools, Auto-Wrap will
-# never trigger because it sees zero CFA flow rate. This is a legacy limitation
-# — GDA was introduced after Auto-Wrap was built.
 #
 # Trigger condition: CFA net flow rate is negative AND Super Token balance <=
 # abs(positiveFlowRate) * lowerLimit. Wrap amount = abs(positiveFlowRate) *
@@ -45,6 +41,8 @@
 meta:
   name: AutoWrapManager
   version: v1
+  notes:
+    - "Gotcha: Auto-Wrap monitors only CFA net flow rate (cfaV1.getNetFlow), NOT GDA flows. If an account streams exclusively through GDA pools, Auto-Wrap will never trigger because it sees zero CFA flow rate. This is a legacy limitation — GDA was introduced after Auto-Wrap was built."
   source:
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/Manager.sol
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/interfaces/IManager.sol
@@ -183,7 +181,8 @@ deleteWrapScheduleByIndex:
 executeWrap:
   # Executes a wrap (top-up) if conditions are met.
   # Checks CFA net flow rate, balance vs lowerLimit threshold, and delegates to strategy.
-  # GOTCHA: Only CFA flows affect the trigger — GDA flows are ignored.
+  notes:
+    - "Gotcha: Only CFA flows affect the trigger — GDA flows are ignored."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -246,7 +245,8 @@ checkWrap:
   # Returns the amount to wrap (0 if no wrap needed).
   # Checks: schedule exists, not expired, allowance > 0, balance > 0, strategy supports token,
   # CFA net flow rate is negative, and balance <= abs(positiveFlowRate) * lowerLimit.
-  # GOTCHA: Uses cfaV1.getNetFlow — only CFA flows are considered, not GDA.
+  notes:
+    - "Gotcha: Uses cfaV1.getNetFlow — only CFA flows are considered, not GDA."
   mutability: view
   inputs:
     - user: address

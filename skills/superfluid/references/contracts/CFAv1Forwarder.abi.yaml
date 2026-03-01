@@ -55,7 +55,8 @@ meta:
 setFlowrate:
   # Smart setter: creates a new flow if none exists, updates if flowrate changed,
   # deletes if flowrate is zero. No-ops if the current rate already matches.
-  # GOTCHA: Negative flowrate values revert with CFA_FWD_INVALID_FLOW_RATE.
+  notes:
+    - "Gotcha: Negative flowrate values revert with CFA_FWD_INVALID_FLOW_RATE."
   mutability: nonpayable
   access: anyone  # flow from msg.sender
   inputs:
@@ -149,7 +150,8 @@ revokePermissions:
 
 updateFlowOperatorPermissions:
   # Set granular operator permissions and flowrate allowance.
-  # GOTCHA: flowrateAllowance limits per-flow rate, NOT aggregate net flow.
+  notes:
+    - "Gotcha: flowrateAllowance limits per-flow rate, NOT aggregate net flow."
   mutability: nonpayable
   access: anyone  # grants on msg.sender's flows
   inputs:
@@ -185,8 +187,8 @@ getFlowInfo:
 
 getBufferAmountByFlowrate:
   # Returns the deposit/buffer required for a given flowrate.
-  # GOTCHA: This value is governance-configurable and may change over time.
-  # Changes only affect newly created/updated flows.
+  notes:
+    - "Gotcha: This value is governance-configurable and may change over time. Changes only affect newly created/updated flows."
   mutability: view
   inputs:
     - token: address

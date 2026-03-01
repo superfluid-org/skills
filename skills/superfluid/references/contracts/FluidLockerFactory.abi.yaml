@@ -31,8 +31,9 @@ meta:
 
 "createLockerContract(address)":
   # Deploy a new Reserve (Locker) for a specific user.
-  # GOTCHA: Deterministic — the same user always maps to the same locker address.
   # Reverts if the factory is paused.
+  notes:
+    - "Gotcha: Deterministic — the same user always maps to the same locker address."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -46,8 +47,9 @@ meta:
 
 "createLockerContract()":
   # Deploy a new Reserve (Locker) for msg.sender. Convenience overload.
-  # GOTCHA: Deterministic — the same user always maps to the same locker address.
   # Reverts if the factory is paused.
+  notes:
+    - "Gotcha: Deterministic — the same user always maps to the same locker address."
   mutability: nonpayable
   access: anyone
   outputs:
@@ -88,7 +90,8 @@ getLockerBeaconImplementation:
 
 IS_PAUSED:
   # Whether Reserve creation is paused (immutable, set at construction).
-  # GOTCHA: If true, both createLockerContract overloads revert.
+  notes:
+    - "Gotcha: If true, both createLockerContract overloads revert."
   mutability: view
   outputs:
     - bool

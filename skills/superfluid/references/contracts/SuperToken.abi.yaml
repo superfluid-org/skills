@@ -59,6 +59,8 @@ symbol:
 
 decimals:
   # Always returns 18 regardless of underlying token decimals.
+  notes:
+    - "Always returns 18, regardless of the underlying token's decimals (e.g. USDC has 6). The upgrade/downgrade functions handle decimal conversion internally."
   mutability: pure
   inputs: []
   outputs:
@@ -75,6 +77,8 @@ totalSupply:
 balanceOf:
   # Returns max(0, availableBalance) — clamps negative balances to zero.
   # For the full real-time picture, use realtimeBalanceOfNow.
+  notes:
+    - "Returns max(0, availableBalance) — negative/critical balances are clamped to zero. Use realtimeBalanceOfNow to detect critical accounts."
   mutability: view
   inputs:
     - account: address
@@ -181,7 +185,8 @@ send:
 
 burn:
   # ERC-777 burn — in SuperToken this actually performs a downgrade (unwrap).
-  # GOTCHA: Reverts with SUPER_TOKEN_NO_UNDERLYING_TOKEN on Pure Super Tokens.
+  notes:
+    - "Gotcha: Reverts with SUPER_TOKEN_NO_UNDERLYING_TOKEN on Pure Super Tokens."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -293,11 +298,8 @@ eip712Domain:
 upgrade:
   # Wrap underlying ERC-20 into Super Tokens for msg.sender.
   # Requires prior ERC-20 approval on the underlying token.
-  # GOTCHA: amount is always in SuperToken decimals (18), regardless of the
-  # underlying token's decimals. The contract handles downscaling internally
-  # when pulling from the underlying via transferFrom. However, the ERC-20
-  # approval on the underlying token must use the underlying's native decimals.
-  # Example: to wrap 1000 USDC, approve 1000e6 on USDC, then call upgrade(1000e18).
+  notes:
+    - "Gotcha: amount is always in SuperToken decimals (18), regardless of the underlying token's decimals. The contract handles downscaling internally when pulling from the underlying via transferFrom. However, the ERC-20 approval on the underlying token must use the underlying's native decimals. Example: to wrap 1000 USDC, approve 1000e6 on USDC, then call upgrade(1000e18)."
   mutability: nonpayable
   access: anyone  # wraps for msg.sender
   inputs:

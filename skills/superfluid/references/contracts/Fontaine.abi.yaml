@@ -69,8 +69,9 @@ unlockFlowRate:
 initialize:
   # Beacon proxy initializer. Called once by FluidLocker when creating an unlock.
   # Sets the recipient, calculates the end date, and opens a CFA stream of SUP.
-  # GOTCHA: Can only be called once (OpenZeppelin initializer modifier).
-  # GOTCHA: Reverts if unlockRecipient is a Super App — streaming to Super Apps is forbidden.
+  notes:
+    - "Gotcha: Can only be called once (OpenZeppelin initializer modifier)."
+    - "Gotcha: Reverts if unlockRecipient is a Super App — streaming to Super Apps is forbidden."
   mutability: nonpayable
   inputs:
     - unlockRecipient: address
@@ -87,10 +88,10 @@ initialize:
 
 terminateUnlock:
   # Stop the unlock stream and transfer any remaining SUP balance to the recipient.
-  # GOTCHA: Can only be called after (endDate - EARLY_END) has passed — reverts with
-  # TOO_EARLY_TO_TERMINATE_UNLOCK if block.timestamp < endDate - EARLY_END.
-  # GOTCHA: Callable by anyone — the contract has no msg.sender restriction on this function.
   # Any address can terminate once the timing condition is met.
+  notes:
+    - "Gotcha: Can only be called after (endDate - EARLY_END) has passed — reverts with TOO_EARLY_TO_TERMINATE_UNLOCK if block.timestamp < endDate - EARLY_END."
+    - "Gotcha: Callable by anyone — the contract has no msg.sender restriction on this function."
   mutability: nonpayable
   access: anyone
   errors:

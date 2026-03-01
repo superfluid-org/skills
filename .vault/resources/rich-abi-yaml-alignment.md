@@ -160,7 +160,7 @@ Rich ABI YAML = ABI structure + NatSpec documentation + protocol context
 | emits                | —                  | —                    | ✓ new               |
 | errors (per-fn)      | —                  | —                    | ✓ new               |
 | # description        | —                  | @notice              | maps to NatSpec     |
-| # GOTCHA             | —                  | @dev                 | maps to NatSpec     |
+| notes (list)         | —                  | @dev                 | ✓ structured field  |
 | # per-param comment  | —                  | @param \<name\>      | maps to NatSpec     |
 
 #### Events
@@ -252,7 +252,7 @@ These fields have **no equivalent** in either ABI JSON or NatSpec:
 | Abbreviations       | Protocol-specific abbreviation reference                     |
 | Glossary            | Domain concept definitions                                   |
 | Section grouping    | Logical function organization by domain                      |
-| GOTCHA comments     | Non-obvious behavior warnings                                |
+| `notes` field       | Non-obvious behavior warnings (structured list)              |
 | Ordering semantics  | emits/errors ordered by execution flow                       |
 
 This is the core value proposition: **these relationships exist in the source code
@@ -277,7 +277,7 @@ impoverished file — no comments, no grouping, no emits/errors/access.
 ### Rich ABI YAML → NatSpec JSON (partial)
 
 - `# description` → `notice`
-- `# GOTCHA / dev notes` → `details`
+- `notes:` field → `details`
 - `# per-param comments` → `params`
 - Contract-level `# title` → `title`
 
@@ -331,7 +331,7 @@ with protocol-specific extensions:
 │  └───────────────────────────────────────┘  │
 │  ┌───────────────────────────────────────┐  │
 │  │  NatSpec documentation                │  │
-│  │  (notice → comments, dev → GOTCHA,    │  │
+│  │  (notice → comments, dev → notes,      │  │
 │  │   param → per-param comments)         │  │
 │  └───────────────────────────────────────┘  │
 │  ┌───────────────────────────────────────┐  │
