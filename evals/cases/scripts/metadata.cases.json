@@ -1,0 +1,118 @@
+[
+  {
+    "id": "meta-contracts-optimism",
+    "description": "Returns contract addresses for Optimism (chain 10)",
+    "command": ["metadata.mjs", "contracts", "10"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.network", "equals": "optimism-mainnet" },
+          { "path": "$.chainId", "equals": 10 },
+          { "path": "$.cfaV1Forwarder", "equals": "0xcfA132E353cB4E398080B9700609bb008eceB125" },
+          { "path": "$.gdaV1Forwarder", "equals": "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08" },
+          { "path": "$.host", "matches": "^0x[a-fA-F0-9]{40}$" }
+        ]
+      }
+    },
+    "tags": ["smoke", "metadata", "addresses"]
+  },
+  {
+    "id": "meta-contracts-base",
+    "description": "Returns contract addresses for Base (chain 8453)",
+    "command": ["metadata.mjs", "contracts", "8453"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.network", "equals": "base-mainnet" },
+          { "path": "$.chainId", "equals": 8453 },
+          { "path": "$.cfaV1Forwarder", "matches": "^0x[a-fA-F0-9]{40}$" }
+        ]
+      }
+    },
+    "tags": ["smoke", "metadata"]
+  },
+  {
+    "id": "meta-network-by-name",
+    "description": "Resolves network by canonical name",
+    "command": ["metadata.mjs", "network", "optimism-mainnet"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.chainId", "equals": 10 },
+          { "path": "$.name", "equals": "optimism-mainnet" },
+          { "path": "$.isTestnet", "equals": false }
+        ]
+      }
+    },
+    "tags": ["metadata"]
+  },
+  {
+    "id": "meta-networks-mainnets",
+    "description": "Lists only mainnets when filtered",
+    "command": ["metadata.mjs", "networks", "--mainnets"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$", "isArray": true },
+          { "path": "$", "minLength": 5 }
+        ]
+      }
+    },
+    "tags": ["metadata"]
+  },
+  {
+    "id": "meta-subgraph-optimism",
+    "description": "Returns subgraph endpoint for Optimism",
+    "command": ["metadata.mjs", "subgraph", "10"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.network", "equals": "optimism-mainnet" },
+          { "path": "$.protocol", "contains": "optimism-mainnet" },
+          { "path": "$.protocol", "contains": "subgraph-endpoints.superfluid.dev" }
+        ]
+      }
+    },
+    "tags": ["metadata", "subgraph"]
+  },
+  {
+    "id": "meta-invalid-chain",
+    "description": "Exits with error for unknown chain ID",
+    "command": ["metadata.mjs", "contracts", "999999"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "Network not found" }
+    },
+    "tags": ["error-handling", "metadata"]
+  },
+  {
+    "id": "meta-missing-arg",
+    "description": "Exits with error when chain argument is missing",
+    "command": ["metadata.mjs", "contracts"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "Usage:" }
+    },
+    "tags": ["error-handling", "metadata"]
+  },
+  {
+    "id": "meta-no-command",
+    "description": "Prints help when no command given",
+    "command": ["metadata.mjs"],
+    "expect": {
+      "exitCode": 0,
+      "stderr": { "contains": "Commands:" }
+    },
+    "tags": ["metadata", "help"]
+  }
+]

@@ -1,0 +1,105 @@
+[
+  {
+    "id": "route-create-stream",
+    "description": "Routes to CFAv1Forwarder for simple stream creation",
+    "prompt": "I want to create a money stream from my wallet to another address using Superfluid. What function should I call and what are the parameters?",
+    "criteria": [
+      { "criterion": "uses_correct_contract_details", "description": "Response contains CFAv1Forwarder-specific details (function signatures, address, or parameter types) from the reference", "weight": 2 },
+      { "criterion": "correct_function", "description": "Recommends setFlowrate or createFlow from CFAv1Forwarder (not raw CFA agreement)", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate function names, parameter names, or addresses", "weight": 3 }
+    ],
+    "golden_facts": [
+      "CFAv1Forwarder is the recommended contract for simple stream operations",
+      "setFlowrate(token, receiver, flowrate) or createFlow(token, sender, receiver, flowrate, userData)",
+      "flowrate is int96, denominated in wei per second"
+    ],
+    "anti_patterns": [
+      "Calling ConstantFlowAgreementV1 directly without mentioning it requires Host routing (ctx: bytes)",
+      "Fabricating function signatures not in CFAv1Forwarder"
+    ],
+    "tags": ["routing", "cfa", "core"]
+  },
+  {
+    "id": "route-gda-pool-creation",
+    "description": "Routes to GDAv1Forwarder for pool creation and distribution",
+    "prompt": "How do I create a GDA distribution pool in Superfluid and add members to it?",
+    "criteria": [
+      { "criterion": "uses_correct_contract_details", "description": "Response contains GDAv1Forwarder or SuperfluidPool-specific details (function signatures, parameters) from the references", "weight": 2 },
+      { "criterion": "correct_functions", "description": "Mentions createPool and updateMemberUnits", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not invent parameters or function signatures", "weight": 3 }
+    ],
+    "golden_facts": [
+      "GDAv1Forwarder.createPool to create a pool",
+      "GDAv1Forwarder.updateMemberUnits to add members with unit allocations",
+      "Pool address is returned by createPool"
+    ],
+    "anti_patterns": [
+      "Confusing IDA functions with GDA",
+      "Calling GDA agreement directly without mentioning Host context requirement"
+    ],
+    "tags": ["routing", "gda", "core"]
+  },
+  {
+    "id": "route-super-app",
+    "description": "Routes to Super Apps guide and CFASuperAppBase for callback questions",
+    "prompt": "I want to build a Super App that reacts to incoming CFA streams. What base contract should I inherit, what callbacks do I override, and what library do I use for outgoing streams inside callbacks?",
+    "criteria": [
+      { "criterion": "uses_super_app_details", "description": "Response contains CFASuperAppBase-specific details (callback names, registration, WithCtx variants) from the reference", "weight": 2 },
+      { "criterion": "explains_base_contract", "description": "Explains CFASuperAppBase as the starting point for CFA-only Super Apps", "weight": 2 },
+      { "criterion": "mentions_callbacks", "description": "Mentions callback hooks (onFlowCreated, onFlowUpdated, onFlowDeleted)", "weight": 2 },
+      { "criterion": "mentions_app_credit", "description": "Mentions app credit or deposit implications for relaying flows", "weight": 1 }
+    ],
+    "golden_facts": [
+      "CFASuperAppBase is the simplified base for CFA-only Super Apps",
+      "Override onFlowCreated, onFlowUpdated, onFlowDeleted callbacks",
+      "Use SuperTokenV1Library WithCtx variants inside callbacks",
+      "App credit allows zero-balance relay operations"
+    ],
+    "anti_patterns": [
+      "Implementing raw ISuperApp callbacks without mentioning CFASuperAppBase",
+      "Not mentioning the Super App registration requirement"
+    ],
+    "tags": ["routing", "super-apps", "core"]
+  },
+  {
+    "id": "route-vesting",
+    "description": "Routes to VestingSchedulerV3 for vesting questions",
+    "prompt": "How do I set up a vesting schedule with a cliff using Superfluid?",
+    "criteria": [
+      { "criterion": "uses_vesting_details", "description": "Response contains VestingSchedulerV3-specific details (function names, keeper requirements, scheduling params) from the reference", "weight": 2 },
+      { "criterion": "mentions_keepers", "description": "Mentions that execution requires off-chain keepers", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate contract functions", "weight": 3 }
+    ],
+    "golden_facts": [
+      "VestingSchedulerV3 handles vesting with cliffs and streams",
+      "Requires off-chain keepers for execution",
+      "May need allowlisting for keepers to trigger"
+    ],
+    "anti_patterns": [
+      "Referencing VestingSchedulerV1 or V2 (only V3 is in the skill)",
+      "Suggesting vesting works without keepers"
+    ],
+    "tags": ["routing", "automation"]
+  },
+  {
+    "id": "route-subgraph-query",
+    "description": "Routes to subgraph references for indexed data queries",
+    "prompt": "I need to query all active streams for a specific sender on Optimism. What is the GraphQL query, the endpoint URL, and are there any caveats about data freshness?",
+    "criteria": [
+      { "criterion": "uses_subgraph_details", "description": "Response contains subgraph-specific details (entity names, endpoint URL pattern, field names) from the reference", "weight": 2 },
+      { "criterion": "correct_endpoint_pattern", "description": "Uses endpoint pattern: subgraph-endpoints.superfluid.dev/{network}/protocol-v1", "weight": 2 },
+      { "criterion": "mentions_lag_caveat", "description": "Notes subgraph lags real-time state (prefer RPC for current balances)", "weight": 1 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate entity or field names", "weight": 3 }
+    ],
+    "golden_facts": [
+      "Use protocol-v1 subgraph for querying streams",
+      "Endpoint: https://subgraph-endpoints.superfluid.dev/optimism-mainnet/protocol-v1",
+      "Query the Stream entity filtered by sender"
+    ],
+    "anti_patterns": [
+      "Fabricating GraphQL entity names not in the schema",
+      "Using wrong endpoint URL pattern"
+    ],
+    "tags": ["routing", "subgraph"]
+  }
+]

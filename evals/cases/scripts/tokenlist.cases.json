@@ -1,0 +1,75 @@
+[
+  {
+    "id": "token-usdcx-optimism",
+    "description": "Finds USDCx Super Token on Optimism with underlying",
+    "command": ["tokenlist.mjs", "super-token", "10", "USDCx"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.superToken.symbol", "equals": "USDCx" },
+          { "path": "$.superToken.chainId", "equals": 10 },
+          { "path": "$.superToken.address", "matches": "^0x[a-fA-F0-9]{40}$" },
+          { "path": "$.underlying", "typeof": "object" },
+          { "path": "$.underlying.address", "matches": "^0x[a-fA-F0-9]{40}$" }
+        ]
+      }
+    },
+    "tags": ["smoke", "tokenlist"]
+  },
+  {
+    "id": "token-by-chain-super",
+    "description": "Lists Super Tokens on Base",
+    "command": ["tokenlist.mjs", "by-chain", "8453", "--super"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$", "isArray": true },
+          { "path": "$", "minLength": 1 }
+        ]
+      }
+    },
+    "tags": ["tokenlist"]
+  },
+  {
+    "id": "token-stats",
+    "description": "Stats command returns valid structure",
+    "command": ["tokenlist.mjs", "stats"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "json",
+        "assertions": [
+          { "path": "$.totalTokens", "typeof": "number" },
+          { "path": "$.superTokens", "typeof": "number" },
+          { "path": "$.chains", "isArray": true },
+          { "path": "$.chains", "minLength": 5 }
+        ]
+      }
+    },
+    "tags": ["smoke", "tokenlist"]
+  },
+  {
+    "id": "token-unknown-symbol",
+    "description": "Error for unknown Super Token symbol",
+    "command": ["tokenlist.mjs", "super-token", "10", "NONEXISTENT_TOKEN_XYZ"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "No Super Token found" }
+    },
+    "tags": ["error-handling", "tokenlist"]
+  },
+  {
+    "id": "token-invalid-chain",
+    "description": "Error when chain-id is not a number",
+    "command": ["tokenlist.mjs", "by-chain", "notanumber"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "chain-id must be a number" }
+    },
+    "tags": ["error-handling", "tokenlist"]
+  }
+]

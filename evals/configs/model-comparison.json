@@ -1,0 +1,7 @@
+{
+  "judge_model": "opus",
+  "configs": [
+    { "label": "sonnet", "model": "sonnet" },
+    { "label": "opus", "model": "opus" }
+  ]
+}

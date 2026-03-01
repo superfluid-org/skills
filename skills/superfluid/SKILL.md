@@ -178,6 +178,56 @@ Each YAML's `errors:` section is the complete error index for that contract,
 with selector hashes and descriptions. Per-function `errors:` fields show
 which errors a specific function can throw.
 
+## Common Gotchas
+
+Non-obvious behaviors that frequently trip up developers. Each is documented
+in the relevant `.abi.yaml` file — this is a quick-reference.
+
+**Super Token decimals always 18** — `upgrade()` and `downgrade()` amounts are
+always in 18-decimal SuperToken units, regardless of underlying token decimals.
+The contract handles scaling internally. The only place underlying decimals
+matter is the ERC-20 `approve()` call. Example: to wrap 100 USDC, approve
+100e6 on USDC, then call `upgrade(100e18)`.
+
+**GDA pool connections vs. membership** — Pool membership is unlimited (an
+account can hold units in any number of pools). However, only 256 pools can be
+**connected** per account per token — connected means the balance auto-reflects
+in the member's SuperToken balance. Unconnected members must call `claimAll()`
+to receive their tokens. Gas for `balanceOf` / `realtimeBalanceOf` scales
+linearly with connected pools.
+
+**GDA distribution rounding** — `distributeFlow`: per-unit rate =
+`requestedFlowRate / totalUnits` (integer division, rounds down). The
+rounding remainder becomes an **adjustment flow to the pool admin**. If
+`requestedFlowRate < totalUnits`, per-unit rate truncates to 0 and the
+entire flow goes to admin. `distribute` (instant): the remainder simply
+isn't taken from the distributor — actual distributed amount < requested.
+Pools hold no balance; tokens flow through directly to members.
+
+**SuperTokenV1Library `address(this)`** — Convenience functions (`flow`,
+`flowX`, `distribute`, `distributeFlow`, `createPool`, `claimAll`) use
+`address(this)` as the implicit sender, not `msg.sender`. In Foundry tests,
+`vm.prank` does not override this. Use CFA/GDA-specific function overloads
+with an explicit sender/from parameter instead.
+
+**CFASuperAppBase APP_LEVEL_FINAL** — `CFASuperAppBase` is hardcoded to
+`APP_LEVEL_FINAL`, which prevents calling other Super Apps downstream from
+its callbacks. To compose with downstream Super Apps, build a custom base
+using `APP_LEVEL_SECOND` and call `host.allowCompositeApp(targetApp)`.
+Max chain depth: 2 apps (SECOND → FINAL).
+
+**GDA pools cannot nest** — A pool cannot be a member of another pool.
+`updateMemberUnits` reverts with `SUPERFLUID_POOL_NO_POOL_MEMBERS` if the
+member address is a pool. Pool addresses also cannot be pool admins
+(`GDA_ADMIN_CANNOT_BE_POOL`).
+
+**FluidLocker instant unlock penalty** — `unlockPeriod=0` triggers an instant
+unlock with **80% penalty** — only 20% is transferred immediately, 80% is
+redistributed to stakers and LPs. All unlocks (including instant) require
+`msg.value` of 0.0001 ETH (`UNLOCKING_FEE`, sent to DAO treasury). Periods
+of 7–365 days deploy a Fontaine beacon proxy that streams tokens over the
+unlock period with a proportional tax.
+
 ## Reading the Rich ABI YAMLs
 
 Essential conventions for parsing the YAML files:
@@ -194,8 +244,9 @@ For the full format spec with examples (function entries, events, errors section
 ## Runtime Data (Scripts)
 
 Scripts provide runtime data (addresses, balances, ABIs) for one-off lookups.
-When writing application code, use the npm packages instead (see Developer
-Tracks above).
+Run with `bunx -p <pkg> bun <script>` — see `references/guides/scripts.md`
+for full syntax. When writing application code, use the npm packages directly
+instead (see Developer Tracks above).
 
 - `scripts/abi.mjs` — JSON ABI lookup, function signatures. Use when you need to inspect ABIs outside an app project.
 - `scripts/tokenlist.mjs` — Super Token addresses, symbols, types. Use when you need to find a token address or check its type.
@@ -208,7 +259,7 @@ For command syntax, arguments, and examples, see `references/guides/scripts.md`.
 ## Common Contract Addresses
 
 Do NOT hardcode or fabricate addresses. Get them from `@sfpro/sdk` address
-exports (see `references/guides/sdks.md`) or `node scripts/metadata.mjs contracts <chain>`.
+exports (see `references/guides/sdks.md`) or `bunx -p @superfluid-finance/metadata bun scripts/metadata.mjs contracts <chain>`.
 
 Forwarder addresses are the exception — uniform across most networks:
 - CFAv1Forwarder: `0xcfA132E353cB4E398080B9700609bb008eceB125`
@@ -273,7 +324,7 @@ Endpoint pattern: `https://subgraph-endpoints.superfluid.dev/{network-name}/{sub
 - SUP (Locker / Reserve) — Goldsky-hosted (Base only). Staking, unlocks, emission programs, LP positions.
 
 Network names are canonical Superfluid names (`optimism-mainnet`,
-`base-mainnet`, etc.). Use `node metadata.mjs subgraph <chain>` to get the
+`base-mainnet`, etc.). Use `bunx -p @superfluid-finance/metadata bun metadata.mjs subgraph <chain>` to get the
 resolved URL for a specific chain.
 
 ### Apps

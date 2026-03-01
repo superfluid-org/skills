@@ -1,0 +1,103 @@
+[
+  {
+    "id": "correct-gda-many-to-many",
+    "description": "GDA should be described as many-to-many, not 1-to-many (T001 regression)",
+    "prompt": "Is GDA (General Distribution Agreement) in Superfluid a one-to-many or many-to-many distribution mechanism?",
+    "criteria": [
+      { "criterion": "many_to_many", "description": "States GDA supports many-to-many (multiple distributors into the same pool)", "weight": 3 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate configuration flags or function names", "weight": 2 }
+    ],
+    "golden_facts": [
+      "GDA is many-to-many: multiple senders can distribute into the same pool",
+      "Pool admin can enable distributionFromAnyAddress"
+    ],
+    "anti_patterns": [
+      "Describing GDA as strictly 1-to-many",
+      "Confusing transferabilityForUnitsOwner with distribution access"
+    ],
+    "tags": ["correctness", "gda", "regression-t001"]
+  },
+  {
+    "id": "correct-unit-change-truncation",
+    "description": "AI should explain unit-change rounding truncation issue (T008 regression)",
+    "prompt": "I increased pool member units and now nobody is receiving tokens even though I have an active distributeFlow. What happened?",
+    "criteria": [
+      { "criterion": "identifies_truncation", "description": "Explains that totalUnits exceeding requestedFlowRate causes per-unit rate truncation to 0", "weight": 3 },
+      { "criterion": "recommends_fix", "description": "Recommends re-calling distributeFlow to recompute the per-unit rate", "weight": 3 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate functions or parameters", "weight": 2 }
+    ],
+    "golden_facts": [
+      "When totalUnits > requestedFlowRate, per-unit rate truncates to 0",
+      "updateMemberUnits does not recompute the per-unit rate from the requested flow rate",
+      "Fix: re-call distributeFlow after changing units"
+    ],
+    "anti_patterns": [
+      "Suggesting the problem is a bug rather than expected behavior",
+      "Not mentioning the need to re-call distributeFlow"
+    ],
+    "tags": ["correctness", "gda", "debugging", "regression-t008"]
+  },
+  {
+    "id": "correct-forwarder-addresses",
+    "description": "AI should use documented addresses, not fabricate others (T013 regression)",
+    "prompt": "What are the contract addresses for CFAv1Forwarder and GDAv1Forwarder? Are they the same across chains?",
+    "criteria": [
+      { "criterion": "correct_cfa_address", "description": "States CFAv1Forwarder is 0xcfA132E353cB4E398080B9700609bb008eceB125", "weight": 3 },
+      { "criterion": "correct_gda_address", "description": "States GDAv1Forwarder is 0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08", "weight": 3 },
+      { "criterion": "host_varies", "description": "States Host and agreement addresses vary per network, do not hardcode", "weight": 2 },
+      { "criterion": "no_fabrication", "description": "Does not fabricate Host or other contract addresses from memory", "weight": 3 }
+    ],
+    "golden_facts": [
+      "CFAv1Forwarder: 0xcfA132E353cB4E398080B9700609bb008eceB125 (uniform across most networks)",
+      "GDAv1Forwarder: 0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08",
+      "Host and agreement addresses vary per network — use metadata.mjs or @sfpro/sdk"
+    ],
+    "anti_patterns": [
+      "Fabricating a Host address from memory",
+      "Stating all addresses are identical on all chains with zero exceptions"
+    ],
+    "tags": ["correctness", "addresses", "regression-t013"]
+  },
+  {
+    "id": "correct-app-credit-deposit",
+    "description": "AI should explain deposit doubling for Super App senders (T009 regression)",
+    "prompt": "Why does a sender streaming to a Super App seem to lock more deposit than expected?",
+    "criteria": [
+      { "criterion": "explains_owed_deposit", "description": "Explains owed deposit / app credit mechanism causing deposit doubling", "weight": 3 },
+      { "criterion": "mentions_1_to_1_relay", "description": "Mentions that a 1:1 relay doubles the sender's locked capital", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate deposit amounts or ratios", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Super Apps use app credit to relay flows without holding tokens",
+      "The outgoing stream deposit is backed as owed deposit on the original sender",
+      "A 1:1 relay roughly doubles the sender's locked capital",
+      "Fan-out to multiple receivers amplifies this further"
+    ],
+    "anti_patterns": [
+      "Saying the deposit is just the standard buffer amount",
+      "Not mentioning app credit or owed deposit"
+    ],
+    "tags": ["correctness", "super-apps", "regression-t009"]
+  },
+  {
+    "id": "correct-error-prefix-routing",
+    "description": "AI should map error prefixes to the correct contract",
+    "prompt": "My transaction reverted with CFA_FLOW_ALREADY_EXISTS. What does this mean and how do I fix it?",
+    "criteria": [
+      { "criterion": "correct_contract", "description": "Maps CFA_ prefix to ConstantFlowAgreementV1", "weight": 2 },
+      { "criterion": "explains_error", "description": "Explains a flow already exists for this sender/receiver/token triple", "weight": 2 },
+      { "criterion": "suggests_fix", "description": "Suggests using updateFlow/setFlowrate instead of createFlow", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate error details", "weight": 3 }
+    ],
+    "golden_facts": [
+      "CFA_ prefix maps to ConstantFlowAgreementV1 (not CFAv1Forwarder, which uses CFA_FWD_ prefix)",
+      "A stream already exists between this sender/receiver/token triple",
+      "Use setFlowrate (handles create/update/delete automatically) or updateFlow"
+    ],
+    "anti_patterns": [
+      "Mapping CFA_ prefix to CFAv1Forwarder (that uses CFA_FWD_ prefix)",
+      "Suggesting to delete and recreate instead of update"
+    ],
+    "tags": ["correctness", "debugging", "cfa"]
+  }
+]

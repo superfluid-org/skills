@@ -1,45 +1,20 @@
 #!/usr/bin/env node
 // Superfluid Token List Resolver
-// Self-contained — no npm install required. Fetches data from CDN on first run,
-// caches locally for offline use.
+// Self-contained — no npm install required. Uses @superfluid-finance/tokenlist
+// package for token data.
 //
 // Usage:
-//   node tokenlist.mjs by-address <address>                       # Find token(s) by address (across all chains)
-//   node tokenlist.mjs by-chain <chain-id>                        # All tokens on a network
-//   node tokenlist.mjs by-chain <chain-id> --super                # Only Super Tokens on a network
-//   node tokenlist.mjs by-chain <chain-id> --underlying           # Only underlying tokens on a network
-//   node tokenlist.mjs by-symbol <symbol> [--chain-id <chain-id>] # Find token(s) by symbol
-//   node tokenlist.mjs super-token <chain-id> <symbol-or-address> # Find a Super Token and its underlying
-//   node tokenlist.mjs stats                                      # Summary stats of the token list
+//   bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-address <address>
+//   bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-chain <chain-id> [--super|--underlying]
+//   bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-symbol <symbol> [--chain-id <chain-id>]
+//   bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs super-token <chain-id> <symbol-or-address>
+//   bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs stats
 //
 // Output: JSON to stdout. Errors to stderr.
 
-import { writeFileSync, readFileSync, mkdirSync } from "fs";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { extendedSuperTokenList } from "@superfluid-finance/tokenlist";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const CACHE_DIR = join(__dirname, ".cache");
-const CACHE_FILE = join(CACHE_DIR, "tokenlist.json");
-const CDN_URL = "https://cdn.jsdelivr.net/npm/@superfluid-finance/tokenlist/dist/superfluid.extended.tokenlist.json";
-
-async function loadTokens() {
-  try {
-    const res = await fetch(CDN_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    try { mkdirSync(CACHE_DIR, { recursive: true }); writeFileSync(CACHE_FILE, JSON.stringify(data)); } catch {}
-    return data.tokens;
-  } catch (fetchErr) {
-    try { return JSON.parse(readFileSync(CACHE_FILE, "utf-8")).tokens; } catch {}
-    console.error(`Error: Could not fetch token list from CDN and no local cache found.`);
-    console.error(`CDN URL: ${CDN_URL}`);
-    console.error(`Fetch error: ${fetchErr.message}`);
-    process.exit(1);
-  }
-}
-
-const tokens = await loadTokens();
+const tokens = extendedSuperTokenList.tokens;
 
 function isSuperToken(t) { return t.tags?.includes("supertoken"); }
 function isUnderlying(t) { return t.tags?.includes("underlying"); }
@@ -129,10 +104,10 @@ Commands:
   stats                                        Summary stats of the token list
 
 Examples:
-  node tokenlist.mjs by-address 0x4ac8bD1bDaE47beeF2D1c6Aa62229509b962Aa0d
-  node tokenlist.mjs by-chain 10 --super
-  node tokenlist.mjs by-symbol USDCx --chain-id 10
-  node tokenlist.mjs super-token 10 USDCx
-  node tokenlist.mjs stats`);
+  bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-address 0x4ac8bD1bDaE47beeF2D1c6Aa62229509b962Aa0d
+  bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-chain 10 --super
+  bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-symbol USDCx --chain-id 10
+  bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs super-token 10 USDCx
+  bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs stats`);
     process.exit(command ? 1 : 0);
 }

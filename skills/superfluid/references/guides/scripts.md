@@ -1,9 +1,9 @@
 # Runtime Data Scripts
 
 The Rich ABIs document **interfaces** (what to call and how). Scripts provide
-**runtime data** (what to call it on) by wrapping canonical npm packages with
-local caching for offline use. No npm install required — the scripts fetch
-from CDN equivalents of the packages.
+**runtime data** (what to call it on) by importing canonical npm packages
+directly. No npm install required — use `bunx -p <pkg> bun script.mjs`
+to resolve packages at runtime.
 
 All scripts are in `skills/superfluid/scripts/`.
 
@@ -14,9 +14,9 @@ All scripts are in `skills/superfluid/scripts/`.
 Source: [`@sfpro/sdk`](https://sdk.superfluid.pro/docs) package.
 
 ```
-node abi.mjs <contract>               Full JSON ABI
-node abi.mjs <contract> <function>    Single fragment by name
-node abi.mjs list                     All contracts with SDK import info
+bunx -p @sfpro/sdk bun abi.mjs <contract>               Full JSON ABI
+bunx -p @sfpro/sdk bun abi.mjs <contract> <function>    Single fragment by name
+bunx -p @sfpro/sdk bun abi.mjs list                     All contracts with SDK import info
 ```
 
 Accepts YAML names (`CFAv1Forwarder`) and short aliases (`cfa`, `host`,
@@ -36,11 +36,11 @@ Resolves Super Token addresses, symbols, and types. Use when you need to find
 a specific token address or determine a Super Token's type.
 
 ```
-node tokenlist.mjs super-token <chain-id> <symbol-or-address>
-node tokenlist.mjs by-chain <chain-id> --super
-node tokenlist.mjs by-symbol <symbol> [--chain-id <id>]
-node tokenlist.mjs by-address <address>
-node tokenlist.mjs stats
+bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs super-token <chain-id> <symbol-or-address>
+bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-chain <chain-id> --super
+bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-symbol <symbol> [--chain-id <id>]
+bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs by-address <address>
+bunx -p @superfluid-finance/tokenlist bun tokenlist.mjs stats
 ```
 
 The `superTokenInfo.type` field determines which ABI patterns apply:
@@ -56,10 +56,10 @@ The `superTokenInfo.type` field determines which ABI patterns apply:
 
 Source: [Super API](https://superapi.kazpi.com) (real-time on-chain query).
 Retrieves the current Super Token balance, net flow rate, and underlying token
-balance for any account. No caching — balances are fetched live.
+balance for any account. Balances are fetched live.
 
 ```
-node balance.mjs balance <chain-id> <token-symbol-or-address> <account>
+bunx -p @superfluid-finance/tokenlist bun balance.mjs balance <chain-id> <token-symbol-or-address> <account>
 ```
 
 The output includes:
@@ -79,11 +79,11 @@ Superfluid-supported chain. Use when `meta.deployments` in a YAML doesn't
 cover the target chain, or when you need automation/subgraph endpoints.
 
 ```
-node metadata.mjs contracts <chain-id-or-name>
-node metadata.mjs contract <chain-id-or-name> <key>
-node metadata.mjs automation <chain-id-or-name>
-node metadata.mjs subgraph <chain-id-or-name>
-node metadata.mjs networks [--mainnets|--testnets]
+bunx -p @superfluid-finance/metadata bun metadata.mjs contracts <chain-id-or-name>
+bunx -p @superfluid-finance/metadata bun metadata.mjs contract <chain-id-or-name> <key>
+bunx -p @superfluid-finance/metadata bun metadata.mjs automation <chain-id-or-name>
+bunx -p @superfluid-finance/metadata bun metadata.mjs subgraph <chain-id-or-name>
+bunx -p @superfluid-finance/metadata bun metadata.mjs networks [--mainnets|--testnets]
 ```
 
 Contract keys match the field names in the metadata: `host`, `cfaV1`,
@@ -107,7 +107,7 @@ The return types in the second set of parentheses tell cast how to decode the
 output. Without them you get raw hex.
 
 **RPC endpoint:** `https://rpc-endpoints.superfluid.dev/{network-name}` — network
-names are the canonical Superfluid names from `node metadata.mjs networks`
+names are the canonical Superfluid names from `metadata.mjs networks`
 (e.g. `optimism-mainnet`, `base-mainnet`, `eth-mainnet`).
 
 **Examples:**

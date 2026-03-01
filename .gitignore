@@ -1,3 +1,4 @@
 .DS_Store
-skills/superfluid/scripts/.cache/
 .vault/.obsidian/workspace.json
+evals/results/
+evals/.cache/
