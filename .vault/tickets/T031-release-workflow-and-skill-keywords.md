@@ -17,10 +17,10 @@ GDA, Super App, Super Token, stream, flow rate), reducing auto-trigger reliabili
 
 ## Resolution
 
-1. **Release workflow** (`.github/workflows/release.yml`): triggers on `v*` tag pushes,
-   validates the tag version matches `plugin.json` and `marketplace.json`, builds a zip
-   of only `skills/superfluid/` via `git archive`, and creates a GitHub Release with the
-   zip attached.
+1. **Release workflow** (`.github/workflows/release.yml`): triggers on push to `main`,
+   reads the version from `plugin.json`, skips if a release already exists for that version,
+   validates against `marketplace.json`, builds a zip of only `skills/superfluid/` via
+   `git archive`, and creates a GitHub Release with the zip attached. No manual tagging needed.
 
 2. **Skill keywords**: added `Keywords: CFA, GDA, Super App, Super Token, stream, flow rate`
    to the SKILL.md `description` frontmatter field.
