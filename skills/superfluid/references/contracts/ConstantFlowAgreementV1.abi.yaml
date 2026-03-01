@@ -82,9 +82,10 @@ meta:
 
 createFlow:
   # Start a new stream from ctx.msgSender to receiver.
-  # GOTCHA: A deposit is taken as a safety margin for solvency agents.
   # The deposit amount depends on the governance-configured liquidation period
   # and minimum deposit. The lower 32 bits of the deposit are clipped (rounded up).
+  notes:
+    - "Gotcha: A deposit is taken as a safety margin for solvency agents."
   mutability: nonpayable
   access: anyone  # flow from ctx.msgSender
   inputs:
@@ -99,10 +100,10 @@ createFlow:
 
 updateFlow:
   # Change the flow rate of an existing stream from ctx.msgSender to receiver.
-  # GOTCHA: Deposit is adjusted to match the new flow rate but never refunds
-  # owed deposit — that adjustment happens separately via the app credit system.
   # Note: owedDeposit accumulates when a Super App receiver uses app credit to
   # open outgoing streams. The sender bears the deposit cost for those streams.
+  notes:
+    - "Gotcha: Deposit is adjusted to match the new flow rate but never refunds owed deposit — that adjustment happens separately via the app credit system."
   mutability: nonpayable
   access: anyone  # flow from ctx.msgSender
   inputs:
@@ -117,11 +118,11 @@ updateFlow:
 
 deleteFlow:
   # Stop a stream between sender and receiver.
-  # GOTCHA: Third-party callers (not sender, receiver, or operator) only succeed
-  # if the sender is critical (negative available balance) or either party is jailed.
   # During liquidation the reward distribution depends on the solvency period:
   # patrician → bond account gets reward; pleb → liquidator gets reward;
   # pirate → liquidator gets full single deposit, protocol covers the bailout.
+  notes:
+    - "Gotcha: Third-party callers (not sender, receiver, or operator) only succeed if the sender is critical (negative available balance) or either party is jailed."
   mutability: nonpayable
   access: sender | receiver | operator | anyone(if-critical-or-jailed)
   inputs:
@@ -141,7 +142,8 @@ deleteFlow:
 
 createFlowByOperator:
   # Create a flow on behalf of sender. Consumes flow rate allowance.
-  # GOTCHA: Reverts if ctx.msgSender IS the sender — use createFlow instead.
+  notes:
+    - "Gotcha: Reverts if ctx.msgSender IS the sender — use createFlow instead."
   mutability: nonpayable
   access: operator
   inputs:
@@ -157,8 +159,9 @@ createFlowByOperator:
 
 updateFlowByOperator:
   # Update a flow on behalf of sender. Only consumes allowance if flow rate increases.
-  # GOTCHA: If the new rate is lower than the old rate, no allowance is consumed.
   # If flowRateAllowance is type(int96).max, it is treated as unlimited.
+  notes:
+    - "Gotcha: If the new rate is lower than the old rate, no allowance is consumed."
   mutability: nonpayable
   access: operator
   inputs:
@@ -193,11 +196,12 @@ realtimeBalanceOf:
   # Returns the dynamic balance delta (flowRate * elapsed), total deposit held,
   # and total owed deposit. This is called by the token's realtimeBalanceOfNow
   # to assemble the full balance across all agreements.
-  # GOTCHA: Returns only the CFA portion of the balance, not the total.
   # To get an account's actual token balance, use SuperToken.realtimeBalanceOfNow
   # (or SuperToken.balanceOf for ERC-20 compatible, clamped to zero).
-  # GOTCHA: The returned dynamicBalance is a delta, not an absolute balance.
   # It can be deeply negative for net-outflow accounts as time progresses.
+  notes:
+    - "Gotcha: Returns only the CFA portion of the balance, not the total."
+    - "Gotcha: The returned dynamicBalance is a delta, not an absolute balance."
   mutability: view
   inputs:
     - token: address
@@ -352,7 +356,8 @@ increaseFlowRateAllowanceWithPermissions:
 decreaseFlowRateAllowanceWithPermissions:
   # Decrease flow rate allowance and remove permission bits in one call.
   # permissionsToRemove is AND-NOT'd from existing permissions.
-  # GOTCHA: Reverts if the resulting allowance would go negative.
+  notes:
+    - "Gotcha: Reverts if the resulting allowance would go negative."
   mutability: nonpayable
   access: anyone  # ctx.msgSender's allowance
   inputs:
@@ -417,7 +422,8 @@ isPatricianPeriod:
 
 getMaximumFlowRateFromDeposit:
   # Calculate the maximum flow rate achievable with a given deposit.
-  # GOTCHA: Deposit is clipped (lower 32 bits zeroed) and rounded down.
+  notes:
+    - "Gotcha: Deposit is clipped (lower 32 bits zeroed) and rounded down."
   mutability: view
   inputs:
     - token: address          # needed to look up liquidation period from governance
@@ -475,9 +481,10 @@ CFA_HOOK_GAS_LIMIT:
 events:
   FlowUpdated:
     # Emitted on every create, update, and delete flow operation.
-    # GOTCHA: Always emitted together with FlowUpdatedExtension.
     # totalSenderFlowRate and totalReceiverFlowRate are the NET flow rates
     # after the operation, not the individual flow rate.
+    notes:
+      - "Gotcha: Always emitted together with FlowUpdatedExtension."
     indexed:
       - token: address
       - sender: address

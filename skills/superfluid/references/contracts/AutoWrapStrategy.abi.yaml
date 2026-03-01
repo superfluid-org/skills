@@ -9,15 +9,11 @@
 # The user must approve THIS contract (the strategy, not the manager) to spend
 # their underlying ERC-20 liquidity token. The allowance must be in the underlying
 # token's native decimals (e.g. 6 for USDC, 8 for WBTC, 18 for DAI).
-# GOTCHA: This is the underlying token's allowance — NOT the Super Token's.
-# The strategy pulls underlying tokens via transferFrom, wraps them (upgrade),
-# and sends the resulting Super Tokens to the user.
-# The allowance must cover the wrap amounts over the schedule's lifetime.
-# For convenience, type(uint256).max approval avoids repeated approvals.
-
 meta:
   name: AutoWrapStrategy
   version: v1
+  notes:
+    - "Gotcha: This is the underlying token's allowance — NOT the Super Token's. The strategy pulls underlying tokens via transferFrom, wraps them (upgrade), and sends the resulting Super Tokens to the user. The allowance must cover the wrap amounts over the schedule's lifetime. For convenience, type(uint256).max approval avoids repeated approvals."
   source:
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/strategies/WrapStrategy.sol
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/automation-contracts/autowrap/contracts/interfaces/IStrategy.sol

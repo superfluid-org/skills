@@ -40,7 +40,7 @@ Rich ABI YAML combines all three into a single file:
 
 The format serves two audiences simultaneously:
 
-- **Humans** scanning for function signatures, gotchas, and domain context
+- **Humans** scanning for function signatures, notes, and domain context
 - **Machines (LLMs)** consuming contract interfaces with minimal token overhead
   while retaining the relationships and nuance that flat ABI JSON loses
 
@@ -85,7 +85,7 @@ the extensions (comments, access, emits, grouping, etc.).
 |---------------------|-----------------------------------------------|
 | `@title`            | Header comment (first line)                   |
 | `@notice`           | `# description` comment on function/event     |
-| `@dev`              | `# GOTCHA:` comment or inline note            |
+| `@dev`              | `notes:` field or inline note                  |
 | `@param <name>`     | `# comment` next to the parameter             |
 | `@return`           | `# comment` next to the output                |
 | `@inheritdoc`       | Not applicable (each function documented)     |
@@ -107,7 +107,7 @@ These fields have no equivalent in either ABI JSON or NatSpec:
 | Abbreviations       | Protocol-specific abbreviation reference                  |
 | Glossary            | Domain concept definitions                                |
 | Section grouping    | Logical function organization by domain                   |
-| GOTCHA comments     | Non-obvious behavior warnings                             |
+| `notes` field       | Non-obvious behavior warnings (structured list)           |
 | Ordering semantics  | emits/errors ordered by execution flow                    |
 
 ## File Structure
@@ -300,13 +300,14 @@ MAXIMUM_FLOW_RATE:
 
 Fields within a function entry follow this order:
 
-1. `# comment` — description, gotchas (optional, placed first)
-2. `mutability` — always first structured field
-3. `access` — who can call this function (optional)
-4. `inputs` — omit if none
-5. `outputs` — omit if none
-6. `emits` — omit if none (typically omitted for view/pure)
-7. `errors` — omit if none (typically omitted for view/pure)
+1. `# comment` — description (optional, placed first)
+2. `notes` — non-obvious behavior, gotchas (optional)
+3. `mutability` — always first structured field after notes
+4. `access` — who can call this function (optional)
+5. `inputs` — omit if none
+6. `outputs` — omit if none
+7. `emits` — omit if none (typically omitted for view/pure)
+8. `errors` — omit if none (typically omitted for view/pure)
 
 Rationale: `mutability` first because it's the most important signal when
 scanning — it tells you immediately whether a function reads or writes state.
@@ -474,18 +475,24 @@ errors:
   - CFA_ZERO_ADDRESS_RECEIVER
 ```
 
-#### Comments and Gotchas
+#### Comments and Notes
 
 Use `#` comments for:
 - **Description**: What the function does (first line under the function key)
-- **GOTCHA**: Non-obvious behavior, edge cases, common mistakes
 - **Inline notes**: Per-parameter clarification
+
+Use the **`notes:` field** (a YAML list) for non-obvious behavior, edge cases,
+and common mistakes. This is a structured field, not a comment — it ensures AI
+agents always read notes instead of skipping comment lines. Place it after the
+description comment and before `mutability`. For contract-level notes, use
+`meta.notes:`. Prefix gotcha items with "Gotcha: " so they remain distinguishable
+from other note types.
 
 ```yaml
 deleteFlow:
   # Stop a stream.
-  # GOTCHA: Third-party callers only succeed if sender is critical. During the
-  # patrician period the reward goes to the bond account; after, to the caller.
+  notes:
+    - "Gotcha: Third-party callers only succeed if sender is critical. During the patrician period the reward goes to the bond account; after, to the caller."
   mutability: nonpayable
   access: sender | receiver | anyone(if-critical)
   inputs:
@@ -495,8 +502,7 @@ deleteFlow:
     - ctx: bytes
 ```
 
-Prefix gotchas with `GOTCHA:` so they stand out when scanning. Keep comments
-concise — if an explanation needs more than 3 lines, link to external docs.
+Keep notes items concise — one behavior per list entry.
 
 **Remember:** comments should add signal for humans and LLMs alike. If a
 function is called `getNetFlow` and it gets the net flow, don't write

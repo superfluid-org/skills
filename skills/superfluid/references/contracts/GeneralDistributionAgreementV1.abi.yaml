@@ -62,7 +62,8 @@ meta:
 
 createPool:
   # Deploy a new SuperfluidPool for the given token with default ERC20 metadata.
-  # GOTCHA: Mints a PoolAdminNFT to the admin. The admin cannot be address(0) or a pool.
+  notes:
+    - "Gotcha: Mints a PoolAdminNFT to the admin. The admin cannot be address(0) or a pool."
   mutability: nonpayable
   inputs:
     - token: address
@@ -109,9 +110,9 @@ createPoolWithCustomERC20Metadata:
 
 distribute:
   # Instant (lump-sum) distribution of tokens from `from` into the pool.
-  # GOTCHA: The actual amount distributed may be less than requestedAmount due to
-  # rounding in the proportional distribution math. The difference stays with `from`.
   # Reverts if from != ctx.msgSender (no delegation).
+  notes:
+    - "Gotcha: Actual amount distributed may be less than requestedAmount due to rounding. The difference stays with `from`."
   mutability: nonpayable
   access: admin | anyone(if-pool-allows)
   inputs:
@@ -127,18 +128,15 @@ distribute:
 
 distributeFlow:
   # Start or update a continuous flow distribution from `from` into the pool.
-  # GOTCHA: The actual flow rate may differ from the requested rate due to rounding
-  # across member units. The difference becomes the adjustment flow to the admin.
-  # The per-unit rate is stored in the pool index as requestedFlowRate / totalUnits
-  # (integer division). If this truncates to 0 (totalUnits > requestedFlowRate),
-  # the entire flow becomes the adjustment flow. Unit changes (updateMemberUnits)
-  # can only increase the adjustment flow (sticky), never decrease it.
-  # Re-calling distributeFlow is the only way to reset the per-unit rate and adjustment flow.
   # Setting requestedFlowRate to 0 closes the flow. A third party can close a flow
   # (from != ctx.msgSender) only when `from` is critical (liquidation).
   # During liquidation, reward distribution follows the same 3Ps model as CFA.
-  # NOTE: The pool config restriction is skipped when requestedFlowRate == 0
-  # to allow liquidators to close critical flows regardless of pool config.
+  # The pool config restriction is skipped when requestedFlowRate == 0 to allow
+  # liquidators to close critical flows regardless of pool config.
+  notes:
+    - "Gotcha: Actual flow rate may differ from requested due to integer division rounding (requestedFlowRate / totalUnits). The remainder does not stay in the pool — it is streamed to the pool admin as a continuous adjustment flow."
+    - "Gotcha: If requestedFlowRate < totalUnits, per-unit rate truncates to 0 and the entire flow goes to admin as adjustment."
+    - "Gotcha: Unit changes (updateMemberUnits) can only increase the adjustment flow (sticky), never decrease it. Re-call distributeFlow to reset the per-unit rate and adjustment flow."
   mutability: nonpayable
   access: admin | anyone(if-pool-allows) | anyone(if-liquidation)
   inputs:
@@ -157,14 +155,9 @@ distributeFlow:
 
 updateMemberUnits:
   # Set a member's units in a pool. Only callable by the pool admin through the Host.
-  # GOTCHA: Delegates to the pool's updateMemberUnits, which also emits MemberUnitsUpdated
-  # and Transfer (mint/burn) from the SuperfluidPool contract.
-  # GOTCHA: Unit changes adjust the adjustment flow but do NOT recompute the per-unit flow
-  # rate stored in the pool index. If the per-unit rate was previously truncated to 0
-  # (because totalUnits exceeded the flow rate), changing units won't fix it.
-  # More generally, unit changes can only increase the adjustment flow, never decrease it
-  # (sticky behavior). Even if new units divide cleanly, the adjustment flow stays at its
-  # high-water mark. The distributor must re-call distributeFlow to reset.
+  notes:
+    - "Gotcha: Delegates to the pool's updateMemberUnits, which also emits MemberUnitsUpdated and Transfer (mint/burn) from the SuperfluidPool contract."
+    - "Gotcha: Unit changes do NOT recompute the per-unit flow rate. If per-unit rate was truncated to 0 (totalUnits > requestedFlowRate), changing units won't fix it. The distributor must re-call distributeFlow to reset."
   mutability: nonpayable
   access: admin
   inputs:
@@ -200,9 +193,8 @@ connectPool:
   # Connect ctx.msgSender to a pool so distributions flow in real-time.
   # Anyone can call this; no check that the caller already holds units.
   # Connecting is meaningful only when the caller has (or will receive) units.
-  # GOTCHA: Hard limit of 256 pool connections per account per token
-  # (SlotsBitmapLibrary bitmap). Each connection also increases gas cost of
-  # balanceOf/realtimeBalanceOf, which loops over all connected pools.
+  notes:
+    - "Gotcha: Hard limit of 256 pool connections per account per token (SlotsBitmapLibrary bitmap). Each connection also increases gas cost of balanceOf/realtimeBalanceOf, which loops over all connected pools."
   mutability: nonpayable
   access: anyone  # connects ctx.msgSender only
   inputs:
@@ -217,7 +209,8 @@ tryConnectPoolFor:
   # Attempt to connect a member to a pool on their behalf.
   # Uses limited autoconnect slots (max 4 per member per token).
   # Returns success=false (instead of reverting) if slots are exhausted or member has opted out.
-  # GOTCHA: Does not work if memberAddr is a pool or address(0).
+  notes:
+    - "Gotcha: Does not work if memberAddr is a pool or address(0)."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -246,8 +239,9 @@ disconnectPool:
 setConnectPermission:
   # Allow or deny third parties from connecting the caller to pools via tryConnectPoolFor.
   # By default, third-party connections are allowed.
-  # GOTCHA: Called directly — not through the Host (no ctx parameter).
   # Uses the Host's SimpleACL to grant/revoke ACL_POOL_CONNECT_EXCLUSIVE_ROLE.
+  notes:
+    - "Gotcha: Called directly — not through the Host (no ctx parameter)."
   mutability: nonpayable
   access: anyone  # sets caller's own permission
   inputs:
@@ -260,15 +254,10 @@ realtimeBalanceOf:
   # For regular accounts: returns the universal index RTB plus unsettled values
   # from all connected pools.
   # For pool accounts: returns the disconnected members' pending balance.
-  # GOTCHA: Returns only the GDA portion of the balance, not the total.
-  # To get an account's actual token balance, use SuperToken.realtimeBalanceOfNow
-  # (or SuperToken.balanceOf for ERC-20 compatible, clamped to zero).
-  # GOTCHA: The returned rtb is a delta, not an absolute balance. It includes
-  # unsettled connected pool distributions that haven't been claimed yet.
-  # GOTCHA: Gas cost scales linearly with the number of connected pools —
-  # each connected pool triggers an external call to getUnsettledValue.
-  # At high connection counts (approaching the 256 bitmap limit), balance
-  # queries can become expensive.
+  notes:
+    - "Gotcha: Returns only the GDA portion of the balance, not the total. Use SuperToken.realtimeBalanceOfNow for the full balance."
+    - "Gotcha: The returned rtb is a delta, not an absolute balance. It includes unsettled connected pool distributions."
+    - "Gotcha: Gas cost scales linearly with connected pools — each triggers an external call to getUnsettledValue. At high counts (approaching 256 limit), queries become expensive."
   mutability: view
   inputs:
     - token: address
@@ -344,7 +333,8 @@ estimateFlowDistributionActualFlowRate:
   # actualFlowRate = floor(requestedFlowRate / totalUnits) * totalUnits.
   # The initial adjustment flow is requestedFlowRate - actualFlowRate (small rounding remainder).
   # NOTE: After unit changes, the actual adjustment flow may be higher due to sticky behavior.
-  # GOTCHA: Only precise in an atomic transaction — do not rely on off-chain queries.
+  notes:
+    - "Gotcha: Only precise in an atomic transaction — do not rely on off-chain queries."
   mutability: view
   inputs:
     - token: address
@@ -357,7 +347,8 @@ estimateFlowDistributionActualFlowRate:
 
 estimateDistributionActualAmount:
   # Estimate the actual distributed amount for a given requested amount.
-  # GOTCHA: Only precise in an atomic transaction — do not rely on off-chain queries.
+  notes:
+    - "Gotcha: Only precise in an atomic transaction — do not rely on off-chain queries."
   mutability: view
   inputs:
     - token: address
@@ -380,7 +371,8 @@ isPool:
 
 isMemberConnected:
   # Check whether a member is connected to a pool.
-  # GOTCHA: Returns false for invalid pools (never reverts).
+  notes:
+    - "Gotcha: Returns false for invalid pools (never reverts)."
   mutability: view
   inputs:
     - pool: address

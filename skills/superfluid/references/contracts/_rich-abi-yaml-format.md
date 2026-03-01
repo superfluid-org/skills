@@ -20,7 +20,8 @@ root-level key is a **function**.
 ```yaml
 createFlow:
   # Description of what the function does.
-  # GOTCHA: Non-obvious behavior or edge cases.
+  notes:
+    - "Gotcha: Non-obvious behavior or edge cases listed here as structured data."
   mutability: nonpayable     # view | pure | nonpayable | payable
   access: sender | operator  # who can call (omitted for view/pure)
   inputs:
@@ -34,8 +35,9 @@ createFlow:
   errors: [CFA_FLOW_ALREADY_EXISTS, CFA_INVALID_FLOW_RATE]  # ordered by check sequence
 ```
 
-Fields appear in this order: description comment, `mutability`, `access`,
-`inputs`, `outputs`, `emits`, `errors`. All are omitted when not applicable.
+Fields appear in this order: description comment, `notes`, `mutability`,
+`access`, `inputs`, `outputs`, `emits`, `errors`. All are omitted when not
+applicable.
 
 ## Key conventions
 
@@ -47,8 +49,9 @@ Fields appear in this order: description comment, `mutability`, `access`,
   `anyone(if-critical-or-jailed)`.
 - **`emits` and `errors` ordering** carries meaning: matches execution flow,
   not alphabetical. First errors in the list are the most likely causes.
-- **`# GOTCHA:`** prefix flags non-obvious behavior, common mistakes, or edge
-  cases. Pay close attention to these.
+- **`notes:` field** on functions (and `meta.notes:` at contract level)
+  lists non-obvious behavior, common mistakes, or edge cases. Always read
+  these carefully.
 - **`meta.source`** is an array of raw GitHub URLs to the Solidity source files
   (implementation, interface, base — filenames are self-documenting).
 - **`meta.deployments`** has per-network addresses split into `mainnet` and

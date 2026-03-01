@@ -154,9 +154,9 @@ UNLOCK_AVAILABLE:
 
 lock:
   # Transfer SUP from msg.sender into this locker, adding to available balance.
-  # GOTCHA: Requires prior ERC-20 approval on the SUP token. Calls
-  # FLUID.transferFrom(msg.sender, address(this), amount).
-  # GOTCHA: Anyone can lock SUP into this locker — no onlyLockerOwner check.
+  notes:
+    - "Gotcha: Requires prior ERC-20 approval on the SUP token. Calls FLUID.transferFrom(msg.sender, address(this), amount)."
+    - "Gotcha: Anyone can lock SUP into this locker — no onlyLockerOwner check."
   mutability: nonpayable
   access: anyone
   inputs:
@@ -168,7 +168,8 @@ lock:
 stake:
   # Move SUP from available to staked balance. Imposes a 30-day cooldown
   # before unstaking (resets on each stake call).
-  # GOTCHA: Stakes the entire available balance if amount > available.
+  notes:
+    - "Gotcha: Stakes the entire available balance if amount > available."
   mutability: nonpayable
   access: locker-owner
   inputs:
@@ -178,7 +179,8 @@ stake:
 
 unstake:
   # Move SUP from staked back to available balance.
-  # GOTCHA: Reverts if the 30-day staking cooldown has not elapsed.
+  notes:
+    - "Gotcha: Reverts if the 30-day staking cooldown has not elapsed."
   mutability: nonpayable
   access: locker-owner
   inputs:
@@ -190,13 +192,14 @@ unstake:
 # Claims connect the locker to emission programs and update units via signed messages.
 # Requires a valid signature from the emission program's off-chain signer.
 # The nonce must match getNextValidNonce on FluidEPProgramManager.
-# GOTCHA: The stackSignature is obtained from the Superfluid points API (GET /points/signed-balance).
 # The signer address is configured per-program in FluidEPProgramManager (createProgram / updateProgramSigner).
 
 "claim(uint256,uint256,uint256,bytes)":
   # Claim from a single emission program; updates locker's units in the program pool.
-  # GOTCHA: connect() must be called for the program before claiming.
-  # GOTCHA: No onlyLockerOwner — anyone can submit a valid claim on behalf of the locker.
+  notes:
+    - "Gotcha: The stackSignature is obtained from the Superfluid points API (GET /points/signed-balance)."
+    - "Gotcha: connect() must be called for the program before claiming."
+    - "Gotcha: No onlyLockerOwner — anyone can submit a valid claim on behalf of the locker."
   mutability: nonpayable
   inputs:
     - programId: uint256
@@ -217,7 +220,8 @@ unstake:
 
 "claimAndStake(uint256,uint256,uint256,bytes)":
   # Claim from a single program, then stake ALL available balance.
-  # GOTCHA: Stakes the entire available balance, not just the claimed amount.
+  notes:
+    - "Gotcha: Stakes the entire available balance, not just the claimed amount."
   mutability: nonpayable
   access: locker-owner
   inputs:
@@ -230,7 +234,8 @@ unstake:
 
 "claimAndStake(uint256[],uint256[],uint256,bytes)":
   # Batch claim from multiple programs, then stake ALL available balance.
-  # GOTCHA: Stakes the entire available balance, not just the claimed amount.
+  notes:
+    - "Gotcha: Stakes the entire available balance, not just the claimed amount."
   mutability: nonpayable
   access: locker-owner
   inputs:
@@ -265,7 +270,8 @@ connect:
 
 disconnectAndClaim:
   # Disconnect from some programs and claim from others in one transaction.
-  # GOTCHA: Combines disconnect + batch claim atomically.
+  notes:
+    - "Gotcha: Combines disconnect + batch claim atomically."
   mutability: nonpayable
   access: locker-owner
   inputs:
@@ -278,7 +284,8 @@ disconnectAndClaim:
 
 disconnectAndClaimAndStake:
   # Disconnect from some programs, claim from others, then stake ALL available balance.
-  # GOTCHA: Stakes the entire available balance, not just the claimed amount.
+  notes:
+    - "Gotcha: Stakes the entire available balance, not just the claimed amount."
   mutability: nonpayable
   access: locker-owner
   inputs:
@@ -297,12 +304,11 @@ disconnectAndClaimAndStake:
 
 unlock:
   # Unlock SUP from available balance via a time-delayed Fontaine stream.
-  # GOTCHA: Payable — msg.value must equal UNLOCKING_FEE (0.0001 ETH), sent to DAO_TREASURY.
-  # GOTCHA: unlockPeriod=0 triggers instant unlock with 80% penalty; remaining 20% transferred
-  # immediately, 80% redistributed to stakers/LPs.
-  # GOTCHA: unlockPeriod between 7 and 365 days deploys a Fontaine beacon proxy that streams
-  # SUP to the recipient over the unlock period with a proportional tax.
-  # GOTCHA: Requires UNLOCK_AVAILABLE feature flag to be true; otherwise reverts TTE_NOT_ACTIVATED.
+  notes:
+    - "Gotcha: Payable — msg.value must equal UNLOCKING_FEE (0.0001 ETH), sent to DAO_TREASURY."
+    - "Gotcha: unlockPeriod=0 triggers instant unlock with 80% penalty; remaining 20% transferred immediately, 80% redistributed to stakers/LPs."
+    - "Gotcha: unlockPeriod between 7 and 365 days deploys a Fontaine beacon proxy that streams SUP to the recipient over the unlock period with a proportional tax."
+    - "Gotcha: Requires UNLOCK_AVAILABLE feature flag to be true; otherwise reverts TTE_NOT_ACTIVATED."
   mutability: payable
   access: locker-owner
   inputs:
@@ -326,10 +332,11 @@ unlock:
 provideLiquidity:
   # Take SUP from available balance, swap a portion to ETH via Uniswap, and create
   # a V3 LP position. Returns the Uniswap NFT position token ID.
-  # GOTCHA: Payable — accepts ETH via msg.value for the LP position.
-  # GOTCHA: Uses BP_PUMP_RATIO (1%) of SUP to swap for ETH.
-  # GOTCHA: Imposes a 7-day LP cooldown before withdrawal is allowed.
-  # GOTCHA: Records a tax-free exit timestamp at creation + TAX_FREE_WITHDRAW_DELAY (180 days).
+  notes:
+    - "Gotcha: Payable — accepts ETH via msg.value for the LP position."
+    - "Gotcha: Uses BP_PUMP_RATIO (1%) of SUP to swap for ETH."
+    - "Gotcha: Imposes a 7-day LP cooldown before withdrawal is allowed."
+    - "Gotcha: Records a tax-free exit timestamp at creation + TAX_FREE_WITHDRAW_DELAY (180 days)."
   mutability: payable
   access: locker-owner
   inputs:
@@ -344,8 +351,9 @@ provideLiquidity:
 withdrawLiquidity:
   # Remove liquidity from a Uniswap V3 position and return SUP to available balance.
   # Burns the NFT if all liquidity is removed.
-  # GOTCHA: Subject to 7-day LP cooldown (LP_COOLDOWN_NOT_ELAPSED).
-  # GOTCHA: Subject to tax if withdrawn before tax-free exit timestamp (180 days after creation).
+  notes:
+    - "Gotcha: Subject to 7-day LP cooldown (LP_COOLDOWN_NOT_ELAPSED)."
+    - "Gotcha: Subject to tax if withdrawn before tax-free exit timestamp (180 days after creation)."
   mutability: nonpayable
   access: locker-owner
   inputs:
@@ -499,7 +507,8 @@ getPositionLiquidity:
 
 initialize:
   # Beacon proxy initializer. Called once by FluidLockerFactory during creation.
-  # GOTCHA: Can only be called once (initializer modifier).
+  notes:
+    - "Gotcha: Can only be called once (initializer modifier)."
   mutability: nonpayable
   inputs:
     - owner: address

@@ -45,7 +45,8 @@ FLUID:
 
 setTaxAllocation:
   # Set the BP split between staker and LP pools.
-  # GOTCHA: Both values must sum to exactly 10000 or the call reverts.
+  notes:
+    - "Gotcha: Both values must sum to exactly 10000 or the call reverts."
   mutability: nonpayable
   access: owner
   inputs:
@@ -73,14 +74,16 @@ taxAllocation:
 refreshTaxDistributionFlow:
   # Recalculates and updates the GDA flow rates to both pools based on the
   # contract's current FLUID balance spread over a 180-day window.
-  # GOTCHA: Permissionless — anyone can call at any time.
+  notes:
+    - "Gotcha: Permissionless — anyone can call at any time."
   mutability: nonpayable
   access: anyone
   emits: [TaxDistributionFlowUpdated]
 
 setupLPDistributionPool:
   # Creates the LP distribution pool. Must be called once after deployment.
-  # GOTCHA: Can only be called once — reverts with LP_DISTRIBUTION_POOL_ALREADY_SET on repeat calls.
+  notes:
+    - "Gotcha: Can only be called once — reverts with LP_DISTRIBUTION_POOL_ALREADY_SET on repeat calls."
   mutability: nonpayable
   access: owner
   errors: [LP_DISTRIBUTION_POOL_ALREADY_SET]
@@ -88,10 +91,11 @@ setupLPDistributionPool:
 # == Unit Updates ==
 # Called by approved Reserves (FluidLockers) to report their staking / LP balances.
 # The controller downscales the balance and writes it as pool member units.
-# GOTCHA: The locker itself is msg.sender — users do not call these directly.
 
 updateStakerUnits:
   # Report the caller's staked balance. Downscaled by 1e18 before writing units.
+  notes:
+    - "Gotcha: The locker itself is msg.sender — users do not call these directly."
   mutability: nonpayable
   access: approved-locker
   inputs:
@@ -110,7 +114,8 @@ updateLiquidityProviderUnits:
 
 approveLocker:
   # Register a FluidLocker so it can call updateStakerUnits / updateLiquidityProviderUnits.
-  # GOTCHA: Only callable by the factory — not by the owner.
+  notes:
+    - "Gotcha: Only callable by the factory — not by the owner."
   mutability: nonpayable
   access: locker-factory
   inputs:
@@ -149,7 +154,8 @@ owner:
 
 initialize:
   # Proxy initializer. Sets the owner and creates the staker distribution pool.
-  # GOTCHA: Can only be called once (OpenZeppelin initializer modifier).
+  notes:
+    - "Gotcha: Can only be called once (OpenZeppelin initializer modifier)."
   mutability: nonpayable
   inputs:
     - owner: address

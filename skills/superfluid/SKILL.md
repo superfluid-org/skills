@@ -54,7 +54,9 @@ on-chain intent, require off-chain keepers to trigger execution.
 ## Use-Case → Reference Map
 
 Read only the files needed for the task. Each Rich ABI YAML documents every
-public function, event, and error for one contract.
+public function, event, and error for one contract — plus `notes:` fields
+that flag non-obvious behavior, edge cases, and common mistakes not apparent
+from signatures alone.
 
 ### Streaming money (CFA)
 
@@ -178,10 +180,11 @@ Each YAML's `errors:` section is the complete error index for that contract,
 with selector hashes and descriptions. Per-function `errors:` fields show
 which errors a specific function can throw.
 
-## Common Gotchas
+## Common Gotchas (Quick Reference)
 
-Non-obvious behaviors that frequently trip up developers. Each is documented
-in the relevant `.abi.yaml` file — this is a quick-reference.
+Subset of non-obvious behaviors. The authoritative source is the `notes:`
+field on each function in the `.abi.yaml` files — always read those for
+the complete picture. This section covers only the most common ones.
 
 **Super Token decimals always 18** — `upgrade()` and `downgrade()` amounts are
 always in 18-decimal SuperToken units, regardless of underlying token decimals.
@@ -234,10 +237,10 @@ Essential conventions for parsing the YAML files:
 
 - **Reserved root keys:** `meta`, `events`, `errors` — every other root key is a **function**.
 - **`ctx: bytes` parameter** = function is called through the Host (`callAgreement` / `batchCall`), never directly.
-- **`# GOTCHA:` prefix** flags non-obvious behavior or common mistakes.
+- **`notes:` field** — the most important field for correctness. Present on functions (and as `meta.notes:` at contract level). Contains non-obvious behavior, edge cases, and common mistakes. If a user asks about unexpected behavior, the answer is almost always in a `notes:` field. Always read these.
 - **`access` labels:** `anyone`, `host`, `self`, `admin`, `governance`, `sender`, `receiver`, `operator`, `manager`, `pic`, etc. Combine with `|`.
 - **`emits` and `errors` ordering** matches execution flow (not alphabetical). First errors = most likely.
-- **Field order:** description comment, `mutability`, `access`, `inputs`, `outputs`, `emits`, `errors`.
+- **Field order:** description comment, `notes`, `mutability`, `access`, `inputs`, `outputs`, `emits`, `errors`.
 
 For the full format spec with examples (function entries, events, errors sections), see `references/contracts/_rich-abi-yaml-format.md`.
 

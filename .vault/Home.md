@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T029-migrate-gotchas-to-notes-fields]] -- Migrate gotchas to structured `notes:` fields across all ABI YAMLs
 - [[T028-refactor-scripts-add-gotchas-and-docs]] -- Refactor scripts to runtime imports, add gotchas and contributor docs
 - [[T027-remove-llm-eval-runner]] -- Remove LLM eval runner in favor of skill-eval-runner
 - [[T026-skill-eval-runner]] -- Custom Skills API eval runner for realistic skill traversal
