@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -53,7 +54,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to ClawHub
-        if: steps.check.outputs.exists == 'false'
+        if: steps.check.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
         run: |
           npx clawhub@0.7 login --token "$CLAWHUB_AUTH" --no-browser
@@ -65,3 +66,4 @@ jobs:
             --changelog "Release v${{ steps.version.outputs.version }}"
         env:
           CLAWHUB_AUTH: ${{ secrets.CLAWHUB_AUTH }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
