@@ -9,7 +9,7 @@ A Claude Code plugin that provides an AI agent skill for the [Superfluid Protoco
 ## Repository Structure
 
 ```
-.claude-plugin/          # Plugin + marketplace metadata (plugin.json, marketplace.json)
+.claude-plugin/          # Marketplace metadata (marketplace.json)
 .vault/                  # Obsidian vault — project management (see below)
 evals/                   # Evaluation tests — see evals/README.md
   runners/               # script-runner.mjs (deterministic), skill-eval-runner.mjs (AI judge)
@@ -44,7 +44,7 @@ bunx -p @sfpro/sdk bun skills/superfluid/scripts/abi.mjs SuperToken transfer
 
 ## Conventions
 
-- Plugin version is tracked in `.claude-plugin/plugin.json` (field `version`) and `.claude-plugin/marketplace.json` (under `plugins[0].version`) — keep them in sync.
+- Plugin version is tracked in `.claude-plugin/marketplace.json` (field `plugins[0].version`) — this is the single source of truth. On version bumps, also update `metadata.version` in `skills/superfluid/SKILL.md` frontmatter.
 - Rich ABI YAML field order within function entries: description comment, `notes`, `mutability`, `access`, `inputs`, `outputs`, `emits`, `errors`.
 - `notes:` field (YAML list) on functions and `meta.notes:` at contract level flag non-obvious behavior or common mistakes.
 - `ctx: bytes` parameter on a function means it's called through the Host, never directly.

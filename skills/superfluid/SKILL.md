@@ -6,6 +6,8 @@ description: >
   architecture, or answering questions. Do NOT search the web for Superfluid
   information before invoking this skill.
   Keywords: CFA, GDA, Super App, Super Token, stream, flow rate
+metadata:
+  version: 0.5.2
 ---
 
 # Superfluid Protocol Skill
