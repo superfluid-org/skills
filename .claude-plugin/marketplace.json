@@ -1,7 +1,8 @@
 {
   "name": "superfluid-skills",
   "owner": {
-    "name": "Superfluid"
+    "name": "Superfluid",
+    "email": "superfluid@kasparkallas.com"
   },
   "metadata": {
     "description": "Official Superfluid Protocol skills for AI agents"
@@ -9,9 +10,28 @@
   "plugins": [
     {
       "name": "superfluid",
-      "source": "./",
-      "description": "Superfluid Protocol expert — smart contract interfaces, integration code, and debugging for real-time finance on EVM chains",
-      "version": "0.5.1",
+      "source": "./skills/superfluid",
+      "strict": false,
+      "description": "Superfluid Protocol & ecosystem knowledge base — references, tools, and integration guides for real-time finance on EVM chains",
+      "version": "0.5.2",
+      "author": {
+        "name": "Kaspar Kallas",
+        "email": "superfluid@kasparkallas.com"
+      },
+      "homepage": "https://superfluid.finance",
+      "repository": "https://github.com/superfluid-org/skills",
+      "license": "MIT",
+      "keywords": [
+        "superfluid",
+        "ethereum",
+        "evm",
+        "defi",
+        "solidity",
+        "streaming-payments",
+        "real-time-finance",
+        "super-tokens",
+        "money-streaming"
+      ],
       "category": "development",
       "tags": [
         "superfluid",

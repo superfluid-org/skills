@@ -20,7 +20,7 @@ jobs:
       - name: Read version
         id: version
         run: |
-          VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
+          VERSION=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Check if release exists
@@ -33,17 +33,6 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Validate marketplace.json version
-        if: steps.check.outputs.exists == 'false'
-        run: |
-          MARKETPLACE_VERSION=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
-          PLUGIN_VERSION="${{ steps.version.outputs.version }}"
-
-          if [ "$PLUGIN_VERSION" != "$MARKETPLACE_VERSION" ]; then
-            echo "::error::plugin.json version ($PLUGIN_VERSION) does not match marketplace.json version ($MARKETPLACE_VERSION)"
-            exit 1
-          fi
 
       - name: Build archive
         if: steps.check.outputs.exists == 'false'
@@ -62,3 +51,17 @@ jobs:
             --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to ClawHub
+        if: steps.check.outputs.exists == 'false'
+        continue-on-error: true
+        run: |
+          npx clawhub@0.7 login --token "$CLAWHUB_AUTH" --no-browser
+          npx clawhub@0.7 publish ./skills/superfluid \
+            --slug superfluid \
+            --name "Superfluid Protocol" \
+            --version "${{ steps.version.outputs.version }}" \
+            --tags "blockchain,defi,superfluid,web3,ethereum,solidity" \
+            --changelog "Release v${{ steps.version.outputs.version }}"
+        env:
+          CLAWHUB_AUTH: ${{ secrets.CLAWHUB_AUTH }}
