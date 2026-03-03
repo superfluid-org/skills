@@ -39,7 +39,7 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         run: |
           ARCHIVE_NAME="superfluid-skill-v${{ steps.version.outputs.version }}.zip"
-          git archive --format=zip -o "$ARCHIVE_NAME" HEAD -- skills/superfluid/
+          git archive --format=zip -o "$ARCHIVE_NAME" HEAD:skills/superfluid/
           echo "archive_name=$ARCHIVE_NAME" >> "$GITHUB_ENV"
 
       - name: Create GitHub Release
