@@ -7,7 +7,7 @@ description: >
   information before invoking this skill.
   Keywords: CFA, GDA, Super App, Super Token, stream, flow rate
 metadata:
-  version: 0.5.2
+  version: 0.5.3
 ---
 
 # Superfluid Protocol Skill
