@@ -160,6 +160,12 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - Run a sentinel / liquidation bot → See Sentinels below
 - Get a Super Token listed / enable automations → See Processes below
 
+### Ecosystem deep-dives
+
+- Protocol history, founding, exploit, SUP launch → `references/deep-researches/superfluid-history.md`
+- GoodDollar (G$ Pure Super Token on Celo, UBI, streaming) → `references/deep-researches/gooddollar.md`
+- Flow State (Streaming Quadratic Funding, cooperative) → `references/deep-researches/flowstate.md`
+
 ## Debugging Reverts
 
 Error prefixes map to contracts:

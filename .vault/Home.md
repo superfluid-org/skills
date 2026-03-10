@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T035-add-deep-researches-and-prompt-guide]] -- Add deep-researches (history, GoodDollar, Flow State), prompt guide
 - [[T034-add-clear-signing-x402-campaigns-social]] -- Add Clear Signing preview, x402, Campaigns, and social links
 - [[T033-add-landing-page]] -- Add landing page with FAQ, OG tags, and install instructions
 - [[T032-bump-version-add-skill-metadata]] -- Bump version to 0.5.2, add skill version metadata
@@ -55,6 +56,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 - [[rich-abi-yaml-guide]] -- Rich ABI YAML authoring specification
 - [[rich-abi-yaml-alignment]] -- Alignment with ABI JSON, NatSpec, and ethers.js
+- [[deep-research-guide]] -- Deep-research authoring guide and prompt template
 - [[The-Complete-Guide-to-Building-Skill-for-Claude.pdf]] -- Anthropic's official skill-building guide (PDF)
 
 ## Quick Reference
