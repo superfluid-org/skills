@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T034-add-clear-signing-x402-campaigns-social]] -- Add Clear Signing preview, x402, Campaigns, and social links
 - [[T033-add-landing-page]] -- Add landing page with FAQ, OG tags, and install instructions
 - [[T032-bump-version-add-skill-metadata]] -- Bump version to 0.5.2, add skill version metadata
 - [[T031-release-workflow-and-skill-keywords]] -- Add GitHub Actions release workflow and skill trigger keywords

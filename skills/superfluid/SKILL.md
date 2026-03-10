@@ -115,6 +115,7 @@ See `references/guides/super-apps.md` for the full guide.
 - MacroForwarder contract address and interface → also `references/guides/macro-forwarders.md`
 - Batch operation types and encoding rules → also `references/contracts/Superfluid.abi.yaml` (batch_operation_types)
 - EIP-712 signed macro patterns → `references/guides/macro-forwarders-eip712-example.md`
+- **Upcoming: Clear Signing** — will supersede MacroForwarder with native EIP-712 clear signing for Super Token operations. Human-readable transaction display (multilingual), third-party relaying (not limited to `msg.sender`), gasless transactions (fees paid in the Super Token), and custom fee schemes. Preview: https://clear-signing-website.vercel.app/
 
 ### Sentinels and liquidation
 
@@ -340,11 +341,19 @@ resolved URL for a specific chain.
 - Claim https://claim.superfluid.org — SUP token, SUP points, reserves/lockers
 - TOGA https://toga.superfluid.finance — View recent liquidations by token
 - Dune https://dune.com/superfluid_hq/superfluid-overview — Official protocol analytics dashboards
+- Campaigns https://campaigns.superfluid.org — Mint exclusive NFTs powered by Superfluid, with SUP reward campaigns
+- x402 https://x402.superfluid.org — Open standard for internet-native subscriptions via HTTP 402 + Superfluid streams. One-time EIP-712 signature, no gas fees, real-time payment verification, zero protocol fees. Works for human users and AI agents.
 
 Repos:
 [Dashboard](https://github.com/superfluid-org/superfluid-dashboard) ·
 [Explorer](https://github.com/superfluid-org/superfluid-explorer) ·
 [TOGA](https://github.com/superfluid-org/toga-suit)
+
+### Community & Social
+
+- Twitter/X https://x.com/Superfluid_HQ
+- Farcaster https://warpcast.com/superfluid
+- Discord https://discord.gg/EFAUmTnPd9
 
 ### Sentinels
 
