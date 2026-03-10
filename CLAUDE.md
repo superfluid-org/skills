@@ -44,7 +44,7 @@ bunx -p @sfpro/sdk bun skills/superfluid/scripts/abi.mjs SuperToken transfer
 
 ## Conventions
 
-- Plugin version is tracked in `.claude-plugin/marketplace.json` (field `plugins[0].version`) — this is the single source of truth. On version bumps, also update `metadata.version` in `skills/superfluid/SKILL.md` frontmatter.
+- Plugin version is tracked in `.claude-plugin/marketplace.json` (field `plugins[0].version`) — this is the single source of truth. On version bumps, also update `metadata.version` in `skills/superfluid/SKILL.md` frontmatter and the version badge in `landing-page/index.html`.
 - Rich ABI YAML field order within function entries: description comment, `notes`, `mutability`, `access`, `inputs`, `outputs`, `emits`, `errors`.
 - `notes:` field (YAML list) on functions and `meta.notes:` at contract level flag non-obvious behavior or common mistakes.
 - `ctx: bytes` parameter on a function means it's called through the Host, never directly.
