@@ -24,12 +24,30 @@
           fontFamily: {
             mono: ['JetBrains Mono', 'monospace'],
             sans: ['Inter', 'system-ui', 'sans-serif'],
+            logo: ['GT Walsheim Pro', 'Inter', 'system-ui', 'sans-serif'],
           },
         },
       },
     }
   </script>
   <style>
+    @font-face {
+      font-family: 'GT Walsheim Pro';
+      src: url('fonts/GT-Walsheim-Pro-Regular.woff2') format('woff2'),
+           url('fonts/GT-Walsheim-Pro-Regular.woff') format('woff');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'GT Walsheim Pro';
+      src: url('fonts/GT-Walsheim-Pro-Medium.woff2') format('woff2'),
+           url('fonts/GT-Walsheim-Pro-Medium.woff') format('woff');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
     /* ── Light theme (default) ── */
     :root {
       --bg-body: #f5f6f8;
@@ -324,42 +342,42 @@
          style="background: var(--bg-left);">
 
       <div class="w-full max-w-md relative" style="z-index: 30;">
-        <h1 id="heading" class="font-mono font-bold text-4xl lg:text-5xl tracking-tight leading-none cursor-none"
+        <h1 id="heading" class="font-logo font-medium text-4xl lg:text-5xl tracking-tight leading-none cursor-none"
             style="color: var(--text-primary); min-height: 3rem;"></h1>
-        <p id="subtitle" class="font-mono font-medium text-xl lg:text-2xl mt-3 tracking-tight fade-in"
+        <p id="subtitle" class="font-sans font-medium text-xl lg:text-2xl mt-3 tracking-tight fade-in"
            style="color: var(--text-muted);">
           for AI Agents
         </p>
-        <p id="tagline" class="font-mono mt-6 text-sm leading-relaxed cursor-none"
+        <p id="tagline" class="font-sans mt-6 text-sm leading-relaxed cursor-none"
            style="color: var(--text-muted); min-height: 1.5rem;"></p>
-        <p id="description" class="font-mono mt-3 text-sm leading-relaxed fade-in"
+        <p id="description" class="font-sans mt-3 text-sm leading-relaxed fade-in"
            style="color: var(--text-secondary);">
           A complete Superfluid Protocol reference: contracts, SDKs, subgraphs, and more.
         </p>
         <div id="meta" class="fade-in">
           <div class="mt-5">
-            <span class="inline-block font-mono text-xs rounded-full px-3 py-1"
+            <span class="inline-block font-sans text-xs rounded-full px-3 py-1"
                   style="color: var(--text-muted); background: var(--badge-bg); border: 1px solid var(--badge-border);">
               v0.5.3
             </span>
           </div>
           <div class="mt-10 flex items-center gap-6">
             <a href="https://github.com/superfluid-org/skills" target="_blank" rel="noopener"
-               class="flex items-center gap-2 text-sm font-mono transition-colors"
+               class="flex items-center gap-2 text-sm font-sans transition-colors"
                style="color: var(--link-color);"
                onmouseenter="this.style.color='var(--link-hover)'" onmouseleave="this.style.color='var(--link-color)'">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
               GitHub
             </a>
             <a href="https://skills.sh/superfluid-org/skills/superfluid" target="_blank" rel="noopener"
-               class="flex items-center gap-2 text-sm font-mono transition-colors"
+               class="flex items-center gap-2 text-sm font-sans transition-colors"
                style="color: var(--link-color);"
                onmouseenter="this.style.color='var(--link-hover)'" onmouseleave="this.style.color='var(--link-color)'">
               <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 1L0 15H16L8 1ZM8 4.02335L2.58477 13.5H13.4152L8 4.02335Z"/></svg>
               skills.sh
             </a>
             <a href="https://clawhub.ai/kasparkallas/superfluid" target="_blank" rel="noopener"
-               class="flex items-center gap-2 text-sm font-mono transition-colors"
+               class="flex items-center gap-2 text-sm font-sans transition-colors"
                style="color: var(--link-color);"
                onmouseenter="this.style.color='var(--link-hover)'" onmouseleave="this.style.color='var(--link-color)'">
               <svg class="w-5 h-5" fill="none" viewBox="28 34 44 32"><path d="m65.7695 35.8984c.4247.0001.7686.3448.7686.7695v4.4873h2.6924c.4247 0 .7694.3438.7695.7686v6.4101c0 .4249-.3447.7696-.7695.7696h-2.6924v7.6923c0 .0215-.0022.0425-.0039.0635.0018.0213.0039.0427.0039.0645v6.4101c0 .4247-.3439.7694-.7686.7696h-3.5898c-.4248 0-.7695-.3447-.7695-.7696v-5.7685h-1.667v5.7685c0 .4248-.3439.7694-.7686.7696h-3.5898c-.4249 0-.7696-.3447-.7696-.7696v-5.7685h-9.3584v5.7685c0 .4248-.3447.7695-.7695.7696h-3.5898c-.4249 0-.7696-.3447-.7696-.7696v-5.7685h-1.666v5.7685c0 .4248-.3447.7695-.7695.7696h-3.5899c-.4248-.0001-.7695-.3448-.7695-.7696v-6.4101c0-.0217.0012-.0432.0029-.0645-.0017-.0209-.0029-.0421-.0029-.0635v-7.6923h-2.5635c-.4248 0-.7695-.3447-.7695-.7696v-6.4101c.0001-.4248.3448-.7686.7695-.7686h2.5635v-4.4873c0-.4248.3447-.7695.7695-.7695z" fill="currentColor"/><path d="m37.9226 47.0189v-1.4862l4.2969-1.8092v.603l-4.2969-1.8092v-1.4754l4.9754 2.1v1.777z" fill="var(--bg-left)"/><path d="m62.1288 47.0189-4.9754-2.1v-1.777l4.9754-2.1v1.4754l-4.297 1.8092v-.603l4.297 1.8092z" fill="var(--bg-left)"/></svg>
@@ -489,7 +507,7 @@
         </div>
 
       <!-- Scroll indicator — pinned to bottom of hero section -->
-      <div class="hidden lg:flex items-center justify-center gap-2 absolute bottom-8 left-0 right-0 font-sans text-xs transition-opacity"
+      <div class="hidden lg:flex items-center justify-center gap-2 absolute bottom-8 left-0 right-0 font-sans text-sm transition-opacity"
            style="color: var(--text-secondary); opacity: 0.5;"
            id="scroll-hint">
         <span>Scroll for FAQ</span>
@@ -500,7 +518,7 @@
       </div>
 
       <!-- FAQ -->
-      <div class="w-full max-w-2xl mx-auto lg:min-h-screen pb-12 font-sans flex flex-col">
+      <div class="w-full max-w-2xl mx-auto pb-12 font-sans flex flex-col">
         <h2 class="font-sans font-semibold text-xl mb-2 pt-8 faq-reveal" style="color: var(--method-title);">FAQ</h2>
         <div style="border-top: 1px solid var(--border-subtle);">
 
@@ -512,7 +530,7 @@
             <svg class="w-4 h-4 chevron flex-shrink-0" style="color: var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </summary>
           <div class="pb-6 pt-1">
-            <p class="text-sm leading-relaxed" style="color: var(--method-emphasis);">
+            <p class="leading-relaxed" style="color: var(--method-emphasis);">
               Yes. Open-source under the MIT license. Your AI tool may have its own costs, but the skill itself is free.
             </p>
           </div>
@@ -526,7 +544,7 @@
             <svg class="w-4 h-4 chevron flex-shrink-0" style="color: var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </summary>
           <div class="pb-6 pt-1">
-            <p class="text-sm leading-relaxed" style="color: var(--method-emphasis);">
+            <p class="leading-relaxed" style="color: var(--method-emphasis);">
               Always verify. The skill gives your AI accurate reference material, but it can still hallucinate contract addresses, invent function signatures, or produce incorrect code. Treat AI output the same way you'd treat code from a junior developer: review it, test it, and check addresses against official sources before deploying anything on-chain.
             </p>
           </div>
@@ -540,7 +558,7 @@
             <svg class="w-4 h-4 chevron flex-shrink-0" style="color: var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </summary>
           <div class="pb-6 pt-1">
-            <p class="text-sm leading-relaxed" style="color: var(--method-emphasis);">
+            <p class="leading-relaxed" style="color: var(--method-emphasis);">
               Complete contract references (ABIs with descriptions), subgraph schemas and query patterns, SDK guides, architecture documentation, and helper scripts for resolving addresses, token lists, and balances.
             </p>
           </div>
@@ -554,7 +572,7 @@
             <svg class="w-4 h-4 chevron flex-shrink-0" style="color: var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </summary>
           <div class="pb-6 pt-1">
-            <p class="text-sm leading-relaxed" style="color: var(--method-emphasis);">
+            <p class="leading-relaxed" style="color: var(--method-emphasis);">
               Without the skill, your AI relies on training data that may be outdated or wrong. With the skill, it reads verified, current contract interfaces and integration guides at the moment it needs them. The difference shows up most in integration code, debugging, and anything involving specific function signatures or contract addresses.
             </p>
           </div>
@@ -631,7 +649,7 @@
             <svg class="w-4 h-4 chevron flex-shrink-0" style="color: var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </summary>
           <div class="pb-6 pt-1">
-            <p class="text-sm leading-relaxed" style="color: var(--method-emphasis);">
+            <p class="leading-relaxed" style="color: var(--method-emphasis);">
               Just run the standard <code class="font-mono" style="color: var(--method-emphasis);">npx skills add superfluid-org/skills</code> install. It writes to the <code class="font-mono" style="color: var(--method-emphasis);">.codex</code> folder, which the Codex Desktop App picks up automatically. No extra steps needed.
             </p>
           </div>
@@ -645,7 +663,7 @@
             <svg class="w-4 h-4 chevron flex-shrink-0" style="color: var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </summary>
           <div class="pb-6 pt-1">
-            <p class="text-sm leading-relaxed" style="color: var(--method-emphasis);">
+            <p class="leading-relaxed" style="color: var(--method-emphasis);">
               Run <code class="font-mono" style="color: var(--method-emphasis);">npx skills update</code> to pull the latest version. For ClawHub, run <code class="font-mono" style="color: var(--method-emphasis);">npx clawhub@latest install superfluid</code> again.
             </p>
           </div>
@@ -659,7 +677,7 @@
             <svg class="w-4 h-4 chevron flex-shrink-0" style="color: var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </summary>
           <div class="pb-6 pt-1">
-            <p class="text-sm leading-relaxed" style="color: var(--method-emphasis);">
+            <p class="leading-relaxed" style="color: var(--method-emphasis);">
               The skill works with any agent that supports the Skills protocol: Claude Code, OpenCode, Cursor, GitHub Copilot, Cline, Windsurf, Gemini CLI, Codex CLI, Codex Desktop App, and more. Claude Desktop is supported via the plugin marketplace or ZIP upload.
             </p>
           </div>
@@ -673,7 +691,7 @@
             <svg class="w-4 h-4 chevron flex-shrink-0" style="color: var(--text-muted);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
           </summary>
           <div class="pb-6 pt-1">
-            <p class="text-sm leading-relaxed" style="color: var(--method-emphasis);">
+            <p class="leading-relaxed" style="color: var(--method-emphasis);">
               The skill has been most tested with Claude Code using the Opus model. Results will vary across different models and tools. A more capable model with extended thinking (or equivalent reasoning mode) will make better use of the references. Other tools and models are compatible, but that combination is the most proven.
             </p>
           </div>
@@ -681,7 +699,7 @@
 
         </div>
 
-        <p class="hidden lg:block text-center text-xs mt-auto pb-8 font-mono" style="color: var(--text-secondary); opacity: 0.3;">
+        <p class="hidden lg:block text-center text-xs pb-2 font-mono" style="margin-top: 75vh; color: var(--text-secondary); opacity: 0.3;">
           You've scrolled far enough. Go build something.
         </p>
       </div>
