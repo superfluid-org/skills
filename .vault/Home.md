@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T033-add-landing-page]] -- Add landing page with FAQ, OG tags, and install instructions
 - [[T032-bump-version-add-skill-metadata]] -- Bump version to 0.5.2, add skill version metadata
 - [[T031-release-workflow-and-skill-keywords]] -- Add GitHub Actions release workflow and skill trigger keywords
 - [[T030-add-gitattributes-export-ignore]] -- Add .gitattributes to exclude dev files from distribution archives
@@ -63,4 +64,5 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 - **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, macro-forwarders, sdks, scripts, api-services, sup-and-dao)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
 - **Evals**: `evals/` (script tests + skill evals)
+- **Landing page**: `landing-page/index.html` (Vercel-deployed static page)
 - **Plugin version**: `.claude-plugin/marketplace.json` (`plugins[0].version`)
