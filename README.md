@@ -6,14 +6,31 @@ This skill gives AI agents deep knowledge of Superfluid smart contract interface
 
 ## Install
 
-```
-npx skills add https://github.com/superfluid-org/skills --skill superfluid
-```
-
-During install, you'll be prompted to choose which CLIs/IDEs to install the skill to (e.g. Claude Code, Cursor, Windsurf). The skill is symlinked across all selected targets, so a single update command refreshes everywhere:
+### Claude Code, Cursor, Copilot, and 15+ other agents
 
 ```
-npx skills update
+bunx skills add superfluid-org/skills
+```
+
+Installs the skill and prompts you to pick which agents to enable it for. Update with `bunx skills update`. See [skills.sh](https://skills.sh) for the full list of supported agents.
+
+### Claude Desktop
+
+**From GitHub (recommended):**
+
+1. Customize → "+" (Add plugin) on "Personal plugins"
+2. "Add marketplace from GitHub" → enter `superfluid-org/skills`
+3. Find and install the Superfluid skill
+
+**From ZIP:**
+
+1. Download the latest ZIP from [Releases](https://github.com/superfluid-org/skills/releases)
+2. Customize → Skills → "+" → "Upload a skill" → select the ZIP
+
+### OpenClaw
+
+```
+clawhub install superfluid
 ```
 
 ## What's included
