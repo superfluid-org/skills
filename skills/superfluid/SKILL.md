@@ -5,7 +5,7 @@ description: >
   writing integration code, debugging, looking up contract ABIs, understanding
   architecture, or answering questions. Do NOT search the web for Superfluid
   information before invoking this skill.
-  Keywords: CFA, GDA, Super App, Super Token, stream, flow rate
+  Keywords: CFA, GDA, Super App, Super Token, stream, flow rate, ERC-8004, agent pool, AI agent
 metadata:
   version: 0.5.3
 ---
@@ -133,6 +133,11 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - Understand tax distribution to stakers and LPs → `references/contracts/StakingRewardController.abi.yaml`
 - Unlock SUP via time-delayed stream (Fontaine) → `references/contracts/FluidLocker.abi.yaml` and `references/contracts/Fontaine.abi.yaml`
 
+### ERC-8004 Agent Pools
+
+- ERC-8004 standard, Identity/Reputation/Validation registries, AgentPoolDistributor integration → `references/deep-researches/erc8004-agent-pools.md`
+- GDA pool mechanics (units, claims, connections) → `references/contracts/GDAv1Forwarder.abi.yaml` and `references/contracts/SuperfluidPool.abi.yaml`
+
 ### Querying indexed data (Subgraphs)
 
 - Understand how The Graph generates query schemas, plus cross-cutting gotchas → `references/subgraphs/_query-patterns.md`
@@ -165,6 +170,7 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - Protocol history, founding, exploit, SUP launch → `references/deep-researches/superfluid-history.md`
 - GoodDollar (G$ Pure Super Token on Celo, UBI, streaming) → `references/deep-researches/gooddollar.md`
 - Flow State (Streaming Quadratic Funding, cooperative) → `references/deep-researches/flowstate.md`
+- ERC-8004 Agent Pools (AI agent identity + GDA distribution on Base) → `references/deep-researches/erc8004-agent-pools.md`
 
 ## Debugging Reverts
 
@@ -185,6 +191,7 @@ Error prefixes map to contracts:
 - `PROGRAM_*`, `INVALID_SIGNATURE`, `NOT_PROGRAM_ADMIN` → FluidEPProgramManager
 - `NOT_APPROVED_LOCKER`, `NOT_LOCKER_FACTORY`, `NOT_PROGRAM_MANAGER` → StakingRewardController
 - `NOT_CONNECTED_LOCKER`, `NO_ACTIVE_UNLOCK`, `TOO_EARLY_TO_TERMINATE_UNLOCK` → Fontaine
+- `NotAgentOwner`, `AlreadyJoined`, `AgentNotRegistered`, `InsufficientFee`, `FeeTransferFailed` → AgentPoolDistributor
 
 Each YAML's `errors:` section is the complete error index for that contract,
 with selector hashes and descriptions. Per-function `errors:` fields show
@@ -349,11 +356,13 @@ resolved URL for a specific chain.
 - Dune https://dune.com/superfluid_hq/superfluid-overview — Official protocol analytics dashboards
 - Campaigns https://campaigns.superfluid.org — Mint exclusive NFTs powered by Superfluid, with SUP reward campaigns
 - x402 https://x402.superfluid.org — Open standard for internet-native subscriptions via HTTP 402 + Superfluid streams. One-time EIP-712 signature, no gas fees, real-time payment verification, zero protocol fees. Works for human users and AI agents.
+- 8004 Agent Pool https://8004-demo.superfluid.org/ — AI agent pool powered by ERC-8004 identity and Superfluid GDA. Agents register, join a pool, and earn proportional SUP distributions.
 
 Repos:
 [Dashboard](https://github.com/superfluid-org/superfluid-dashboard) ·
 [Explorer](https://github.com/superfluid-org/superfluid-explorer) ·
-[TOGA](https://github.com/superfluid-org/toga-suit)
+[TOGA](https://github.com/superfluid-org/toga-suit) ·
+[8004 Demo](https://github.com/superfluid-org/8004-demo)
 
 ### Community & Social
 

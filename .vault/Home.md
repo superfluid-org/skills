@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T036-erc8004-agent-pool-support]] -- Add ERC-8004 Agent Pool deep-research and SKILL.md routing
 - [[T035-add-deep-researches-and-prompt-guide]] -- Add deep-researches (history, GoodDollar, Flow State), prompt guide
 - [[T034-add-clear-signing-x402-campaigns-social]] -- Add Clear Signing preview, x402, Campaigns, and social links
 - [[T033-add-landing-page]] -- Add landing page with FAQ, OG tags, and install instructions
