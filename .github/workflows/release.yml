@@ -21,7 +21,7 @@ jobs:
       - name: Read version
         id: version
         run: |
-          VERSION=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
+          VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Check if release exists
@@ -39,7 +39,7 @@ jobs:
         if: steps.check.outputs.exists == 'false'
         run: |
           ARCHIVE_NAME="superfluid-skill-v${{ steps.version.outputs.version }}.zip"
-          git archive --format=zip -o "$ARCHIVE_NAME" HEAD:skills/superfluid/
+          git archive --format=zip -o "$ARCHIVE_NAME" HEAD -- .claude-plugin skills/superfluid
           echo "archive_name=$ARCHIVE_NAME" >> "$GITHUB_ENV"
 
       - name: Create GitHub Release
@@ -58,7 +58,7 @@ jobs:
         continue-on-error: true
         run: |
           npx clawhub@0.7 login --token "$CLAWHUB_AUTH" --no-browser
-          npx clawhub@0.7 publish ./skills/superfluid \
+          npx clawhub@0.7 publish . \
             --slug superfluid \
             --name "Superfluid Protocol" \
             --version "${{ steps.version.outputs.version }}" \
