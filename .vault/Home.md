@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T037-add-plugin-json]] -- Add plugin.json and fix plugin packaging
 - [[T036-erc8004-agent-pool-support]] -- Add ERC-8004 Agent Pool deep-research and SKILL.md routing
 - [[T035-add-deep-researches-and-prompt-guide]] -- Add deep-researches (history, GoodDollar, Flow State), prompt guide
 - [[T034-add-clear-signing-x402-campaigns-social]] -- Add Clear Signing preview, x402, Campaigns, and social links
@@ -69,4 +70,4 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
 - **Evals**: `evals/` (script tests + skill evals)
 - **Landing page**: `landing-page/index.html` (Vercel-deployed static page)
-- **Plugin version**: `.claude-plugin/marketplace.json` (`plugins[0].version`)
+- **Plugin version**: `.claude-plugin/plugin.json` (`version`)

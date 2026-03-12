@@ -10,10 +10,9 @@
   "plugins": [
     {
       "name": "superfluid",
-      "source": "./skills/superfluid",
-      "strict": false,
+      "source": "./",
       "description": "Superfluid Protocol & ecosystem knowledge base — references, tools, and integration guides for real-time finance on EVM chains",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "author": {
         "name": "Kaspar Kallas",
         "email": "superfluid@kasparkallas.com"
