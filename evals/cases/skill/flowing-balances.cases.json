@@ -1,0 +1,106 @@
+[
+  {
+    "id": "route-flowing-balance-display",
+    "description": "Routes to flowing-balances.md and recommends correct approach for real-time balance display",
+    "prompt": "How do I display a real-time streaming balance in a Superfluid app? The balance should animate and tick up every second.",
+    "criteria": [
+      {
+        "criterion": "auto_decimal_precision",
+        "description": "Explains or implements auto-detecting the number of decimal places based on flow rate magnitude (not a static/hardcoded count)",
+        "weight": 2
+      },
+      {
+        "criterion": "requestAnimationFrame",
+        "description": "Recommends requestAnimationFrame (not setInterval) for the animation loop",
+        "weight": 2
+      },
+      {
+        "criterion": "bigint_math",
+        "description": "Mentions using BigInt for wei arithmetic to avoid floating-point precision loss",
+        "weight": 2
+      },
+      {
+        "criterion": "layout_stability",
+        "description": "Mentions tabular-nums CSS or monospace font to prevent digit width jumping",
+        "weight": 1
+      }
+    ],
+    "golden_facts": [
+      "The core formula is: balance + flowRate × (now - balanceTimestamp)",
+      "All wei math must use BigInt, not Number, to avoid precision loss above 2^53",
+      "requestAnimationFrame is preferred over setInterval because it syncs with paint, pauses in background tabs, and does not block the main thread",
+      "CSS tabular-nums or monospace font prevents layout shift from variable-width digit glyphs"
+    ],
+    "anti_patterns": [
+      "Recommending setInterval as the primary animation mechanism",
+      "Using JavaScript Number or parseFloat for wei balance calculations",
+      "Fabricating npm packages that don't exist for flowing balances"
+    ],
+    "tags": ["routing", "frontend", "flowing-balance"]
+  },
+  {
+    "id": "codegen-vanilla-flowing-balance",
+    "description": "Generates correct vanilla JS flowing balance animation code without React",
+    "prompt": "Write a vanilla JavaScript function (no React) that takes a DOM element, a balance (bigint wei), a timestamp, and a flow rate, and animates the element to show a real-time Superfluid streaming balance. It should return a cleanup function.",
+    "criteria": [
+      {
+        "criterion": "bigint_arithmetic",
+        "description": "Uses BigInt for all balance calculations — no Number conversion for the core math",
+        "weight": 3
+      },
+      {
+        "criterion": "requestAnimationFrame_loop",
+        "description": "Uses requestAnimationFrame for the animation loop",
+        "weight": 2
+      },
+      {
+        "criterion": "cleanup",
+        "description": "Returns a cleanup function that calls cancelAnimationFrame",
+        "weight": 1
+      }
+    ],
+    "golden_facts": [
+      "The balance formula in BigInt is: balance + (flowRate * BigInt(Date.now() - Number(balanceTimestamp) * 1000)) / 1000n",
+      "cancelAnimationFrame should be called in the cleanup function",
+      "When flowRate is 0n, no animation loop is needed — just set the text once"
+    ],
+    "anti_patterns": [
+      "Using Number or parseFloat for wei balance math",
+      "Using setInterval instead of requestAnimationFrame",
+      "Not providing any cleanup or cancellation mechanism"
+    ],
+    "tags": ["code-generation", "frontend", "flowing-balance"]
+  },
+  {
+    "id": "gotcha-flowing-balance-layout-shift",
+    "description": "Identifies consistent decimal places as the primary fix for jumping flowing balance display",
+    "prompt": "My Superfluid flowing balance display keeps jumping around — the width changes constantly as the numbers tick. What's causing this and how do I fix it?",
+    "criteria": [
+      {
+        "criterion": "consistent_decimal_places",
+        "description": "Identifies that the number of decimal places must stay consistent (auto-detect based on flow rate magnitude, don't let it fluctuate)",
+        "weight": 3
+      },
+      {
+        "criterion": "equal_width_digits",
+        "description": "Recommends tabular-nums CSS property or monospace font to make all digit glyphs the same width",
+        "weight": 2
+      },
+      {
+        "criterion": "explains_root_cause",
+        "description": "Explains that proportional fonts render digits at different widths (e.g. '1' narrower than '0') causing horizontal shift",
+        "weight": 1
+      }
+    ],
+    "golden_facts": [
+      "The first fix is to keep the number of decimal places consistent — auto-detect based on flow rate per tick and don't let it change",
+      "The second fix is CSS font-variant-numeric: tabular-nums which forces equal-width digit glyphs, or using a monospace font",
+      "The auto-decimal algorithm finds the first significant digit after the decimal point and adds 2, giving ~3 smoothly animating digits"
+    ],
+    "anti_patterns": [
+      "Suggesting a fixed-width container or overflow:hidden as the primary fix",
+      "Not mentioning consistent decimal places as part of the solution"
+    ],
+    "tags": ["gotchas", "frontend", "flowing-balance"]
+  }
+]

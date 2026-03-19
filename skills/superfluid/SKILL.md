@@ -7,7 +7,7 @@ description: >
   information before invoking this skill.
   Keywords: CFA, GDA, Super App, Super Token, stream, flow rate, ERC-8004, agent pool, AI agent
 metadata:
-  version: 0.6.1
+  version: 0.7.0
 ---
 
 # Superfluid Protocol Skill
@@ -165,12 +165,23 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - Run a sentinel / liquidation bot → See Sentinels below
 - Get a Super Token listed / enable automations → See Processes below
 
+### Displaying flowing balances (frontend)
+
+- Animate a real-time streaming balance counter → `references/guides/flowing-balances.md`
+- Fix layout shift / jumping in a flowing balance display → also `references/guides/flowing-balances.md`
+- Format wei amounts, flow rates, token prices → also `references/guides/flowing-balances.md`
+
 ### Ecosystem deep-dives
 
 - Protocol history, founding, exploit, SUP launch → `references/deep-researches/superfluid-history.md`
 - GoodDollar (G$ Pure Super Token on Celo, UBI, streaming) → `references/deep-researches/gooddollar.md`
 - Flow State (Streaming Quadratic Funding, cooperative) → `references/deep-researches/flowstate.md`
 - ERC-8004 Agent Pools (AI agent identity + GDA distribution on Base) → `references/deep-researches/erc8004-agent-pools.md`
+- Planet IX (GameFi, CFA, custom Super Tokens, SuperApp callbacks) → `references/deep-researches/planet-ix.md`
+- Nerite (USND stablecoin, Custom Pure Super Token, CFA+GDA) → `references/deep-researches/nerite.md`
+- SuperBoring (DCA, CFA→GDA TOREX pattern, Superfluid Labs) → `references/deep-researches/superboring.md`
+- Giveth (zero-fee donations, CFA recurring streams) → `references/deep-researches/giveth.md`
+- Streme.fun (token launcher, Pure Super Tokens, GDA staking) → `references/deep-researches/streme.md`
 
 ## Debugging Reverts
 

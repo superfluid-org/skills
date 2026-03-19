@@ -16,6 +16,8 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T039-add-ecosystem-deep-researches]] -- Add 5 ecosystem deep researches (Planet IX, Nerite, SuperBoring, Giveth, Streme)
+- [[T038-add-flowing-balances-guide]] -- Add flowing balances guide, eval cases, and SKILL.md routing
 - [[T037-add-plugin-json]] -- Add plugin.json and fix plugin packaging
 - [[T036-erc8004-agent-pool-support]] -- Add ERC-8004 Agent Pool deep-research and SKILL.md routing
 - [[T035-add-deep-researches-and-prompt-guide]] -- Add deep-researches (history, GoodDollar, Flow State), prompt guide
