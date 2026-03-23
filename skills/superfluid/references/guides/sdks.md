@@ -18,18 +18,27 @@ for use with viem / wagmi / ethers. ABIs are split across sub-paths:
 | SuperTokenFactory | `@sfpro/sdk/abi/core` | `superTokenFactoryAbi` |
 | BatchLiquidator | `@sfpro/sdk/abi/core` | `batchLiquidatorAbi` |
 | TOGA | `@sfpro/sdk/abi/core` | `togaAbi` |
+| Governance | `@sfpro/sdk/abi/core` | `governanceAbi` |
 | AutoWrapManager | `@sfpro/sdk/abi/automation` | `autoWrapManagerAbi` |
 | AutoWrapStrategy | `@sfpro/sdk/abi/automation` | `autoWrapStrategyAbi` |
 | FlowScheduler | `@sfpro/sdk/abi/automation` | `flowSchedulerAbi` |
 | VestingSchedulerV3 | `@sfpro/sdk/abi/automation` | `vestingSchedulerV3Abi` |
+| Fontaine | `@sfpro/sdk/abi/sup` | `fontaineAbi` |
+| FluidLocker | `@sfpro/sdk/abi/sup` | `lockerAbi` |
+| FluidLockerFactory | `@sfpro/sdk/abi/sup` | `lockerFactoryAbi` |
+| FluidEPProgramManager | `@sfpro/sdk/abi/sup` | `programManagerAbi` |
+| StakingRewardController | `@sfpro/sdk/abi/sup` | `stakingRewardControllerAbi` |
+| SUPToken | `@sfpro/sdk/abi/sup` | `supTokenAbi` |
+| SUPVestingFactory | `@sfpro/sdk/abi/sup` | `vestingFactoryAbi` |
 
 The SDK also exports chain-indexed address objects alongside each ABI:
 
 | Import path | Address exports |
 |---|---|
 | `@sfpro/sdk/abi` | `cfaForwarderAddress`, `gdaForwarderAddress` |
-| `@sfpro/sdk/abi/core` | `hostAddress`, `cfaAddress`, `gdaAddress`, `idaAddress`, `superTokenFactoryAddress`, `batchLiquidatorAddress`, `togaAddress` |
+| `@sfpro/sdk/abi/core` | `hostAddress`, `cfaAddress`, `gdaAddress`, `idaAddress`, `superTokenFactoryAddress`, `batchLiquidatorAddress`, `togaAddress`, `governanceAddress` |
 | `@sfpro/sdk/abi/automation` | `autoWrapManagerAddress`, `autoWrapStrategyAddress`, `flowSchedulerAddress`, `vestingSchedulerV3Address` |
+| `@sfpro/sdk/abi/sup` | `supTokenAddress`, `lockerFactoryAddress`, `programManagerAddress`, `stakingRewardControllerAddress`, `vestingFactoryAddress` |
 
 Each export is an object keyed by chain ID:
 

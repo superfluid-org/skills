@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T040-update-sdk-0.2.0-yield-backend]] -- Update to @sfpro/sdk 0.2.0 with yield backend and SUP contracts
 - [[T039-add-ecosystem-deep-researches]] -- Add 5 ecosystem deep researches (Planet IX, Nerite, SuperBoring, Giveth, Streme)
 - [[T038-add-flowing-balances-guide]] -- Add flowing balances guide, eval cases, and SKILL.md routing
 - [[T037-add-plugin-json]] -- Add plugin.json and fix plugin packaging
