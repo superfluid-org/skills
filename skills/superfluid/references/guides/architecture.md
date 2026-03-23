@@ -242,3 +242,7 @@ than custom errors — it predates the protocol's migration to custom error type
 ### Agreement → token storage
 - Agreements write state via `token.createAgreement`, `token.settleBalance`, etc.
 - These use the `onlyAgreement` modifier (checked against Host's whitelist)
+
+## Formal Foundations
+
+The protocol's formal mathematical foundations are specified in the [Semantic Money yellowpaper](https://semantic.money) — see `references/deep-researches/semantic-money-yellowpaper.md` for a detailed walkthrough.

@@ -16,6 +16,8 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T043-deep-research-eval-cases]] -- Add eval cases for semantic money and GDA scalability deep researches
+- [[T042-semantic-money-gda-deep-researches]] -- Add Semantic Money yellowpaper and GDA scalability deep researches
 - [[T041-selector-sidecars]] -- Add selector sidecar files, refine guides and eval cases
 - [[T040-update-sdk-0.2.0-yield-backend]] -- Update to @sfpro/sdk 0.2.0 with yield backend and SUP contracts
 - [[T039-add-ecosystem-deep-researches]] -- Add 5 ecosystem deep researches (Planet IX, Nerite, SuperBoring, Giveth, Streme)
