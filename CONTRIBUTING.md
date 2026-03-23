@@ -86,6 +86,8 @@ No `npm install` or local cache needed.
 7. Add a route in SKILL.md under the appropriate use-case section
 8. Verify: every public function present, field order correct, no empty fields,
    comments add signal
+9. Regenerate selector sidecar files:
+   `bunx -p @sfpro/sdk -p js-sha3 bun scripts/selectors.mjs generate`
 
 ## Conventions
 

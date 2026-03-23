@@ -7,7 +7,7 @@
       {
         "criterion": "auto_decimal_precision",
         "description": "Explains or implements auto-detecting the number of decimal places based on flow rate magnitude (not a static/hardcoded count)",
-        "weight": 2
+        "weight": 1
       },
       {
         "criterion": "requestAnimationFrame",

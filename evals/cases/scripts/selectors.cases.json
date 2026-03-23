@@ -1,0 +1,60 @@
+[
+  {
+    "id": "selectors-list",
+    "description": "Lists all available contracts including non-SDK",
+    "command": ["selectors.mjs", "list"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "text",
+        "contains": ["CFAv1Forwarder", "SuperToken", "FluidLocker", "CFASuperAppBase (non-SDK)"]
+      }
+    },
+    "tags": ["smoke", "selectors"]
+  },
+  {
+    "id": "selectors-single-contract",
+    "description": "Generates correct selectors for FluidLocker",
+    "command": ["selectors.mjs", "FluidLocker"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "text",
+        "contains": [
+          "# FluidLocker selectors",
+          "functions:",
+          "stake(uint256):",
+          "0xa694fc3a",
+          "events:",
+          "errors:",
+          "NOT_LOCKER_OWNER():",
+          "0x6318cf62"
+        ]
+      }
+    },
+    "tags": ["smoke", "selectors"]
+  },
+  {
+    "id": "selectors-alias",
+    "description": "Alias 'cfa' resolves to ConstantFlowAgreementV1",
+    "command": ["selectors.mjs", "cfa"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "text",
+        "contains": ["# ConstantFlowAgreementV1 selectors", "CFA_FLOW_ALREADY_EXISTS():", "0x801b6863"]
+      }
+    },
+    "tags": ["selectors"]
+  },
+  {
+    "id": "selectors-unknown-contract",
+    "description": "Error for unknown contract name",
+    "command": ["selectors.mjs", "NonexistentContract"],
+    "expect": {
+      "exitCode": 1,
+      "stderr": { "contains": "Unknown contract" }
+    },
+    "tags": ["error-handling", "selectors"]
+  }
+]

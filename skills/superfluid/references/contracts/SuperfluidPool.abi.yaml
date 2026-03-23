@@ -452,16 +452,16 @@ events:
 
 errors:
   # Access control
-  - SUPERFLUID_POOL_NOT_GDA              # 0xfcbe3f9e — caller is not the GDA contract
-  - SUPERFLUID_POOL_NOT_POOL_ADMIN_OR_GDA  # 0x1c5fbdcb — caller is neither admin nor GDA
+  - SUPERFLUID_POOL_NOT_GDA              # caller is not the GDA contract
+  - SUPERFLUID_POOL_NOT_POOL_ADMIN_OR_GDA  # caller is neither admin nor GDA
   # Member validation
-  - SUPERFLUID_POOL_NO_POOL_MEMBERS      # 0xe10f405a — memberAddr is a pool (pools can't be members)
-  - SUPERFLUID_POOL_NO_ZERO_ADDRESS       # 0x54eb6ee6 — memberAddr is address(0)
+  - SUPERFLUID_POOL_NO_POOL_MEMBERS      # memberAddr is a pool (pools can't be members)
+  - SUPERFLUID_POOL_NO_ZERO_ADDRESS       # memberAddr is address(0)
   # Transfer restrictions
-  - SUPERFLUID_POOL_SELF_TRANSFER_NOT_ALLOWED   # 0xceddc0be — from == to
-  - SUPERFLUID_POOL_TRANSFER_UNITS_NOT_ALLOWED  # 0x2285efba — transferability disabled in pool config
+  - SUPERFLUID_POOL_SELF_TRANSFER_NOT_ALLOWED   # from == to
+  - SUPERFLUID_POOL_TRANSFER_UNITS_NOT_ALLOWED  # transferability disabled in pool config
   # Time
-  - SUPERFLUID_POOL_INVALID_TIME         # 0x83c35016
+  - SUPERFLUID_POOL_INVALID_TIME
   # SafeCast (inherited from OpenZeppelin)
   - SafeCastOverflowedIntDowncast:
       inputs:

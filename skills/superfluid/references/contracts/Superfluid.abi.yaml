@@ -695,42 +695,42 @@ events:
 
 errors:
   # Governance
-  - HOST_ONLY_GOVERNANCE               # 0xc5d22a4e — caller is not the governance contract
+  - HOST_ONLY_GOVERNANCE               # caller is not the governance contract
 
   # Agreement whitelisting
-  - HOST_AGREEMENT_ALREADY_REGISTERED  # 0xdc9ddba8
-  - HOST_AGREEMENT_IS_NOT_REGISTERED   # 0x1c9e9bea
-  - HOST_MAX_256_AGREEMENTS            # 0x7c281a78 — maximum agreement slots exhausted
-  - HOST_ONLY_LISTED_AGREEMENT         # 0x619c5359 — caller is not a registered agreement
+  - HOST_AGREEMENT_ALREADY_REGISTERED
+  - HOST_AGREEMENT_IS_NOT_REGISTERED
+  - HOST_MAX_256_AGREEMENTS            # maximum agreement slots exhausted
+  - HOST_ONLY_LISTED_AGREEMENT         # caller is not a registered agreement
 
   # Upgradability
-  - HOST_NON_UPGRADEABLE              # 0x14f72c9f — deployment is non-upgradable
-  - HOST_CANNOT_DOWNGRADE_TO_NON_UPGRADEABLE  # 0x474e7641
+  - HOST_NON_UPGRADEABLE              # deployment is non-upgradable
+  - HOST_CANNOT_DOWNGRADE_TO_NON_UPGRADEABLE
 
   # App registration
-  - HOST_MUST_BE_CONTRACT              # 0xd4f6b30c — app address has no code
-  - HOST_NO_APP_REGISTRATION_PERMISSION  # 0xb56455f0
-  - HOST_INVALID_CONFIG_WORD           # 0xf4c802a4 — invalid Super App manifest flags
-  - HOST_SUPER_APP_ALREADY_REGISTERED  # 0x01b0a935
-  - HOST_NOT_A_SUPER_APP              # 0x163cbe43 — target is not a registered Super App
-  - HOST_SUPER_APP_IS_JAILED          # 0x02384b64
+  - HOST_MUST_BE_CONTRACT              # app address has no code
+  - HOST_NO_APP_REGISTRATION_PERMISSION
+  - HOST_INVALID_CONFIG_WORD           # invalid Super App manifest flags
+  - HOST_SUPER_APP_ALREADY_REGISTERED
+  - HOST_NOT_A_SUPER_APP              # target is not a registered Super App
+  - HOST_SUPER_APP_IS_JAILED
 
   # App composition
-  - HOST_SENDER_IS_NOT_SUPER_APP      # 0xbacfdc40
-  - HOST_RECEIVER_IS_NOT_SUPER_APP    # 0x96aa315e
-  - HOST_SOURCE_APP_NEEDS_HIGHER_APP_LEVEL  # 0x44725270
+  - HOST_SENDER_IS_NOT_SUPER_APP
+  - HOST_RECEIVER_IS_NOT_SUPER_APP
+  - HOST_SOURCE_APP_NEEDS_HIGHER_APP_LEVEL
 
   # Context & call proxies
-  - HOST_NON_ZERO_LENGTH_PLACEHOLDER_CTX      # 0x67e9985b — placeholder ctx must be empty
-  - HOST_CALL_AGREEMENT_WITH_CTX_FROM_WRONG_ADDRESS   # 0x0cd0ebc2 — msg.sender != ctx.appAddress
-  - HOST_CALL_APP_ACTION_WITH_CTX_FROM_WRONG_ADDRESS  # 0x473f7bd4 — msg.sender != ctx.appAddress
-  - HOST_AGREEMENT_CALLBACK_IS_NOT_ACTION             # 0xef4295f6 — app action selector matches a callback
+  - HOST_NON_ZERO_LENGTH_PLACEHOLDER_CTX      # placeholder ctx must be empty
+  - HOST_CALL_AGREEMENT_WITH_CTX_FROM_WRONG_ADDRESS   # msg.sender != ctx.appAddress
+  - HOST_CALL_APP_ACTION_WITH_CTX_FROM_WRONG_ADDRESS  # msg.sender != ctx.appAddress
+  - HOST_AGREEMENT_CALLBACK_IS_NOT_ACTION             # app action selector matches a callback
 
   # Batch call
-  - HOST_UNKNOWN_BATCH_CALL_OPERATION_TYPE  # 0xb4770115
+  - HOST_UNKNOWN_BATCH_CALL_OPERATION_TYPE
 
   # Callback execution
-  - HOST_NEED_MORE_GAS                # 0xd4f5d496 — insufficient gas for Super App callback
+  - HOST_NEED_MORE_GAS                # insufficient gas for Super App callback
 
   # Super App rule violations (generic, carries a reason code)
   # Reason codes (from SuperAppDefinitions.sol):

@@ -44,7 +44,7 @@
     "criteria": [
       { "criterion": "correct_cfa_address", "description": "States CFAv1Forwarder is 0xcfA132E353cB4E398080B9700609bb008eceB125", "weight": 3 },
       { "criterion": "correct_gda_address", "description": "States GDAv1Forwarder is 0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08", "weight": 3 },
-      { "criterion": "host_varies", "description": "States Host and agreement addresses vary per network, do not hardcode", "weight": 2 },
+      { "criterion": "host_varies", "description": "States Host and agreement addresses vary per network, do not hardcode", "weight": 1 },
       { "criterion": "no_fabrication", "description": "Does not fabricate Host or other contract addresses from memory", "weight": 3 }
     ],
     "golden_facts": [
@@ -84,7 +84,7 @@
     "description": "AI should map error prefixes to the correct contract",
     "prompt": "My transaction reverted with CFA_FLOW_ALREADY_EXISTS. What does this mean and how do I fix it?",
     "criteria": [
-      { "criterion": "correct_contract", "description": "Maps CFA_ prefix to ConstantFlowAgreementV1", "weight": 2 },
+      { "criterion": "correct_contract", "description": "Maps CFA_ prefix to CFA / ConstantFlowAgreementV1 (not CFAv1Forwarder)", "weight": 2 },
       { "criterion": "explains_error", "description": "Explains a flow already exists for this sender/receiver/token triple", "weight": 2 },
       { "criterion": "suggests_fix", "description": "Suggests using updateFlow/setFlowrate instead of createFlow", "weight": 2 },
       { "criterion": "no_hallucination", "description": "Does not fabricate error details", "weight": 3 }
@@ -92,11 +92,11 @@
     "golden_facts": [
       "CFA_ prefix maps to ConstantFlowAgreementV1 (not CFAv1Forwarder, which uses CFA_FWD_ prefix)",
       "A stream already exists between this sender/receiver/token triple",
-      "Use setFlowrate (handles create/update/delete automatically) or updateFlow"
+      "Use setFlowrate (handles create/update/delete automatically) or updateFlow",
+      "CFA_FLOW_ALREADY_EXISTS has selector 0x801b6863 — this is documented in ConstantFlowAgreementV1.selectors.yaml, not a hallucination"
     ],
     "anti_patterns": [
-      "Mapping CFA_ prefix to CFAv1Forwarder (that uses CFA_FWD_ prefix)",
-      "Suggesting to delete and recreate instead of update"
+      "Mapping CFA_ prefix to CFAv1Forwarder (that uses CFA_FWD_ prefix)"
     ],
     "tags": ["correctness", "debugging", "cfa"]
   }

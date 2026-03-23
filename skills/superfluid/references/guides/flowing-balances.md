@@ -22,28 +22,41 @@ elapsed = now() - balanceTimestamp
 currentBalance = balance + flowRate × elapsed
 ```
 
-### Key design decisions
+## Critical Rules
 
-**BigInt arithmetic, not floating-point.** Wei values are integers up to
-10^77. JavaScript `Number` loses precision above 2^53. All balance math
-must use `BigInt` to avoid drift. Convert to a display string only at the
-final rendering step.
+Follow ALL of these when implementing flowing balances. Violating any one
+produces a visually broken or incorrect result.
 
-**`requestAnimationFrame`, not `setInterval`.** rAF is designed for visual
-updates — it syncs with the browser's paint cycle, pauses in background
-tabs (saving CPU), and does not block the main thread. `setInterval` has
-none of these properties and will cause jank when multiple flowing
-balances are on screen.
+1. **`requestAnimationFrame`, NEVER `setInterval`.** rAF syncs with the
+   browser paint cycle, pauses in background tabs, and does not block the
+   main thread. `setInterval` has none of these properties — it causes jank
+   when multiple flowing balances are on screen. Use rAF with manual
+   throttling (skip frames until enough time has elapsed).
 
-**Throttle the update rate.** Even with rAF, recalculating every frame
-(~16ms) is wasteful when the visible digits don't change that fast. A
-practical approach is to skip frames until enough time has elapsed:
+2. **BigInt arithmetic, not floating-point.** Wei values are integers up to
+   10^77. JavaScript `Number` loses precision above 2^53. All balance math
+   must use `BigInt`. Convert to a display string only at the final step.
 
-- **60ms** ("fast") — smooth animation, ~3 visible digits ticking
-- **400ms** ("slow") — subtle pulse, good for secondary balances
+3. **Auto decimal precision.** Different flow rates need different decimal
+   counts. Hardcoding (e.g. `.toFixed(6)`) produces either too many or too
+   few digits. Compute once from the flow rate magnitude — see the algorithm
+   below.
 
-**Skip animation when `flowRate === 0`.** No flow means no change — render
-the static balance once and stop the loop entirely.
+4. **`font-variant-numeric: tabular-nums`.** In proportional fonts "1" is
+   narrower than "0", so digits jump horizontally. Apply `tabular-nums` CSS
+   (or use a monospace font) on the container.
+
+5. **Skip animation when `flowRate === 0n`.** No flow = no change. Render
+   the static balance once and stop the loop.
+
+6. **Render as a leaf component.** The rAF loop triggers re-renders every
+   tick. Keep the flowing component as a leaf node to avoid re-rendering
+   its entire subtree.
+
+7. **Throttle the update rate.** Even with rAF, recalculating every frame
+   (~16ms) is wasteful when visible digits don't change that fast:
+   - **60ms** ("fast") — smooth animation, ~3 visible digits ticking
+   - **400ms** ("slow") — subtle pulse, good for secondary balances
 
 ## Auto Decimal Precision
 
@@ -96,17 +109,46 @@ Insert commas every 3 digits in the integer part via regex:
 integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 ```
 
+## Vanilla JS Reference Implementation
+
+The simplest portable expression of the algorithm. No framework
+dependency — works anywhere with a DOM element:
+
+```js
+function startFlowingBalance(element, balance, balanceTimestamp, flowRate) {
+    if (flowRate === 0n) {
+        element.textContent = formatWei(balance)
+        return () => {}
+    }
+
+    let lastTick = 0
+    let rafId
+
+    function tick(now) {
+        rafId = requestAnimationFrame(tick)
+        if (now - lastTick < 60) return
+        lastTick = now
+
+        // All wei math in BigInt — do NOT convert flowRate to Number
+        const elapsed = BigInt(Date.now() - Number(balanceTimestamp) * 1000)
+        const current = balance + (flowRate * elapsed) / 1000n
+        element.textContent = formatWei(current)
+    }
+
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+}
+```
+
+Note the pattern: `requestAnimationFrame` drives the loop, manual
+throttling skips frames under 60ms, `BigInt` handles all wei math, and
+the returned function cancels the animation via `cancelAnimationFrame`.
+
 ## React Reference Implementation
 
-This is one concrete implementation of the algorithm above. The same
-logic applies to any framework — see "Other Approaches" below.
+Dependencies: `react` (>=18), `viem` (for `formatEther`).
 
-### Dependencies
-
-- `react` (>=18)
-- `viem` (for `formatEther`)
-
-### FlowingBalance.tsx
+### Core hooks
 
 ```tsx
 "use client"
@@ -187,9 +229,11 @@ function useFlowingDecimalPoint(params: {
         return Math.min(leadingZeroes + 2, 18)
     }, [flowRate, animationStepTimeInMs])
 }
+```
 
-// ─── Component: FlowingBalance ───────────────────────────────────
+### FlowingBalance component
 
+```tsx
 export function FlowingBalance(props: {
     /** Balance snapshot in wei */
     balance: bigint
@@ -242,9 +286,11 @@ export function FlowingBalance(props: {
         />
     )
 }
+```
 
-// ─── Display: FormattedBalance ───────────────────────────────────
+### FormattedBalance (display helper)
 
+```tsx
 function FormattedBalance(props: {
     value: bigint
     decimalPlaces?: number
@@ -273,16 +319,6 @@ function FormattedBalance(props: {
         </span>
     )
 }
-
-// ─── Utils ───────────────────────────────────────────────────────
-
-function formatEtherAndRound(value: bigint, decimals = 0): string {
-    const etherValue = formatEther(value)
-    const numberValue = Number.parseFloat(etherValue).toFixed(decimals)
-    const [integerPart, decimalPart] = numberValue.split(".")
-    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-    return decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger
-}
 ```
 
 ### Props
@@ -309,40 +345,10 @@ import { FlowingBalance } from "./FlowingBalance"
 />
 ```
 
-## Other Approaches
+## Other Frameworks
 
 The core loop is framework-independent. Only the "set the displayed value"
 mechanism changes.
-
-### Vanilla JS / Direct DOM Manipulation
-
-Bypasses any virtual DOM entirely — ideal for performance-critical cases
-or non-framework environments:
-
-```js
-function startFlowingBalance(element, balance, balanceTimestamp, flowRate) {
-    if (flowRate === 0n) {
-        element.textContent = formatWei(balance)
-        return () => {}
-    }
-
-    let lastTick = 0
-    let rafId
-
-    function tick(now) {
-        rafId = requestAnimationFrame(tick)
-        if (now - lastTick < 60) return
-        lastTick = now
-
-        const elapsed = BigInt(Date.now() - Number(balanceTimestamp) * 1000)
-        const current = balance + (flowRate * elapsed) / 1000n
-        element.textContent = formatWei(current)
-    }
-
-    rafId = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(rafId)
-}
-```
 
 ### Vue 3
 
@@ -365,8 +371,8 @@ Use `createEffect` with `onCleanup` — same loop, update a signal.
 
 ## Formatting Utilities
 
-These are pure functions, usable in any JS/TS project. They all build on
-viem's `formatEther` and `parseEther`.
+Pure functions usable in any JS/TS project. Build on viem's `formatEther`
+and `parseEther`.
 
 ### formatEtherAndRound
 
@@ -390,7 +396,6 @@ function getPrettyShortNumber(wei: bigint): string
 
 getPrettyShortNumber(1234567000000000000000000n)  // "1.23M"
 getPrettyShortNumber(1234000000000000000000n)     // "1.23K"
-getPrettyShortNumber(123000000000000000000n)      // "123"
 ```
 
 ### getSignificantDecimals
@@ -399,54 +404,18 @@ Calculates how many decimal places are needed to show meaningful digits
 for values of unknown magnitude.
 
 ```ts
-function getSignificantDecimals(
-    value: bigint,
-    minDecimals?: number,  // default: 0
-    extraDigits?: number,  // default: 2
-): number
+function getSignificantDecimals(value: bigint, minDecimals?: number, extraDigits?: number): number
 
 getSignificantDecimals(26700000000000n)        // 7  (shows "0.0000267")
 getSignificantDecimals(1000000000000000000n)   // 0  (1 ETH — no decimals)
 ```
 
-### roundWeiToPrettyAmount
+### Other utilities
 
-Rounds wei values to avoid displaying numbers like `1,499,999.999...`.
-Detects 3+ consecutive 9's and rounds up.
-
-```ts
-function roundWeiToPrettyAmount(value: bigint, decimals?: number): bigint
-
-roundWeiToPrettyAmount(23023402845098425n)  // 20000000000000000n (0.02 ETH)
-roundWeiToPrettyAmount(26834587324572943n)  // 30000000000000000n (0.03 ETH)
-```
-
-### normalizeDecimalInput / safeParseEther
-
-For handling user-typed token amounts before converting to wei.
-
-```ts
-function normalizeDecimalInput(value: string): string
-function safeParseEther(value: string | undefined): bigint | undefined
-
-normalizeDecimalInput("1,234.56")   // "1234.56"
-normalizeDecimalInput("1.2.3")      // "1.23"
-
-safeParseEther("1.5")       // 1500000000000000000n
-safeParseEther("invalid")   // undefined
-```
-
-### formatUSD / calculateTokenUSD
-
-USD formatting with K/M abbreviations.
-
-```ts
-function formatUSD(value: number | string | undefined): string
-function calculateTokenUSD(amount: bigint | undefined, priceUSD: number | undefined): string
-
-formatUSD(1234567)    // "$1.23M"
-calculateTokenUSD(1000000000000000000n, 2000)  // "$2.00K"
-```
+- **`roundWeiToPrettyAmount(value, decimals?)`** — Detects 3+ consecutive 9's and rounds up. Avoids displaying `1,499,999.999...`.
+- **`normalizeDecimalInput(value)`** — Sanitizes user-typed amounts: strips commas, collapses multiple decimals (`"1.2.3"` → `"1.23"`).
+- **`safeParseEther(value)`** — Wraps `parseEther` — returns `undefined` instead of throwing on invalid input.
+- **`formatUSD(value)` / `calculateTokenUSD(amount, priceUSD)`** — USD formatting with K/M abbreviations.
 
 ## Flow Rate Display
 
@@ -459,19 +428,3 @@ const SECONDS_PER_MONTH = 2628000n
 const monthlyWei = flowRate * SECONDS_PER_MONTH
 const display = formatEtherAndRound(monthlyWei, 2) // e.g. "100.00"
 ```
-
-## Common Mistakes
-
-- **Using `setInterval`** — blocks the main thread, no tab throttling, no
-  paint sync. Use `requestAnimationFrame` with manual throttling.
-- **Floating-point math for wei** — `Number` loses precision above 2^53.
-  Use `BigInt` for all balance arithmetic.
-- **Missing `tabular-nums`** — digits jump horizontally as values change.
-  Add `font-variant-numeric: tabular-nums` to the container.
-- **Rendering high in the component tree** — the rAF loop triggers
-  re-renders every tick. Keep the flowing component as a leaf node to
-  avoid re-rendering its entire subtree.
-- **Not handling `flowRate === 0n`** — starts an animation loop that
-  recomputes the same value every frame. Check and bail out early.
-- **Hardcoding decimal places** — different flow rates need different
-  precision. Use auto-detection based on flow-rate-per-tick magnitude.

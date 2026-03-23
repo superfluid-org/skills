@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T041-selector-sidecars]] -- Add selector sidecar files, refine guides and eval cases
 - [[T040-update-sdk-0.2.0-yield-backend]] -- Update to @sfpro/sdk 0.2.0 with yield backend and SUP contracts
 - [[T039-add-ecosystem-deep-researches]] -- Add 5 ecosystem deep researches (Planet IX, Nerite, SuperBoring, Giveth, Streme)
 - [[T038-add-flowing-balances-guide]] -- Add flowing balances guide, eval cases, and SKILL.md routing
@@ -67,11 +68,11 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 ## Quick Reference
 
 - **Skill entry**: `skills/superfluid/SKILL.md`
-- **Contracts**: `skills/superfluid/references/contracts/` (22 Rich ABI YAMLs + format spec)
+- **Contracts**: `skills/superfluid/references/contracts/` (22 Rich ABI YAMLs + 24 selector sidecars + format spec)
 - **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 6 `.graphql` schemas, 5 usage guides)
 - **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, macro-forwarders, sdks, scripts, api-services, sup-and-dao, flowing-balances)
 - **Deep researches**: `skills/superfluid/references/deep-researches/` (9 ecosystem deep-dives)
-- **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
+- **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`, `selectors.mjs`)
 - **Evals**: `evals/` (script tests + skill evals)
 - **Landing page**: `landing-page/index.html` (Vercel-deployed static page)
 - **Plugin version**: `.claude-plugin/plugin.json` (`version`)

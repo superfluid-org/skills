@@ -92,14 +92,16 @@ const SCRIPT_PACKAGES = {
   "tokenlist.mjs": "@superfluid-finance/tokenlist",
   "balance.mjs": "@superfluid-finance/tokenlist",
   "abi.mjs": "@sfpro/sdk",
+  "selectors.mjs": ["@sfpro/sdk", "js-sha3"],
 };
 
 function runScript(testCase) {
   const [script, ...scriptArgs] = testCase.command;
   const scriptPath = join(SCRIPTS_DIR, script);
   const pkg = SCRIPT_PACKAGES[script];
+  const pkgFlags = Array.isArray(pkg) ? pkg.flatMap(p => ["-p", p]) : ["-p", pkg];
   return new Promise((resolve) => {
-    execFile("bunx", ["-p", pkg, "bun", scriptPath, ...scriptArgs], { timeout: 30_000 }, (error, stdout, stderr) => {
+    execFile("bunx", [...pkgFlags, "bun", scriptPath, ...scriptArgs], { timeout: 30_000 }, (error, stdout, stderr) => {
       resolve({
         exitCode: error ? (error.code ?? 1) : 0,
         stdout: stdout.trim(),
@@ -137,6 +139,15 @@ function evaluateCase(testCase, result) {
     for (const assertion of expect.stdout.assertions) {
       const err = checkAssertion(data, assertion);
       if (err) failures.push(`${assertion.path}: ${err}`);
+    }
+  }
+
+  // Stdout text assertions
+  if (expect.stdout?.type === "text" && expect.stdout.contains) {
+    for (const needle of expect.stdout.contains) {
+      if (!result.stdout.includes(needle)) {
+        failures.push(`stdout expected to contain "${needle}"`);
+      }
     }
   }
 

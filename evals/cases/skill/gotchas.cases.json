@@ -116,12 +116,13 @@
     "criteria": [
       { "criterion": "identifies_address_this", "description": "Explains these functions use address(this) as sender, not msg.sender, so vm.prank doesn't affect the sender", "weight": 3 },
       { "criterion": "recommends_explicit_sender", "description": "Suggests using CFA/GDA-specific functions with explicit sender parameter for Foundry tests", "weight": 2 },
-      { "criterion": "no_hallucination", "description": "Does not fabricate a prank-compatible wrapper or library function", "weight": 2 }
+      { "criterion": "no_hallucination", "description": "Does not fabricate undocumented prank workarounds or wrapper functions (note: cache-warming gotcha IS documented)", "weight": 2 }
     ],
     "golden_facts": [
       "SuperTokenV1Library flow/flowX/transferX use address(this) as sender — not overridable by prank",
       "Use CFA/GDA-specific functions with explicit sender for Foundry tests",
-      "The WithCtx variants are for Super App callbacks, not for testing"
+      "The WithCtx variants are for Super App callbacks, not for testing",
+      "The library caches Host/CFA/GDA addresses on first use — if cache is cold, prank can be consumed by the cache-warming call (token.getHost()), not the actual agreement call. This is documented in SuperTokenV1Library.abi.yaml."
     ],
     "anti_patterns": [
       "Suggesting vm.prank should work with these convenience functions",
