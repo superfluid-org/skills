@@ -68,7 +68,8 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 - **Skill entry**: `skills/superfluid/SKILL.md`
 - **Contracts**: `skills/superfluid/references/contracts/` (22 Rich ABI YAMLs + format spec)
 - **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 6 `.graphql` schemas, 5 usage guides)
-- **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, macro-forwarders, sdks, scripts, api-services, sup-and-dao)
+- **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, macro-forwarders, sdks, scripts, api-services, sup-and-dao, flowing-balances)
+- **Deep researches**: `skills/superfluid/references/deep-researches/` (9 ecosystem deep-dives)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`)
 - **Evals**: `evals/` (script tests + skill evals)
 - **Landing page**: `landing-page/index.html` (Vercel-deployed static page)
