@@ -7,7 +7,7 @@ description: >
   information before invoking this skill.
   Keywords: CFA, GDA, Super App, Super Token, stream, flow rate, ERC-8004, agent pool, AI agent
 metadata:
-  version: 0.7.0
+  version: 1.0.0
 ---
 
 # Superfluid Protocol Skill

@@ -1,5 +1,5 @@
 ---
-updated: 2026-02-13
+updated: 2026-03-23
 ---
 
 # Roadmap
@@ -17,13 +17,12 @@ The skill exists to solve these problems by giving AI direct, structured knowled
 
 ## Current Focus
 
-v0.4.0 released — subgraph query support, MacroForwarder guide, ABI YAML rename. Next focus is tool selection guidance and task-oriented guides.
+v1.0.0 released — comprehensive protocol skill with 22 contract references, 9 deep researches, flowing balances guide, evaluation suite, landing page, and plugin packaging.
 
 ## Planned
 
-1. **Tool selection guidance** — help AI know which tool to reach for given a task
+1. **Task-oriented guides** — step-by-step recipes for common tasks (set up vesting, build a Super App, create a distribution pool, etc.)
 2. **Best practices** — common patterns, pitfalls, and recommendations for Superfluid integrations
-3. **Task-oriented guides** — step-by-step recipes for common tasks (set up vesting, build a Super App, create a distribution pool, etc.)
 
 ## Ideas
 
@@ -31,6 +30,7 @@ v0.4.0 released — subgraph query support, MacroForwarder guide, ABI YAML renam
 
 ## Completed
 
+- **v1.0.0** -- Flowing balances guide with framework-agnostic real-time balance display (T038). 5 ecosystem deep researches: Planet IX, Nerite, SuperBoring, Giveth, Streme (T039). ERC-8004 Agent Pool deep-research (T036). History, GoodDollar, Flow State deep researches and prompt guide (T035). Clear Signing preview, x402, Campaigns, social links (T034). Landing page with FAQ, OG tags, install instructions (T033). Release workflow and skill trigger keywords (T031). Plugin packaging with plugin.json (T037). Skill eval runner and evaluation test suite (T026, T024). SUP Token / Reserve System ABIs (T020). Per-subgraph usage guides (T018). Super Apps guide (T017). Version bump and .gitattributes export-ignore (T032, T030). Gotcha migration to notes fields (T029).
 - **v0.4.0** -- Subgraph query support: 4 GraphQL entity schemas (protocol-v1, vesting-scheduler, flow-scheduler, auto-wrap) and query-patterns guide in `references/subgraphs/` (T016). MacroForwarder guide with composable batch operations and EIP-712 signed macro example (T015). Renamed `.rich-abi.yaml` → `.abi.yaml` across all 17 reference files (T014). Added Graphinator sentinel and Token Prices API to ecosystem. Replaced marketplace install docs with skills.sh tutorial.
 - **v0.3.1** -- Code generation best practices: SDK address exports table, strengthened anti-hallucination ABI/address guidance, Whois endpoint clarification with GOTCHA (T013). Fix GDA celo-mainnet address typo (89355 → 89555).
 - **v0.3.0** -- Ecosystem section: SDKs & Packages (active/deprecated with guidance), API Services (CMS, Points, Accounting, Allowlist, Whois), Subgraphs (protocol, vesting, flow-scheduler, auto-wrap), Apps, Foundation/DAO/SUP Token, and Processes (token listing, automation allowlisting). Use-case routing for ecosystem topics (T011). 256 pool/index connection limit and gas cost GOTCHAs in GDA and IDA ABIs (T012).
