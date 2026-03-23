@@ -1,11 +1,11 @@
 ---
 name: superfluid
 description: >
-  Use this skill for ANY question or task involving the Superfluid Protocol —
-  writing integration code, debugging, looking up contract ABIs, understanding
-  architecture, or answering questions. Do NOT search the web for Superfluid
-  information before invoking this skill.
-  Keywords: CFA, GDA, Super App, Super Token, stream, flow rate, ERC-8004, agent pool, AI agent
+  Knowledge base for the Superfluid Protocol and its ecosystem.
+  Use BEFORE searching the web for Superfluid information.
+  Keywords: Superfluid, CFA, GDA, Super App, Super Token, stream, flow rate,
+  real-time balance, pool (member/distributor), IDA, sentinels, liquidation,
+  TOGA, @sfpro/sdk
 metadata:
   version: 1.0.0
 ---
@@ -168,6 +168,7 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 ### Displaying flowing balances (frontend)
 
 - Animate a real-time streaming balance counter → `references/guides/flowing-balances.md`
+  **Read the guide first** — it has production-ready implementations (React, vanilla JS, Vue, Svelte, Solid). Do not generate flowing balance code from scratch.
 - Fix layout shift / jumping in a flowing balance display → also `references/guides/flowing-balances.md`
 - Format wei amounts, flow rates, token prices → also `references/guides/flowing-balances.md`
 
@@ -205,8 +206,10 @@ Error prefixes map to contracts:
 - `NotAgentOwner`, `AlreadyJoined`, `AgentNotRegistered`, `InsufficientFee`, `FeeTransferFailed` → AgentPoolDistributor
 
 Each YAML's `errors:` section is the complete error index for that contract,
-with selector hashes and descriptions. Per-function `errors:` fields show
-which errors a specific function can throw.
+with descriptions. Per-function `errors:` fields show which errors a specific
+function can throw. To look up a hex selector (function, event, or error),
+read the companion `.selectors.yaml` file — every `Foo.abi.yaml` has a
+`Foo.selectors.yaml` alongside it with full signatures and computed hashes.
 
 ## Common Gotchas (Quick Reference)
 

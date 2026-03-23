@@ -28,6 +28,7 @@ evals/
       abi.cases.json         #   7 cases
       balance.cases.json     #   4 cases
       metadata.cases.json    #   8 cases
+      selectors.cases.json   #   4 cases
       tokenlist.cases.json   #   5 cases
     skill/                   # Skill eval cases (JSON)
       routing.cases.json     #   5 cases
@@ -86,6 +87,18 @@ All assertions use a `path` field with JSONPath syntax (`$.field`, `$[0].field`)
 | `hasKey` | Object contains a key | `{ "path": "$[0]", "hasKey": "contract" }` |
 
 Multiple operators can be combined in a single assertion object.
+
+### Text Stdout Assertions
+
+For scripts that output text (not JSON), use `"type": "text"` with a
+`"contains"` array of strings that must all appear in stdout:
+
+```json
+"stdout": {
+  "type": "text",
+  "contains": ["expected line 1", "expected line 2"]
+}
+```
 
 ## Skill Evals
 

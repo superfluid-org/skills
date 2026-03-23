@@ -521,29 +521,29 @@ events:
 
 errors:
   # Flow validation
-  - CFA_FLOW_ALREADY_EXISTS        # 0x801b6863 — createFlow when flow exists
-  - CFA_FLOW_DOES_NOT_EXIST        # 0x5a32bf24 — update/delete when no flow
-  - CFA_INVALID_FLOW_RATE          # 0x91acad16 — flowRate <= 0
-  - CFA_NO_SELF_FLOW               # 0xa47338ef — sender == receiver
-  - CFA_ZERO_ADDRESS_SENDER        # 0x1ce9b067 — sender is address(0)
-  - CFA_ZERO_ADDRESS_RECEIVER      # 0x78e02b2a — receiver is address(0)
+  - CFA_FLOW_ALREADY_EXISTS        # createFlow when flow exists
+  - CFA_FLOW_DOES_NOT_EXIST        # update/delete when no flow
+  - CFA_INVALID_FLOW_RATE          # flowRate <= 0
+  - CFA_NO_SELF_FLOW               # sender == receiver
+  - CFA_ZERO_ADDRESS_SENDER        # sender is address(0)
+  - CFA_ZERO_ADDRESS_RECEIVER      # receiver is address(0)
   # Solvency
-  - CFA_INSUFFICIENT_BALANCE       # 0xea76c9b3 — sender cannot cover deposit
-  - CFA_NON_CRITICAL_SENDER        # 0xce11b5d1 — third-party delete but sender is solvent
-  - CFA_DEPOSIT_TOO_BIG            # 0x752c2b9c — deposit > MAXIMUM_DEPOSIT
-  - CFA_FLOW_RATE_TOO_BIG          # 0x0c9c55c1 — flowRate * liquidationPeriod overflows
+  - CFA_INSUFFICIENT_BALANCE       # sender cannot cover deposit
+  - CFA_NON_CRITICAL_SENDER        # third-party delete but sender is solvent
+  - CFA_DEPOSIT_TOO_BIG            # deposit > MAXIMUM_DEPOSIT
+  - CFA_FLOW_RATE_TOO_BIG          # flowRate * liquidationPeriod overflows
   # ACL
-  - CFA_ACL_FLOW_RATE_ALLOWANCE_EXCEEDED  # 0xa0645c1f — operator exceeds granted allowance
-  - CFA_ACL_NO_NEGATIVE_ALLOWANCE         # 0x86e0377d — resulting allowance would be < 0
-  - CFA_ACL_NO_SENDER_CREATE              # 0x4b993136 — operator cannot be the sender (use createFlow)
-  - CFA_ACL_NO_SENDER_FLOW_OPERATOR       # 0xb0ed394d — cannot set yourself as your own operator
-  - CFA_ACL_NO_SENDER_UPDATE              # 0xedfa0d3b — operator cannot be the sender (use updateFlow)
-  - CFA_ACL_OPERATOR_NO_CREATE_PERMISSIONS  # 0xa3eab6ac
-  - CFA_ACL_OPERATOR_NO_DELETE_PERMISSIONS  # 0xe30f1bff
-  - CFA_ACL_OPERATOR_NO_UPDATE_PERMISSIONS  # 0xac434b5f
-  - CFA_ACL_UNCLEAN_PERMISSIONS            # 0x7939d66c — permission bits outside valid range
+  - CFA_ACL_FLOW_RATE_ALLOWANCE_EXCEEDED  # operator exceeds granted allowance
+  - CFA_ACL_NO_NEGATIVE_ALLOWANCE         # resulting allowance would be < 0
+  - CFA_ACL_NO_SENDER_CREATE              # operator cannot be the sender (use createFlow)
+  - CFA_ACL_NO_SENDER_FLOW_OPERATOR       # cannot set yourself as your own operator
+  - CFA_ACL_NO_SENDER_UPDATE              # operator cannot be the sender (use updateFlow)
+  - CFA_ACL_OPERATOR_NO_CREATE_PERMISSIONS
+  - CFA_ACL_OPERATOR_NO_DELETE_PERMISSIONS
+  - CFA_ACL_OPERATOR_NO_UPDATE_PERMISSIONS
+  - CFA_ACL_UNCLEAN_PERMISSIONS            # permission bits outside valid range
   # Super App / Host
-  - CFA_HOOK_OUT_OF_GAS            # 0x9f76430b — Super App callback exceeded gas limit
+  - CFA_HOOK_OUT_OF_GAS            # Super App callback exceeded gas limit
   - APP_RULE:                      # Super App rule violation
       inputs:
         - _code: uint256

@@ -448,17 +448,17 @@ events:
 
 errors:
   # Index operations
-  - IDA_INDEX_ALREADY_EXISTS           # 0x5c02a517 — index with this (publisher, indexId) already exists
-  - IDA_INDEX_DOES_NOT_EXIST           # 0xedeaa63b — no index found for this (publisher, indexId)
-  - IDA_INDEX_SHOULD_GROW              # 0xcfdca725 — new indexValue must be >= current value
+  - IDA_INDEX_ALREADY_EXISTS           # index with this (publisher, indexId) already exists
+  - IDA_INDEX_DOES_NOT_EXIST           # no index found for this (publisher, indexId)
+  - IDA_INDEX_SHOULD_GROW              # new indexValue must be >= current value
   # Distribution
-  - IDA_INSUFFICIENT_BALANCE           # 0x16e759bb — publisher becomes critical after distributing
+  - IDA_INSUFFICIENT_BALANCE           # publisher becomes critical after distributing
   # Subscription operations
-  - IDA_SUBSCRIPTION_DOES_NOT_EXIST    # 0xb6c8c980
-  - IDA_SUBSCRIPTION_ALREADY_APPROVED  # 0x3eb2f849 — subscription already approved (or claim on approved sub)
-  - IDA_SUBSCRIPTION_IS_NOT_APPROVED   # 0x37412573 — cannot revoke a pending subscription
-  - IDA_ZERO_ADDRESS_SUBSCRIBER        # 0xc90a4674 — subscriber cannot be address(0)
-  - IDA_OPERATION_NOT_ALLOWED          # 0x92da6d17 — only publisher can delete a subscription
+  - IDA_SUBSCRIPTION_DOES_NOT_EXIST
+  - IDA_SUBSCRIPTION_ALREADY_APPROVED  # subscription already approved (or claim on approved sub)
+  - IDA_SUBSCRIPTION_IS_NOT_APPROVED   # cannot revoke a pending subscription
+  - IDA_ZERO_ADDRESS_SUBSCRIBER        # subscriber cannot be address(0)
+  - IDA_OPERATION_NOT_ALLOWED          # only publisher can delete a subscription
   # Super App / Host
   - AGREEMENT_BASE_ONLY_HOST           # call not routed through the Host contract
   # SafeCast (inherited from OpenZeppelin)

@@ -565,20 +565,20 @@ events:
 
 errors:
   # Pool creation
-  - GDA_ADMIN_CANNOT_BE_POOL       # 0x9ab88a26 — admin address is itself a pool
-  - GDA_NO_ZERO_ADDRESS_ADMIN      # 0x82c5d837 — admin is address(0)
+  - GDA_ADMIN_CANNOT_BE_POOL       # admin address is itself a pool
+  - GDA_NO_ZERO_ADDRESS_ADMIN      # admin is address(0)
   # Distribution
-  - GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED   # 0xf67d263e — from != ctx.msgSender (no ACL)
-  - GDA_DISTRIBUTE_FROM_ANY_ADDRESS_NOT_ALLOWED  # 0x7761a5e5 — pool restricts to admin only
-  - GDA_NO_NEGATIVE_FLOW_RATE      # 0x15f25663 — requestedFlowRate < 0
+  - GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED   # from != ctx.msgSender (no ACL)
+  - GDA_DISTRIBUTE_FROM_ANY_ADDRESS_NOT_ALLOWED  # pool restricts to admin only
+  - GDA_NO_NEGATIVE_FLOW_RATE      # requestedFlowRate < 0
   # Solvency
-  - GDA_INSUFFICIENT_BALANCE       # 0x33115c3f — distributor cannot cover deposit or distribution
-  - GDA_NON_CRITICAL_SENDER        # 0x666f381d — third-party close but sender is solvent
-  - GDA_FLOW_DOES_NOT_EXIST        # 0x29f4697e
+  - GDA_INSUFFICIENT_BALANCE       # distributor cannot cover deposit or distribution
+  - GDA_NON_CRITICAL_SENDER        # third-party close but sender is solvent
+  - GDA_FLOW_DOES_NOT_EXIST
   # Pool membership / ACL
-  - GDA_NOT_POOL_ADMIN             # 0x3a87e565 — caller is not the pool admin
-  - GDA_ONLY_SUPER_TOKEN_POOL      # 0x90028c37 — address is not a registered pool
-  - GDA_CANNOT_CONNECT_POOL        # 0x83d98e4c — memberAddr is address(0) or a pool
+  - GDA_NOT_POOL_ADMIN             # caller is not the pool admin
+  - GDA_ONLY_SUPER_TOKEN_POOL      # address is not a registered pool
+  - GDA_CANNOT_CONNECT_POOL        # memberAddr is address(0) or a pool
   # Super App / Host
   - AGREEMENT_BASE_ONLY_HOST       # call not routed through the Host contract
   # SafeCast (inherited from OpenZeppelin)
