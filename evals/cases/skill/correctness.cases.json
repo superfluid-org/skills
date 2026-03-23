@@ -99,5 +99,51 @@
       "Mapping CFA_ prefix to CFAv1Forwarder (that uses CFA_FWD_ prefix)"
     ],
     "tags": ["correctness", "debugging", "cfa"]
+  },
+  {
+    "id": "correct-basic-particle-rtb-formula",
+    "description": "AI should explain the BasicParticle formula and settle-on-write pattern from the formal spec",
+    "prompt": "How does Superfluid avoid updating every stream recipient's balance every second? What's the mathematical trick behind real-time balances?",
+    "criteria": [
+      { "criterion": "mentions_basic_particle", "description": "Mentions BasicParticle or the RTB formula: settled_value + flow_rate * (t - settled_at)", "weight": 3 },
+      { "criterion": "explains_settle_on_write", "description": "Explains settle-on-write: state is only written on interactions, balance is computed on-the-fly from the formula", "weight": 3 },
+      { "criterion": "references_formal_spec", "description": "References the Semantic Money yellowpaper, formal spec, or semantic.money as the source", "weight": 1 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate formula components or claim balances are stored per-second", "weight": 2 }
+    ],
+    "golden_facts": [
+      "BasicParticle stores three values: settled_at (timestamp), settled_value, and flow_rate",
+      "Real-time balance = settled_value + flow_rate * (t - settled_at) — computed lazily, never stored per-second",
+      "State is only updated (settled) when an agreement operation occurs (settle-on-write pattern)",
+      "This is formalized in the Semantic Money yellowpaper by Miao ZhiCheng"
+    ],
+    "anti_patterns": [
+      "Claiming balances are updated every block or via cron jobs",
+      "Not explaining the lazy computation formula",
+      "Describing the mechanism without mentioning the three stored values"
+    ],
+    "tags": ["correctness", "formal-spec", "deep-research"]
+  },
+  {
+    "id": "correct-gda-o1-scalability",
+    "description": "AI should explain GDA's O(1) distribution via pool-level index, not per-member loops",
+    "prompt": "If a GDA pool has 10,000 members and I call distributeFlow, does the contract loop through all members? How does the gas cost scale with pool size?",
+    "criteria": [
+      { "criterion": "states_o1_gas", "description": "States distributeFlow is O(1) / constant gas regardless of member count", "weight": 3 },
+      { "criterion": "explains_pool_index", "description": "Explains the pool-level index mechanism (PDPoolIndex or pool-level state) that avoids per-member updates", "weight": 3 },
+      { "criterion": "mentions_lazy_member_balance", "description": "Mentions members compute or claim their balance lazily from the pool index", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not claim distributeFlow loops through members or that gas scales with member count", "weight": 2 }
+    ],
+    "golden_facts": [
+      "distributeFlow updates only the pool-level index (PDPoolIndex), not individual members — O(1) gas",
+      "The pool index stores a wrapped_particle with the per-unit flow rate; members derive their balance from it",
+      "Individual member balances are computed lazily: member_rtb = (pool_index - member_synced_index) * units + settled_value",
+      "Member state is only updated when that member interacts (claims, connects, or has units changed)"
+    ],
+    "anti_patterns": [
+      "Claiming distributeFlow iterates over members",
+      "Saying gas cost scales linearly or otherwise with pool size",
+      "Confusing distributeFlow gas with connectPool/claimAll gas (which is per-member but only affects that member)"
+    ],
+    "tags": ["correctness", "gda", "scalability", "deep-research"]
   }
 ]

@@ -5,9 +5,9 @@ description: >
   Use BEFORE searching the web for Superfluid information.
   Keywords: Superfluid, CFA, GDA, Super App, Super Token, stream, flow rate,
   real-time balance, pool (member/distributor), IDA, sentinels, liquidation,
-  TOGA, @sfpro/sdk
+  TOGA, @sfpro/sdk, semantic money, yellowpaper, whitepaper
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Superfluid Protocol Skill
@@ -72,6 +72,7 @@ from signatures alone.
 - Create pools, distribute, stream to pool → `references/contracts/GDAv1Forwarder.abi.yaml`
 - Pool member management, units, claims → also `references/contracts/SuperfluidPool.abi.yaml`
 - Low-level agreement details → also `references/contracts/GeneralDistributionAgreementV1.abi.yaml`
+- How GDA achieves O(1) scalability (formal math deep-dive) → also `references/deep-researches/gda-scalability.md`
 
 ### Token operations
 
@@ -175,6 +176,8 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 ### Ecosystem deep-dives
 
 - Protocol history, founding, exploit, SUP launch → `references/deep-researches/superfluid-history.md`
+- Semantic Money formal spec (yellowpaper, Haskell reference, BasicParticle, agreement hierarchy) → `references/deep-researches/semantic-money-yellowpaper.md`
+- GDA scalability (PDPool math, O(1) distributions, rounding model, settle-on-write) → `references/deep-researches/gda-scalability.md`
 - GoodDollar (G$ Pure Super Token on Celo, UBI, streaming) → `references/deep-researches/gooddollar.md`
 - Flow State (Streaming Quadratic Funding, cooperative) → `references/deep-researches/flowstate.md`
 - ERC-8004 Agent Pools (AI agent identity + GDA distribution on Base) → `references/deep-researches/erc8004-agent-pools.md`
@@ -183,6 +186,12 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - SuperBoring (DCA, CFA→GDA TOREX pattern, Superfluid Labs) → `references/deep-researches/superboring.md`
 - Giveth (zero-fee donations, CFA recurring streams) → `references/deep-researches/giveth.md`
 - Streme.fun (token launcher, Pure Super Tokens, GDA staking) → `references/deep-researches/streme.md`
+
+### Formal specification and protocol theory
+
+- Yellowpaper foundations (payment primitives, conservation of value, agreement framework) → `references/deep-researches/semantic-money-yellowpaper.md`
+- How GDA achieves O(1) streaming to unlimited receivers → `references/deep-researches/gda-scalability.md`
+- BasicParticle and the real-time balance formula → also `references/deep-researches/semantic-money-yellowpaper.md`
 
 ## Debugging Reverts
 
@@ -237,6 +246,8 @@ rounding remainder becomes an **adjustment flow to the pool admin**. If
 entire flow goes to admin. `distribute` (instant): the remainder simply
 isn't taken from the distributor — actual distributed amount < requested.
 Pools hold no balance; tokens flow through directly to members.
+See `references/deep-researches/gda-scalability.md` for the full rounding
+model with `align2` and adjustment flow math.
 
 **SuperTokenV1Library `address(this)`** — Convenience functions (`flow`,
 `flowX`, `distribute`, `distributeFlow`, `createPool`, `claimAll`) use

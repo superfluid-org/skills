@@ -12,7 +12,7 @@
       "name": "superfluid",
       "source": "./",
       "description": "Superfluid Protocol & ecosystem knowledge base — references, tools, and integration guides for real-time finance on EVM chains",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "Kaspar Kallas",
         "email": "superfluid@kasparkallas.com"
