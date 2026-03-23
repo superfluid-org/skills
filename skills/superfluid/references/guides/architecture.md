@@ -72,6 +72,15 @@ This design means all financial state for a token lives on that token contract.
 
 Creates continuous money streams: one sender, one receiver, constant flow rate.
 
+**Terminology: flow vs stream** — The protocol uses "flow" everywhere:
+`createFlow`, `updateFlow`, `deleteFlow`, `getFlow`, `FlowUpdated`. A flow
+always exists between two accounts for a given token (rate 0 when inactive).
+"Stream" is a higher-level concept introduced by the subgraph — a stream
+represents one continuous period of non-zero flow (rate 0→non-zero = stream
+created, back to 0 = stream closed). Prefer "flow" in code and variable names;
+"stream" is acceptable in user-facing text and event labels (`StreamCreated`,
+`StreamUpdated`, `StreamClosed`).
+
 - Flow rate is `int96` in wei/second
 - Sender must maintain a **buffer deposit** = flowRate * liquidationPeriod
 - When a sender's available balance goes negative ("critical"), anyone can

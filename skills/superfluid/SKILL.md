@@ -115,7 +115,7 @@ See `references/guides/super-apps.md` for the full guide.
 - MacroForwarder contract address and interface → also `references/guides/macro-forwarders.md`
 - Batch operation types and encoding rules → also `references/contracts/Superfluid.abi.yaml` (batch_operation_types)
 - EIP-712 signed macro patterns → `references/guides/macro-forwarders-eip712-example.md`
-- **Upcoming: Clear Signing** — will supersede MacroForwarder with native EIP-712 clear signing for Super Token operations. Human-readable transaction display (multilingual), third-party relaying (not limited to `msg.sender`), gasless transactions (fees paid in the Super Token), and custom fee schemes. Preview: https://clear-signing-website.vercel.app/
+- **Clear Signing** — supersedes MacroForwarder with native EIP-712 clear signing for Super Token operations. Human-readable transaction display (multilingual), third-party relaying (not limited to `msg.sender`), gasless transactions (fees paid in the Super Token), and custom fee schemes. https://tokens.superfluid.org/clear
 
 ### Sentinels and liquidation
 
@@ -163,7 +163,7 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - Resolve ENS / Farcaster / Lens handles → See API Services (Whois) below
 - Query protocol data via GraphQL → See Subgraphs below
 - Run a sentinel / liquidation bot → See Sentinels below
-- Get a Super Token listed / enable automations → See Processes below
+- Get a Super Token listed → https://tokens.superfluid.org/listing (submit via GitHub) — See also Processes below
 
 ### Displaying flowing balances (frontend)
 
@@ -258,6 +258,12 @@ redistributed to stakers and LPs. All unlocks (including instant) require
 `msg.value` of 0.0001 ETH (`UNLOCKING_FEE`, sent to DAO treasury). Periods
 of 7–365 days deploy a Fontaine beacon proxy that streams tokens over the
 unlock period with a proportional tax.
+
+**balanceOf clamps to zero** — `balanceOf` returns `max(0, availableBalance)` for
+ERC-20 compatibility. Accounts with active outgoing streams can go negative
+(critical), but `balanceOf` will still show 0. Use `realtimeBalanceOfNow` to
+detect negative balances — a negative `availableBalance` means the account is
+critical and awaiting liquidation. Once liquidated, the balance resets to zero.
 
 ## Reading the Rich ABI YAMLs
 
@@ -360,6 +366,7 @@ resolved URL for a specific chain.
 
 ### Apps
 
+- Super Tokens https://tokens.superfluid.org — Official Super Tokens site: ERC20x overview, Clear Signing, Super App hooks, and token listing
 - Dashboard https://app.superfluid.org — Stream management for end-users
 - Explorer https://explorer.superfluid.org — Block explorer for Superfluid Protocol
 - Claim https://claim.superfluid.org — SUP token, SUP points, reserves/lockers
