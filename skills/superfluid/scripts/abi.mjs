@@ -32,6 +32,14 @@ const ABI_MAP = {
   AutoWrapStrategy:               { module: "automation",  export: "autoWrapStrategyAbi" },
   FlowScheduler:                  { module: "automation",  export: "flowSchedulerAbi" },
   VestingSchedulerV3:             { module: "automation",  export: "vestingSchedulerV3Abi" },
+  // @sfpro/sdk/abi/sup
+  Fontaine:                       { module: "sup",         export: "fontaineAbi" },
+  FluidLocker:                    { module: "sup",         export: "lockerAbi" },
+  FluidLockerFactory:             { module: "sup",         export: "lockerFactoryAbi" },
+  FluidEPProgramManager:          { module: "sup",         export: "programManagerAbi" },
+  StakingRewardController:        { module: "sup",         export: "stakingRewardControllerAbi" },
+  SUPToken:                       { module: "sup",         export: "supTokenAbi" },
+  SUPVestingFactory:              { module: "sup",         export: "vestingFactoryAbi" },
 };
 
 // Shorthand aliases → canonical name.
@@ -59,6 +67,19 @@ const ALIASES = {
   vestingschedulerv3: "VestingSchedulerV3",
   vestingscheduler: "VestingSchedulerV3",
   vesting: "VestingSchedulerV3",
+  fontaine: "Fontaine",
+  locker: "FluidLocker",
+  fluidlocker: "FluidLocker",
+  lockerfactory: "FluidLockerFactory",
+  fluidlockerfactory: "FluidLockerFactory",
+  programmanager: "FluidEPProgramManager",
+  fluidepprogrammanager: "FluidEPProgramManager",
+  stakingrewardcontroller: "StakingRewardController",
+  staking: "StakingRewardController",
+  suptoken: "SUPToken",
+  sup: "SUPToken",
+  supvestingfactory: "SUPVestingFactory",
+  vestingfactory: "SUPVestingFactory",
 };
 
 function resolveContract(query) {

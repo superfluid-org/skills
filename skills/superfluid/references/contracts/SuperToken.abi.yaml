@@ -10,10 +10,6 @@
 # Proxy / upgradability functions are omitted:
 #   castrate, getCodeAddress, proxiableUUID, initialize, initializeWithAdmin, updateCode
 # Proxy-related events are also omitted: CodeUpdated, Initialized.
-#
-# Yield backend functions (enableYieldBackend, disableYieldBackend, getYieldBackend,
-# withdrawSurplusFromYieldBackend) are defined directly on the contract but are not
-# part of the canonical ISuperToken interface and are omitted here.
 
 meta:
   name: SuperToken
@@ -22,7 +18,21 @@ meta:
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SuperToken.sol
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SuperfluidToken.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/interfaces/superfluid/IYieldBackend.sol
   inherits: [SuperfluidToken, ISuperToken, UUPSProxiable]
+  yield_backends:
+    - name: AaveYieldBackend
+      note: "Production backend for ERC-20 wrapper tokens using Aave V3"
+      source: https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/AaveYieldBackend.sol
+    - name: AaveETHYieldBackend
+      note: "Variant for native-asset (ETH/WETH) wrapper tokens using Aave V3"
+      source: https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/AaveETHYieldBackend.sol
+    - name: ERC4626YieldBackend
+      note: "Generic backend for any ERC-4626 vault"
+      source: https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/ERC4626YieldBackend.sol
+    - name: SparkYieldBackend
+      note: "Extends ERC4626YieldBackend for Spark Protocol vaults with referral tracking"
+      source: https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/superfluid/SparkYieldBackend.sol
   variants:
     wrapper: "Standard ERC-20 wrapper — upgrade() / downgrade()"
     native-asset: "Native asset wrapper (SETH) — upgradeByETH() / downgradeToETH()"
@@ -472,6 +482,47 @@ getAdmin:
   outputs:
     - address
 
+# == Yield Backend ==
+# Hot-pluggable yield generation for wrapper Super Tokens. The yield backend is a
+# contract implementing IYieldBackend that is invoked via delegatecall. When enabled,
+# the underlying ERC-20 is deposited into a yield protocol (e.g. Aave, Spark, ERC4626 vaults).
+# Surplus yield (balance exceeding totalSupply) can be withdrawn by the admin.
+
+enableYieldBackend:
+  # Enable a yield backend and deposit all underlying token balance into it.
+  # Requires no existing yield backend to be set.
+  notes:
+    - "Gotcha: Reverts if a yield backend is already enabled — must call disableYieldBackend first to switch backends."
+    - "The yield backend contract is invoked via delegatecall — it executes in the SuperToken's context."
+  mutability: nonpayable
+  access: admin
+  inputs:
+    - newYieldBackend: address  # must implement IYieldBackend
+  emits: [YieldBackendEnabled]
+
+disableYieldBackend:
+  # Withdraw all assets from the yield backend and disable it.
+  notes:
+    - "Calls withdrawMax() then disable() on the backend via delegatecall."
+  mutability: nonpayable
+  access: admin
+  inputs: []
+  emits: [YieldBackendDisabled]
+
+getYieldBackend:
+  # Returns the current yield backend address, or address(0) if none is set.
+  mutability: view
+  inputs: []
+  outputs:
+    - yieldBackend: address
+
+withdrawSurplusFromYieldBackend:
+  # Withdraw yield surplus (deposited amount exceeding totalSupply) from the backend.
+  # The surplus is sent to a receiver defined by the yield backend implementation.
+  mutability: nonpayable
+  access: admin
+  inputs: []
+
 # == Self Operations ==
 # Can only be called by the token contract itself (address(this)).
 # Used by custom super token proxies (SETH, Pure) to mint/burn/approve/transfer
@@ -725,6 +776,13 @@ POOL_MEMBER_NFT:
   outputs:
     - address
 
+VERSION:
+  # Returns the version string of the SuperToken logic contract (e.g. "1.0.0").
+  mutability: view
+  inputs: []
+  outputs:
+    - string
+
 # == Events ==
 
 events:
@@ -812,6 +870,18 @@ events:
     data:
       - oldAdmin: address
       - newAdmin: address
+
+  # -- Yield Backend --
+
+  YieldBackendEnabled:
+    indexed:
+      - yieldBackend: address
+    data:
+      - depositAmount: uint256
+
+  YieldBackendDisabled:
+    indexed:
+      - yieldBackend: address
 
   PoolAdminNFTCreated:
     # Emitted once during logic contract constructor deployment.
