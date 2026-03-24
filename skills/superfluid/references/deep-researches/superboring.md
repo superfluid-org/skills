@@ -161,6 +161,8 @@ No SuperBoring-specific NPM packages. Depends on `@superfluid-finance/ethereum-c
 
 SuperBoring is Superfluid Labs' reference pattern for building streaming-based exchange protocols. The evolution from Ricochet Exchange (IDA-based, Polygon) to SuperBoring (GDA-based, Base/Optimism) mirrors the protocol's progression toward GDA as the preferred distribution primitive. The TOREX architecture with competitive Liquidity Movers and TWAP oracle validation represents the canonical streaming DEX design.
 
+For detailed TOREX protocol mechanics (discount model, back adjustments, TWAP observer, liquidity mover implementations, Twin TOREX) see `torex.md`.
+
 ---
 
 ## Timeline

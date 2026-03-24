@@ -184,6 +184,7 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - Planet IX (GameFi, CFA, custom Super Tokens, SuperApp callbacks) → `references/deep-researches/planet-ix.md`
 - Nerite (USND stablecoin, Custom Pure Super Token, CFA+GDA) → `references/deep-researches/nerite.md`
 - SuperBoring (DCA, CFA→GDA TOREX pattern, Superfluid Labs) → `references/deep-researches/superboring.md`
+- TOREX (TWAP Oracle Exchange — core streaming DEX mechanism, discount model, liquidity movers, Twin TOREX) → `references/deep-researches/torex.md`
 - Giveth (zero-fee donations, CFA recurring streams) → `references/deep-researches/giveth.md`
 - Streme.fun (token launcher, Pure Super Tokens, GDA staking) → `references/deep-researches/streme.md`
 

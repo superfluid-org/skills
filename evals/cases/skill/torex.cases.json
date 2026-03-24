@@ -1,0 +1,65 @@
+[
+  {
+    "id": "torex-discount-model",
+    "description": "AI should explain TOREX discount model that prevents stalling",
+    "prompt": "How does TOREX prevent stalling when the TWAP price diverges from spot price for an extended period?",
+    "criteria": [
+      { "criterion": "shifted_reciprocal", "description": "Explains the shifted reciprocal discount function f(v,t) = v * F / (F + t) where discount grows with time since last LME", "weight": 3 },
+      { "criterion": "non_stalling", "description": "States that the ever-increasing discount guarantees a liquidity mover will eventually find the swap profitable", "weight": 3 },
+      { "criterion": "parameterization", "description": "Mentions tau/epsilon parameterization or discount factor F", "weight": 1 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate mechanisms or claim TOREX uses spot prices", "weight": 2 }
+    ],
+    "golden_facts": [
+      "TOREX uses a shifted reciprocal discount model: f(v, t) = v * F / (F + t)",
+      "At t=0 (right after an LME) there is zero discount; as t grows the discount increases toward 100%",
+      "F can be parameterized as tau * (1 - epsilon) / epsilon where at time tau the discount is epsilon"
+    ],
+    "anti_patterns": [
+      "Claiming TOREX uses spot prices instead of TWAP",
+      "Suggesting manual intervention or governance is needed to unstall"
+    ],
+    "tags": ["correctness", "torex", "deep-research"]
+  },
+  {
+    "id": "torex-back-adjustments",
+    "description": "AI should explain TOREX back charge when a new streamer joins between LMEs",
+    "prompt": "I just started streaming into a TOREX. Why was I charged extra tokens upfront?",
+    "criteria": [
+      { "criterion": "back_charge", "description": "Explains back charge: new streamer pays the missing contribution since the last LME to prevent free-riding", "weight": 3 },
+      { "criterion": "back_refund", "description": "Mentions the inverse case: back refund when a streamer departs between LMEs", "weight": 2 },
+      { "criterion": "fairness_rationale", "description": "Explains this ensures fair distribution — without it, new streamers would get a share of the next swap without having contributed proportionally", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate mechanisms or confuse with protocol fees", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Back charge: new streamer pays back the missing contribution since the last LME",
+      "Back refund: departing streamer gets refunded their contribution since the last LME",
+      "This is a fairness mechanism, not a fee — it prevents gaming the distribution timing"
+    ],
+    "anti_patterns": [
+      "Describing the back charge as a fee or protocol tax",
+      "Confusing back adjustments with BORING token staking"
+    ],
+    "tags": ["correctness", "torex", "deep-research"]
+  },
+  {
+    "id": "torex-twin-concept",
+    "description": "AI should explain Twin TOREX netting for capital efficiency",
+    "prompt": "What is a Twin TOREX and how does it reduce swap costs?",
+    "criteria": [
+      { "criterion": "inverse_pairs", "description": "Explains Twin TOREX as two inverse TOREX contracts for the same token pair (e.g., ETHx->USDCx and USDCx->ETHx)", "weight": 3 },
+      { "criterion": "netting", "description": "Explains Rich/Poor analysis: the Rich torex moves first, its out-tokens feed the Poor torex, only the shortfall needs an external DEX swap", "weight": 3 },
+      { "criterion": "capital_efficiency", "description": "States this reduces capital requirements and DEX interaction costs", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not describe Twin TOREX as a separate protocol or confuse with Uniswap pool pairs", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Twin TOREX pairs two inverse TOREX contracts trading the same token pair in opposite directions",
+      "TwinTorexLiquidityMover nets the two sides: only the shortfall after internal matching goes to an external DEX",
+      "The Rich torex (more accumulated liquidity) moves first; its output feeds the Poor torex"
+    ],
+    "anti_patterns": [
+      "Describing Twin TOREX as a separate protocol unrelated to TOREX",
+      "Confusing Twin TOREX with Uniswap V3 pool token pair ordering"
+    ],
+    "tags": ["correctness", "torex", "deep-research"]
+  }
+]
