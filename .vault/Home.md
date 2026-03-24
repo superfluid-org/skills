@@ -16,6 +16,8 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T046-smart-contract-patterns-evals]] -- Add eval cases for smart contract patterns guide
+- [[T045-smart-contract-patterns-guide]] -- Add smart contract patterns guide, GDA gotchas, skill corrections
 - [[T044-torex-deep-research]] -- Add TOREX deep research and eval cases
 - [[T043-deep-research-eval-cases]] -- Add eval cases for semantic money and GDA scalability deep researches
 - [[T042-semantic-money-gda-deep-researches]] -- Add Semantic Money yellowpaper and GDA scalability deep researches
@@ -73,7 +75,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 - **Skill entry**: `skills/superfluid/SKILL.md`
 - **Contracts**: `skills/superfluid/references/contracts/` (22 Rich ABI YAMLs + 24 selector sidecars + format spec)
 - **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 6 `.graphql` schemas, 5 usage guides)
-- **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, macro-forwarders, sdks, scripts, api-services, sup-and-dao, flowing-balances)
+- **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, smart-contract-patterns, macro-forwarders, sdks, scripts, api-services, sup-and-dao, flowing-balances)
 - **Deep researches**: `skills/superfluid/references/deep-researches/` (12 ecosystem deep-dives)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`, `selectors.mjs`)
 - **Evals**: `evals/` (script tests + skill evals)

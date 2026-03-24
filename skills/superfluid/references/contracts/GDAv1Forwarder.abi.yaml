@@ -137,6 +137,7 @@ distributeFlow:
   # Start or update a continuous flow distribution from `from` into the pool.
   notes:
     - "Gotcha: The actual flow rate may differ from the requested rate due to rounding across member units. The difference does not stay in the pool — it is streamed to the admin as a continuous adjustment flow. If requestedFlowRate < totalUnits, the per-unit rate truncates to 0 and the entire flow goes to the admin. Unit changes can only increase the adjustment flow (sticky), never decrease it. Re-call distributeFlow to reset."
+    - "Gotcha: GDA has no app credit — unlike CFA, a Super App cannot borrow deposit buffer for GDA flows. The caller must fund the buffer deposit from its own balance or via ERC-20 transferFrom from the user."
   mutability: nonpayable
   access: admin | anyone(if-pool-allows) | anyone(if-liquidation)
   inputs:

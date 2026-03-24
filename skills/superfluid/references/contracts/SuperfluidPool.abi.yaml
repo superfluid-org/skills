@@ -71,6 +71,7 @@ decreaseMemberUnits:
   # Decrease a member's units by a delta.
   notes:
     - "Gotcha: Same rounding caveat as updateMemberUnits — does not recompute per-unit flow rate."
+    - "Reverts with uint128 underflow if subtractedUnits > current units. Use updateMemberUnits(member, 0) if you want to remove all units safely."
   mutability: nonpayable
   access: admin | GDA
   inputs:

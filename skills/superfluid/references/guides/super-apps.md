@@ -69,6 +69,14 @@ Three rules govern how much credit the CFA grants:
   the Super App needs to hold some tokens to cover the additional deposits
   beyond the 1:1 credit.
 
+### App Credit Is CFA-Only
+
+**GDA does not have an app credit mechanism.** A Super App that receives CFA
+inflows and distributes via GDA pool cannot borrow the deposit buffer — it
+must fund the GDA buffer separately (e.g., via ERC-20 `transferFrom` from
+the user or pre-funding the contract). See `smart-contract-patterns.md` § A
+for the workaround pattern.
+
 ### Deposit Impact on Sender
 
 The deposits for the Super App's outgoing streams are tracked as **owed deposit**
