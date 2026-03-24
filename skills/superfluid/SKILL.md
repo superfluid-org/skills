@@ -109,6 +109,7 @@ allowance enabling zero-balance operation. A 1:1 relay (one in, one out at
 the same rate) always works without tokens. Fan-out (1:N) requires the app to
 hold tokens for extra deposits. The sender's locked capital roughly doubles
 because outgoing stream deposits are backed as owed deposit on the sender.
+**App credit is CFA-only** — GDA has no app credit rule. See Common Gotchas below.
 See `references/guides/super-apps.md` for the full guide.
 
 ### Macro forwarders (composable batch operations)
@@ -185,7 +186,7 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - Planet IX (GameFi, CFA, custom Super Tokens, SuperApp callbacks) → `references/deep-researches/planet-ix.md`
 - Nerite (USND stablecoin, Custom Pure Super Token, CFA+GDA) → `references/deep-researches/nerite.md`
 - SuperBoring (DCA, CFA→GDA TOREX pattern, Superfluid Labs) → `references/deep-researches/superboring.md`
-- TOREX (TWAP Oracle Exchange — core streaming DEX mechanism, discount model, liquidity movers, Twin TOREX) → `references/deep-researches/torex.md`
+- TOREX (TWAP Oracle Exchange — streaming DEX, discount model, back charge/refund between LMEs, liquidity movers, Twin TOREX) → `references/deep-researches/torex.md`
 - Giveth (zero-fee donations, CFA recurring streams) → `references/deep-researches/giveth.md`
 - Streme.fun (token launcher, Pure Super Tokens, GDA staking) → `references/deep-researches/streme.md`
 

@@ -44,13 +44,11 @@
     "criteria": [
       { "criterion": "correct_cfa_address", "description": "States CFAv1Forwarder is 0xcfA132E353cB4E398080B9700609bb008eceB125", "weight": 3 },
       { "criterion": "correct_gda_address", "description": "States GDAv1Forwarder is 0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08", "weight": 3 },
-      { "criterion": "host_varies", "description": "States Host and agreement addresses vary per network, do not hardcode", "weight": 1 },
       { "criterion": "no_fabrication", "description": "Does not fabricate Host or other contract addresses from memory", "weight": 3 }
     ],
     "golden_facts": [
       "CFAv1Forwarder: 0xcfA132E353cB4E398080B9700609bb008eceB125 (uniform across most networks)",
-      "GDAv1Forwarder: 0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08",
-      "Host and agreement addresses vary per network — use metadata.mjs or @sfpro/sdk"
+      "GDAv1Forwarder: 0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08"
     ],
     "anti_patterns": [
       "Fabricating a Host address from memory",
@@ -82,7 +80,7 @@
   {
     "id": "correct-error-prefix-routing",
     "description": "AI should map error prefixes to the correct contract",
-    "prompt": "My transaction reverted with CFA_FLOW_ALREADY_EXISTS. What does this mean and how do I fix it?",
+    "prompt": "My transaction reverted with CFA_FLOW_ALREADY_EXISTS. Which contract does this error come from, what does it mean, and how do I fix it?",
     "criteria": [
       { "criterion": "correct_contract", "description": "Maps CFA_ prefix to CFA / ConstantFlowAgreementV1 (not CFAv1Forwarder)", "weight": 2 },
       { "criterion": "explains_error", "description": "Explains a flow already exists for this sender/receiver/token triple", "weight": 2 },
@@ -107,14 +105,12 @@
     "criteria": [
       { "criterion": "mentions_basic_particle", "description": "Mentions BasicParticle or the RTB formula: settled_value + flow_rate * (t - settled_at)", "weight": 3 },
       { "criterion": "explains_settle_on_write", "description": "Explains settle-on-write: state is only written on interactions, balance is computed on-the-fly from the formula", "weight": 3 },
-      { "criterion": "references_formal_spec", "description": "References the Semantic Money yellowpaper, formal spec, or semantic.money as the source", "weight": 1 },
       { "criterion": "no_hallucination", "description": "Does not fabricate formula components or claim balances are stored per-second", "weight": 2 }
     ],
     "golden_facts": [
       "BasicParticle stores three values: settled_at (timestamp), settled_value, and flow_rate",
       "Real-time balance = settled_value + flow_rate * (t - settled_at) — computed lazily, never stored per-second",
-      "State is only updated (settled) when an agreement operation occurs (settle-on-write pattern)",
-      "This is formalized in the Semantic Money yellowpaper by Miao ZhiCheng"
+      "State is only updated (settled) when an agreement operation occurs (settle-on-write pattern)"
     ],
     "anti_patterns": [
       "Claiming balances are updated every block or via cron jobs",

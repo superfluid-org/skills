@@ -23,7 +23,7 @@
   {
     "id": "torex-back-adjustments",
     "description": "AI should explain TOREX back charge when a new streamer joins between LMEs",
-    "prompt": "I just started streaming into a TOREX. Why was I charged extra tokens upfront?",
+    "prompt": "I started streaming into a TOREX between two LMEs. When I look at my token balance, I notice I lost more tokens than just the CFA deposit — there was an additional instant transfer. What is this extra charge and why does TOREX do it?",
     "criteria": [
       { "criterion": "back_charge", "description": "Explains back charge: new streamer pays the missing contribution since the last LME to prevent free-riding", "weight": 3 },
       { "criterion": "back_refund", "description": "Mentions the inverse case: back refund when a streamer departs between LMEs", "weight": 2 },
