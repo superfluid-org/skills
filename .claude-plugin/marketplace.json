@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "superfluid",
-      "source": "./",
+      "source": "./skills/superfluid",
       "description": "Superfluid Protocol & ecosystem knowledge base — references, tools, and integration guides for real-time finance on EVM chains",
       "version": "1.1.0",
       "author": {
