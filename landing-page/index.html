@@ -804,22 +804,22 @@
     }
 
     async function runAnimation() {
-      await typeText(headingEl, HEADING_TEXT, 90);
+      await typeText(headingEl, HEADING_TEXT, 55);
       if (aborted) return;
 
-      await sleep(400);
+      await sleep(250);
       if (aborted) return;
       headingEl.className = headingEl.className.replace(/cursor-\w+/g, '') + ' cursor-none';
 
       subtitleEl.classList.add('visible');
-      await sleep(350);
+      await sleep(200);
       if (aborted) return;
 
-      await typeText(taglineEl, TAGLINE_TEXT, 40);
+      await typeText(taglineEl, TAGLINE_TEXT, 25);
       if (aborted) return;
 
       taglineEl.className = taglineEl.className.replace(/cursor-\w+/g, '') + ' cursor-solid';
-      await sleep(500);
+      await sleep(300);
       if (aborted) return;
       taglineEl.className = taglineEl.className.replace(/cursor-\w+/g, '') + ' cursor-none';
 
