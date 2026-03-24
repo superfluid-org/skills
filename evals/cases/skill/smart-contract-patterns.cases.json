@@ -1,0 +1,255 @@
+[
+  {
+    "id": "gotcha-gda-no-app-credit",
+    "description": "GDA has no app credit — CFA→GDA splitting contracts cannot borrow deposit buffer",
+    "prompt": "I'm building a Super App that receives CFA streams and distributes them to a GDA pool. My contract has zero balance — it should work with app credit like a regular CFA relay, right?",
+    "criteria": [
+      {
+        "criterion": "states_no_app_credit",
+        "description": "Clearly states that GDA does not support the app credit mechanism (unlike CFA)",
+        "weight": 3
+      },
+      {
+        "criterion": "explains_workaround",
+        "description": "Explains how to fund the GDA buffer deposit — any viable mechanism counts: ERC-20 approve + transferFrom from the user, pre-funding the contract with tokens, or similar",
+        "weight": 2
+      },
+      {
+        "criterion": "no_hallucination",
+        "description": "Does not fabricate functions, mechanisms, or claim GDA has app credit",
+        "weight": 2
+      }
+    ],
+    "golden_facts": [
+      "GDA does not have the app credit rule that CFA has",
+      "A Super App receiving CFA and distributing via GDA cannot borrow the deposit buffer",
+      "The contract must fund the GDA stream's buffer deposit from its own balance or via ERC-20 transferFrom from the user"
+    ],
+    "anti_patterns": [
+      "Saying GDA supports app credit or that it works the same as CFA relay",
+      "Suggesting zero-balance operation works for CFA→GDA splitting"
+    ],
+    "tags": ["gotchas", "gda", "super-apps", "core"]
+  },
+  {
+    "id": "gotcha-gda-unit-scaling",
+    "description": "GDA flow truncates to zero when flowRate/totalUnits < 1 — all goes to admin",
+    "prompt": "My GDA pool has 1 billion total units but a flow rate of only 1000 wei/sec. All the tokens are going to the pool admin instead of the members. Why?",
+    "criteria": [
+      {
+        "criterion": "explains_truncation",
+        "description": "Explains that per-unit rate = flowRate / totalUnits (integer division), and when flowRate < totalUnits the result truncates to 0 — so the entire flow goes to the pool admin as an adjustment flow",
+        "weight": 3
+      },
+      {
+        "criterion": "recommends_scaling",
+        "description": "Recommends using a scaling factor to reduce total units so that flowRate / totalUnits >= 1",
+        "weight": 2
+      },
+      {
+        "criterion": "mentions_adjustment_flow",
+        "description": "Mentions that the rounding remainder becomes an adjustment flow to the pool admin",
+        "weight": 1
+      },
+      {
+        "criterion": "no_hallucination",
+        "description": "Does not say this is a bug or fabricate pool configuration options to fix it",
+        "weight": 2
+      }
+    ],
+    "golden_facts": [
+      "GDA distributes: each member receives flowRate * memberUnits / totalUnits per second (integer division)",
+      "When flowRate / totalUnits < 1, the per-unit rate truncates to 0",
+      "The rounding remainder becomes an adjustment flow streamed to the pool admin",
+      "Solution: use a scaling factor so totalUnits <= flowRate after scaling",
+      "1000 wei/sec with 1 billion units = 0 per unit (1000 / 1_000_000_000 = 0 in integer math)"
+    ],
+    "anti_patterns": [
+      "Saying this is a protocol bug",
+      "Suggesting increasing the flow rate as the only solution without mentioning unit scaling"
+    ],
+    "tags": ["gotchas", "gda"]
+  },
+  {
+    "id": "correct-automation-public-operator",
+    "description": "Public operator pattern requires CFA ACL permissions + ERC-20 allowance + createFlowFrom",
+    "prompt": "I want to build a contract that manages CFA flows on behalf of users and can transfer Super Tokens from their balance (e.g., lump-sum payments or deposits). Users register their intent, and off-chain keepers call my contract to execute. What on-chain permissions does my contract need from users, and what functions does it use to act on their behalf?",
+    "criteria": [
+      {
+        "criterion": "mentions_acl_permissions",
+        "description": "States that the contract needs CFA flow operator permissions from users — via grantPermissions, updateFlowOperatorPermissions, setFlowPermissions, or equivalent ACL granting mechanism",
+        "weight": 3
+      },
+      {
+        "criterion": "mentions_erc20_approve",
+        "description": "Mentions that users may also need to grant ERC-20 allowance (superToken.approve) for the contract to transfer tokens on their behalf — for deposits, compensation, lump-sum transfers, or similar",
+        "weight": 2
+      },
+      {
+        "criterion": "mentions_flowfrom_functions",
+        "description": "Mentions the functions used to act on behalf of users: createFlowFrom, deleteFlowFrom, setFlowrateFrom, or equivalent operator flow functions",
+        "weight": 2
+      },
+      {
+        "criterion": "no_hallucination",
+        "description": "Does not fabricate permission functions or flow operator mechanisms that don't exist in Superfluid",
+        "weight": 2
+      }
+    ],
+    "golden_facts": [
+      "CFA ACL permissions: users grant via CFAv1Forwarder.grantPermissions(token, operator) for full control, or updateFlowOperatorPermissions(token, operator, permissions, flowRateAllowance) for granular",
+      "ERC-20 allowance: superToken.approve(operator, amount) — needed when the contract transfers tokens (deposits, compensation, cliffs)",
+      "The contract uses createFlowFrom / deleteFlowFrom / setFlowrateFrom to manage flows on behalf of users",
+      "VestingSchedulerV3 and FlowScheduler are production implementations of this pattern"
+    ],
+    "anti_patterns": [
+      "Fabricating permission function names not in the Superfluid protocol"
+    ],
+    "tags": ["correctness", "cfa", "automation"]
+  },
+  {
+    "id": "correct-passive-vs-superapp",
+    "description": "Stream-based access control doesn't require a Super App — passive query suffices",
+    "prompt": "I want to gate access to my smart contract based on whether someone is actively streaming to me. Do I need to build a Super App?",
+    "criteria": [
+      {
+        "criterion": "recommends_passive_query",
+        "description": "Recommends querying stream state directly (e.g., getFlowRate or getFlowInfo in a view function) without building a Super App",
+        "weight": 3
+      },
+      {
+        "criterion": "explains_when_superapp_needed",
+        "description": "Explains when a Super App IS needed — reactive logic, relaying/splitting streams, executing code on stream changes",
+        "weight": 2
+      },
+      {
+        "criterion": "no_hallucination",
+        "description": "Does not fabricate functions or say a Super App is always required to read stream state",
+        "weight": 2
+      }
+    ],
+    "golden_facts": [
+      "You do NOT need a Super App to check if someone is streaming to you",
+      "Query getFlowRate(token, sender, receiver) in a view function for passive access gating",
+      "A Super App is only needed if you want to react to stream lifecycle events (create/update/delete)",
+      "Passive query is cheaper and simpler than a Super App"
+    ],
+    "anti_patterns": [
+      "Saying you must build a Super App to read stream state",
+      "Recommending Super App callbacks when only read access is needed"
+    ],
+    "tags": ["correctness", "cfa"]
+  },
+  {
+    "id": "correct-custom-supertoken-types",
+    "description": "Multiple Super Token variants: Pure, Wrapper, Native Asset/SETH, Bridged/xERC20",
+    "prompt": "What are the different types of Super Tokens, and what are the key differences between them?",
+    "criteria": [
+      {
+        "criterion": "lists_core_types",
+        "description": "Lists at least Pure (no underlying, selfMint for supply) and ERC-20 Wrapper (wraps existing ERC-20), plus at least one of: Native Asset/SETH (wraps ETH) or Bridged/xERC20 (cross-chain with rate limits)",
+        "weight": 3
+      },
+      {
+        "criterion": "explains_differences",
+        "description": "Explains key differences between the types: how supply is backed, whether upgrade/downgrade is supported, and any unique characteristics",
+        "weight": 2
+      },
+      {
+        "criterion": "no_hallucination",
+        "description": "Does not fabricate Super Token types or incorrect deployment mechanisms",
+        "weight": 2
+      }
+    ],
+    "golden_facts": [
+      "Pure SuperToken: no underlying ERC-20, uses selfMint() for initial supply, no upgrade/downgrade",
+      "ERC-20 Wrapper SuperToken: wraps an existing ERC-20, users upgrade/downgrade to convert, always 18 decimals",
+      "Native Asset SuperToken (SETH): wraps ETH/MATIC/etc, uses upgradeByETH/downgradeToETH, pre-deployed by governance on each network",
+      "Bridged/xERC20 SuperToken: cross-chain with rolling 24-hour rate limits per bridge (mint/burn separate), developer-deployed",
+      "All share the same logic contract (UUPS proxy), deployed via SuperTokenFactory"
+    ],
+    "anti_patterns": [
+      "Confusing Pure with Wrapper (saying Pure has an underlying token)"
+    ],
+    "tags": ["correctness", "tokens"]
+  },
+  {
+    "id": "codegen-cfa-gda-splitter",
+    "description": "CFA→GDA splitting contract must handle buffer funding — code generation test",
+    "prompt": "Write a Solidity Super App that receives a CFA stream and distributes it to a GDA pool. Include all the important gotchas.",
+    "criteria": [
+      {
+        "criterion": "addresses_buffer_funding",
+        "description": "Addresses the GDA buffer funding problem — mentions or handles that GDA has no app credit and the contract needs to fund the buffer deposit (e.g., via transferFrom, pre-funding, or comments explaining the requirement)",
+        "weight": 3
+      },
+      {
+        "criterion": "uses_withctx_variants",
+        "description": "Uses WithCtx variants (createFlowWithCtx, distributeFlowWithCtx, etc.) inside callbacks and chains the context",
+        "weight": 2
+      },
+      {
+        "criterion": "separates_callback_cases",
+        "description": "Handles CREATE, UPDATE, and DELETE callbacks with different logic (not a single catch-all)",
+        "weight": 2
+      },
+      {
+        "criterion": "no_hallucinated_functions",
+        "description": "Does not fabricate Superfluid function names, parameters, or library methods that don't exist",
+        "weight": 3
+      }
+    ],
+    "golden_facts": [
+      "GDA has no app credit — the contract cannot rely on zero-balance operation for the GDA distribution",
+      "All agreement operations inside callbacks must use WithCtx variants and chain the context through",
+      "onFlowCreated, onFlowUpdated, onFlowDeleted should have separate logic",
+      "The delete callback (onFlowDeleted) must not revert — use try/catch for external calls",
+      "SuperTokenV1Library provides distributeFlowWithCtx for GDA operations in callbacks",
+      "getCFAFlowRate(token, sender, receiver) and getCFANetFlowRate(token, account) are valid SuperTokenV1Library query functions"
+    ],
+    "anti_patterns": [
+      "Assuming app credit works for GDA distributions (zero-balance operation)",
+      "Using non-WithCtx calls (e.g., token.distributeFlow()) inside callbacks",
+      "Not mentioning the buffer funding requirement at all"
+    ],
+    "tags": ["code-generation", "gda", "super-apps"]
+  },
+  {
+    "id": "routing-smart-contract-patterns",
+    "description": "Delivers production smart contract pattern knowledge when asked about common patterns",
+    "prompt": "I need to understand common patterns for building Superfluid smart contracts — things like how production apps handle GDA pool precision, proxy architectures, and automation patterns.",
+    "criteria": [
+      {
+        "criterion": "covers_gda_precision",
+        "description": "Explains GDA unit scaling for precision — when flowRate / totalUnits < 1, per-unit rate truncates to zero. Recommends scaling factor or reducing units.",
+        "weight": 3
+      },
+      {
+        "criterion": "covers_proxy_architectures",
+        "description": "Discusses proxy patterns used in Superfluid apps: at least two of Beacon proxy, Create2, Minimal proxy (Clones), or UUPS",
+        "weight": 2
+      },
+      {
+        "criterion": "covers_automation",
+        "description": "Explains the public operator / automation pattern: storing user intent on-chain, requiring ACL + ERC-20 allowance permissions, and permissionless keeper execution",
+        "weight": 2
+      },
+      {
+        "criterion": "no_hallucination",
+        "description": "Does not fabricate pattern names, function signatures, or architectural concepts that don't exist in Superfluid",
+        "weight": 2
+      }
+    ],
+    "golden_facts": [
+      "GDA unit scaling ensures flowRate / totalUnits >= 1 to prevent truncation",
+      "Proxy architectures used in production: Beacon proxy (multi-instance upgradeable), Create2 (deterministic addresses), Minimal proxy/Clones (cheapest deployment), UUPS (single-instance upgradeable)",
+      "Automation pattern: contract stores user intent, receives CFA ACL + ERC-20 allowance, exposes permissionless execution functions for off-chain keepers",
+      "VestingSchedulerV3 and FlowScheduler are production implementations of the automation pattern"
+    ],
+    "anti_patterns": [
+      "Fabricating pattern names or architectures not used in Superfluid ecosystem",
+      "Providing only vague generalities without specific Superfluid details"
+    ],
+    "tags": ["routing"]
+  }
+]

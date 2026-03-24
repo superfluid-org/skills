@@ -102,6 +102,7 @@ callbacks. See the YAML header and glossary for Foundry testing gotchas.
 - CFA callback hooks (simplified base) → `references/contracts/CFASuperAppBase.abi.yaml`
 - Token-centric API for callback logic → `references/contracts/SuperTokenV1Library.abi.yaml` (use `WithCtx` variants)
 - App registration, Host context, batch calls → `references/contracts/Superfluid.abi.yaml`
+- Smart contract patterns (GDA pools, callbacks, custom tokens, automation, proxies) → `references/guides/smart-contract-patterns.md`
 
 Super Apps that relay incoming flows use **app credit** — a temporary deposit
 allowance enabling zero-balance operation. A 1:1 relay (one in, one out at
@@ -273,6 +274,13 @@ redistributed to stakers and LPs. All unlocks (including instant) require
 `msg.value` of 0.0001 ETH (`UNLOCKING_FEE`, sent to DAO treasury). Periods
 of 7–365 days deploy a Fontaine beacon proxy that streams tokens over the
 unlock period with a proportional tax.
+
+**GDA has no app credit** — Unlike CFA, GDA does not support the app credit
+mechanism. A Super App that receives CFA inflows and distributes via GDA
+cannot borrow the deposit buffer — it must fund the GDA stream's buffer
+deposit from its own balance or via ERC-20 `transferFrom` from the user.
+This is the most common reason CFA→GDA stream-splitting contracts fail.
+See `references/guides/smart-contract-patterns.md` § A for the workaround.
 
 **balanceOf clamps to zero** — `balanceOf` returns `max(0, availableBalance)` for
 ERC-20 compatibility. Accounts with active outgoing streams can go negative
