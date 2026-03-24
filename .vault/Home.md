@@ -70,6 +70,8 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 - [[rich-abi-yaml-alignment]] -- Alignment with ABI JSON, NatSpec, and ethers.js
 - [[deep-research-guide]] -- Deep-research authoring guide and prompt template
 - [[The-Complete-Guide-to-Building-Skill-for-Claude.pdf]] -- Anthropic's official skill-building guide (PDF)
+- [[semantic-money-yellowpaper1.pdf]] -- Semantic Money yellowpaper (formal payment primitives)
+- [[torex-paper.pdf]] -- TOREX research paper (streaming DEX mechanics)
 
 ## Quick Reference
 
