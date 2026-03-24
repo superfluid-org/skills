@@ -87,7 +87,7 @@
       },
       {
         "criterion": "mentions_flowfrom_functions",
-        "description": "Mentions the functions used to act on behalf of users: createFlowFrom, deleteFlowFrom, setFlowrateFrom, or equivalent operator flow functions",
+        "description": "Mentions the functions used to act on behalf of users: createFlowFrom/setFlowrateFrom (Forwarder) OR createFlowByOperator/updateFlowByOperator/deleteFlowByOperator (CFA-level), or equivalent operator flow functions",
         "weight": 2
       },
       {
@@ -99,7 +99,7 @@
     "golden_facts": [
       "CFA ACL permissions: users grant via CFAv1Forwarder.grantPermissions(token, operator) for full control, or updateFlowOperatorPermissions(token, operator, permissions, flowRateAllowance) for granular",
       "ERC-20 allowance: superToken.approve(operator, amount) — needed when the contract transfers tokens (deposits, compensation, cliffs)",
-      "The contract uses createFlowFrom / deleteFlowFrom / setFlowrateFrom to manage flows on behalf of users",
+      "The contract uses createFlowFrom / deleteFlowFrom / setFlowrateFrom (Forwarder) or createFlowByOperator / updateFlowByOperator / deleteFlowByOperator (CFA-level) to manage flows on behalf of users",
       "VestingSchedulerV3 and FlowScheduler are production implementations of this pattern"
     ],
     "anti_patterns": [

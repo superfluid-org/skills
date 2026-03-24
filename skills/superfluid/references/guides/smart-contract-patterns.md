@@ -449,3 +449,8 @@ Use a Super App when:
 for dynamic ownership, but the protocol disabled CFA stream NFT creation
 due to spam. The passive state query concept remains valid — just don't
 rely on stream NFTs for ownership tracking.
+
+## See Also
+
+- Super App fundamentals (callback lifecycle, app credit, jailing, app levels) → `super-apps.md`
+- GDA scalability deep-dive (O(1) math, rounding model, PDPoolIndex) → `../deep-researches/gda-scalability.md`

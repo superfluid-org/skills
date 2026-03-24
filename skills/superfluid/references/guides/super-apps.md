@@ -151,3 +151,7 @@ Query `Host.isAppJailed(app)` or `Host.getAppManifest(app)` to check status.
   relative to the credit available will fail.
 - **Whitelist composite apps.** If your SECOND-level app calls a downstream
   Super App, call `Host.allowCompositeApp(target)` first.
+
+## See Also
+
+- Production patterns (GDA pools, CFA→GDA splitting, custom tokens, proxies, automation) → `smart-contract-patterns.md`
