@@ -190,6 +190,11 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - Giveth (zero-fee donations, CFA recurring streams) → `references/deep-researches/giveth.md`
 - Streme.fun (token launcher, Pure Super Tokens, GDA staking) → `references/deep-researches/streme.md`
 
+### Superfluid team brand & design
+
+- Color palette, typography, visual identity → `references/guides/brand-design.md`
+  Covers the Superfluid team's product design, not the broader protocol ecosystem.
+
 ### Formal specification and protocol theory
 
 - Yellowpaper foundations (payment primitives, conservation of value, agreement framework) → `references/deep-researches/semantic-money-yellowpaper.md`
