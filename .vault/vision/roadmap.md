@@ -1,5 +1,5 @@
 ---
-updated: 2026-03-24
+updated: 2026-04-14
 ---
 
 # Roadmap
@@ -30,6 +30,8 @@ v1.1.0 released — formal specification deep researches, GDA scalability analys
 
 ## Completed
 
+- **v1.1.2** -- Rename "Clear Signing" → "Clear Macro" across all skill references to match updated product name (T048).
+- **v1.1.1** -- Release infrastructure fixes: restore ClawHub publish path to skill directory, flatten release archive so SKILL.md is at zip root.
 - **v1.1.0** -- Semantic Money formal specification deep research: yellowpaper foundations, BasicParticle formula, index abstraction, agreement framework, FRP connection, Haskell spec walkthrough (T042). GDA scalability deep research: O(1) distribution via PDPoolIndex, operation walkthroughs, rounding model with align2, connected vs disconnected members, practical builder advice (T042). 2 new correctness eval cases for deep research routing (T043). TOREX deep research: streaming DEX mechanics, discount model, back adjustments, Twin TOREX, liquidity mover implementations, 3 eval cases (T044). Smart contract patterns guide: GDA pool patterns, Super App callbacks, custom SuperTokens, proxy/factory, automation/operator, stream access control — distilled from 8 production repos; GDA no-app-credit and decreaseMemberUnits corrections in ABI YAMLs; 7 eval cases (T045, T046). Cross-references, SKILL.md routing, Formal Foundations section in architecture.md. Brand design guide with color palette, typography, and visual identity for Superfluid team products (T047).
 - **v1.0.0** -- Flowing balances guide with framework-agnostic real-time balance display (T038). 5 ecosystem deep researches: Planet IX, Nerite, SuperBoring, Giveth, Streme (T039). ERC-8004 Agent Pool deep-research (T036). History, GoodDollar, Flow State deep researches and prompt guide (T035). Clear Signing preview, x402, Campaigns, social links (T034). Landing page with FAQ, OG tags, install instructions (T033). Release workflow and skill trigger keywords (T031). Plugin packaging with plugin.json (T037). Skill eval runner and evaluation test suite (T026, T024). SUP Token / Reserve System ABIs (T020). Per-subgraph usage guides (T018). Super Apps guide (T017). Version bump and .gitattributes export-ignore (T032, T030). Gotcha migration to notes fields (T029).
 - **v0.4.0** -- Subgraph query support: 4 GraphQL entity schemas (protocol-v1, vesting-scheduler, flow-scheduler, auto-wrap) and query-patterns guide in `references/subgraphs/` (T016). MacroForwarder guide with composable batch operations and EIP-712 signed macro example (T015). Renamed `.rich-abi.yaml` → `.abi.yaml` across all 17 reference files (T014). Added Graphinator sentinel and Token Prices API to ecosystem. Replaced marketplace install docs with skills.sh tutorial.
