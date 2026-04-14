@@ -7,7 +7,7 @@ description: >
   real-time balance, pool (member/distributor), IDA, sentinels, liquidation,
   TOGA, @sfpro/sdk, semantic money, yellowpaper, whitepaper
 metadata:
-  version: 1.1.1
+  version: 1.1.2
 ---
 
 # Superfluid Protocol Skill
@@ -118,7 +118,7 @@ See `references/guides/super-apps.md` for the full guide.
 - MacroForwarder contract address and interface → also `references/guides/macro-forwarders.md`
 - Batch operation types and encoding rules → also `references/contracts/Superfluid.abi.yaml` (batch_operation_types)
 - EIP-712 signed macro patterns → `references/guides/macro-forwarders-eip712-example.md`
-- **Clear Signing** — supersedes MacroForwarder with native EIP-712 clear signing for Super Token operations. Human-readable transaction display (multilingual), third-party relaying (not limited to `msg.sender`), gasless transactions (fees paid in the Super Token), and custom fee schemes. https://tokens.superfluid.org/clear
+- **Clear Macro** — supersedes MacroForwarder with native EIP-712 clear signing for Super Token operations. Human-readable transaction display (multilingual), third-party relaying (not limited to `msg.sender`), gasless transactions (fees paid in the Super Token), and custom fee schemes. https://tokens.superfluid.org/clear
 
 ### Sentinels and liquidation
 
@@ -395,7 +395,7 @@ resolved URL for a specific chain.
 
 ### Apps
 
-- Super Tokens https://tokens.superfluid.org — Official Super Tokens site: ERC20x overview, Clear Signing, Super App hooks, and token listing
+- Super Tokens https://tokens.superfluid.org — Official Super Tokens site: ERC20x overview, Clear Macro, Super App hooks, and token listing
 - Dashboard https://app.superfluid.org — Stream management for end-users
 - Explorer https://explorer.superfluid.org — Block explorer for Superfluid Protocol
 - Claim https://claim.superfluid.org — SUP token, SUP points, reserves/lockers

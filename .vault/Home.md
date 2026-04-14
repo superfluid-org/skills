@@ -16,6 +16,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T048-rename-clear-signing-to-clear-macro]] -- Rename Clear Signing to Clear Macro
 - [[T047-add-brand-design-guide]] -- Add brand design guide (color palette, typography, visual identity)
 - [[T046-smart-contract-patterns-evals]] -- Add eval cases for smart contract patterns guide
 - [[T045-smart-contract-patterns-guide]] -- Add smart contract patterns guide, GDA gotchas, skill corrections
