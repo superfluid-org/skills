@@ -98,7 +98,7 @@ These apps use the design system above and can serve as style references:
 - **Dashboard** https://app.superfluid.org — Stream management (the flagship app)
 - **Explorer** https://explorer.superfluid.org — Protocol block explorer
 - **Claim** https://claim.superfluid.org — SUP token claiming and reserves
-- **Tokens** https://tokens.superfluid.org — Super Tokens overview, Clear Signing, listing
+- **Tokens** https://tokens.superfluid.org — Super Tokens overview, Clear Macro, listing
 - **Campaigns** https://campaigns.superfluid.org — NFT campaigns with SUP rewards
 - **x402** https://x402.superfluid.org — HTTP 402 subscriptions via Superfluid streams
 - **8004 Agent Pool** https://8004-demo.superfluid.org — AI agent pool demo

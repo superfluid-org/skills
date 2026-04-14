@@ -74,7 +74,7 @@ Super Tokens extend ERC-20 with agreement logic baked into the token itself. All
 - **Super App Framework**: Contracts that react to agreement callbacks (stream created/updated/deleted).
 - **TOGA**: Manages liquidation incentives.
 - **Automation**: VestingScheduler, FlowScheduler.
-- **MacroForwarder / EIP712MacroBase**: Gasless meta-transaction system for relayed operations (EIP-712 Clear Signing).
+- **MacroForwarder / EIP712MacroBase**: Gasless meta-transaction system for relayed operations (EIP-712 Clear Macro).
 - **SuperfluidPool**: Created via GDA. ERC-20 where units = balance. Admin manages units, anyone can distribute (if allowed). 256 pool connections per account per token limit.
 
 ### Semantic Money Library
