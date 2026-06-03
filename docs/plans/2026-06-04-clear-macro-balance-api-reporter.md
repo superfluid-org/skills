@@ -194,16 +194,16 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
       dangling references
 
 ### Task 5: Document the Balance API
-- [ ] SKILL.md API Services list (after the Super API line ~365): add the Balance API one-liner
+- [x] SKILL.md API Services list (after the Super API line ~365): add the Balance API one-liner
       (`https://balances.superfluid.dev` — comprehensive CFA+GDA+IDA balances/reports/movements,
       read-only, no auth)
-- [ ] `references/guides/api-services.md`: add a "Balance API" section after "Super API" — base URL,
+- [x] `references/guides/api-services.md`: add a "Balance API" section after "Super API" — base URL,
       Scalar `/ui`, OpenAPI `/doc`, the endpoint list, and a **disambiguation callout** (Super = live
       balance only; Accounting = CFA+ERC-20, no GDA; Balance = most comprehensive)
-- [ ] add reciprocal one-line pointers in the existing Super API and Accounting sections of
+- [x] add reciprocal one-line pointers in the existing Super API and Accounting sections of
       `api-services.md`
-- [ ] verify: both files parse; `curl -s 'https://balances.superfluid.dev/v1/chains'` returns the
-      documented shape (record any mismatch as ⚠️)
+- [x] verify: both files parse; `curl -s 'https://balances.superfluid.dev/v1/chains'` returns the
+      documented shape — confirmed (returns `{"chains":[{"chainId":10,"canonical":"optimism-mainnet",...}]}`)
 
 ### Task 6: Add the Reporter pointer
 - [ ] SKILL.md Apps section: add a Reporter entry

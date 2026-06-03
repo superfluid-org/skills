@@ -363,7 +363,8 @@ package details, see `references/guides/sdks.md`.
 
 ### API Services
 
-- Super API `https://superapi.kazpi.com` — Real-time on-chain Super Token balances
+- Super API `https://superapi.kazpi.com` — Real-time on-chain Super Token balances (live balance only)
+- Balance API `https://balances.superfluid.dev` — comprehensive CFA+GDA+IDA balances, history, reports, movements; read-only, no auth
 - CMS `https://cms.superfluid.pro` — Token prices, price history, filtered token list
 - Points `https://cms.superfluid.pro/points` — SUP points campaigns
 - Accounting `https://accounting.superfluid.dev/v1` — Stream accounting with per-day chunking
