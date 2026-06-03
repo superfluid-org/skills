@@ -16,6 +16,10 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T052-version-bump-1.2.0]] -- Version bump 1.1.2 → 1.2.0
+- [[T051-clear-macro-balance-api-evals]] -- Eval cases for Clear Macro, Balance API, and Reporter
+- [[T050-balance-api-and-reporter]] -- Balance API + Reporter documentation
+- [[T049-clear-macro-guide-and-abis]] -- Clear Macro guide + Rich ABI YAMLs (TESTNET, OP Sepolia)
 - [[T048-rename-clear-signing-to-clear-macro]] -- Rename Clear Signing to Clear Macro
 - [[T047-add-brand-design-guide]] -- Add brand design guide (color palette, typography, visual identity)
 - [[T046-smart-contract-patterns-evals]] -- Add eval cases for smart contract patterns guide
@@ -79,7 +83,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 - **Skill entry**: `skills/superfluid/SKILL.md`
 - **Contracts**: `skills/superfluid/references/contracts/` (22 Rich ABI YAMLs + 24 selector sidecars + format spec)
 - **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 6 `.graphql` schemas, 5 usage guides)
-- **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, smart-contract-patterns, macro-forwarders, sdks, scripts, api-services, sup-and-dao, flowing-balances, brand-design)
+- **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, smart-contract-patterns, macro-forwarders, clear-macro, sdks, scripts, api-services, sup-and-dao, flowing-balances, brand-design)
 - **Deep researches**: `skills/superfluid/references/deep-researches/` (12 ecosystem deep-dives)
 - **Scripts**: `skills/superfluid/scripts/` (`metadata.mjs`, `tokenlist.mjs`, `balance.mjs`, `abi.mjs`, `selectors.mjs`)
 - **Evals**: `evals/` (script tests + skill evals)

@@ -238,14 +238,14 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
       shows all four and no stray `1.1.2` remains
 
 ### Task 9: Vault bookkeeping (tickets + roadmap)
-- [ ] create tickets `.vault/tickets/T049…T052` with frontmatter (`status`, `priority`, `tags`,
+- [x] create tickets `.vault/tickets/T049…T052` with frontmatter (`status`, `priority`, `tags`,
       `created`): T049 Clear Macro guide+YAMLs `[skill, guide, contracts, enhancement]`,
       T050 Balance API + Reporter `[skill, ecosystem, api, enhancement]`, T051 evals `[skill, evals]`,
       T052 version bump `[skill, release]`; record the key decisions + the @sfpro/sdk caveat
-- [ ] update `.vault/Home.md` (add tickets; add `clear-macro` to Quick Reference guides line)
-- [ ] update `.vault/vision/roadmap.md` (add a v1.2.0 Completed entry summarizing T049–T051; bump
+- [x] update `.vault/Home.md` (add tickets; add `clear-macro` to Quick Reference guides line)
+- [x] update `.vault/vision/roadmap.md` (add a v1.2.0 Completed entry summarizing T049–T051; bump
       `updated:` date)
-- [ ] verify: ticket numbers are unique/contiguous after T048; Home.md links resolve
+- [x] verify: ticket numbers are unique/contiguous after T048; Home.md links resolve
 
 ### Task N-1: Verify acceptance criteria
 - [ ] every Overview item is documented (Clear Macro guide+YAMLs, Balance API, Reporter pointer)

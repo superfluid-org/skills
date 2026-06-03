@@ -1,5 +1,5 @@
 ---
-updated: 2026-04-14
+updated: 2026-06-04
 ---
 
 # Roadmap
@@ -30,6 +30,13 @@ v1.1.0 released — formal specification deep researches, GDA scalability analys
 
 ## Completed
 
+- **v1.2.0** -- Clear Macro guide + Rich ABI YAMLs (`ClearMacroForwarderV1`, `IClearMacro`): EIP-712
+  clear signing, relaying, gasless transactions, Provider API; TESTNET ONLY (OP Sepolia 11155420,
+  PR #2148); selectors via `NON_SDK_ABIS` path (not in `@sfpro/sdk`) (T049). Balance API
+  (`balances.superfluid.dev`) docs: full endpoint list, disambiguation vs Super API and Accounting
+  API (CFA+GDA+IDA, history, reports, CSV); Reporter (`reporter.superfluid.org`) lightweight pointer
+  with deep-link param spec (T050). 5 eval cases for routing and correctness (T051). Version bump
+  1.1.2 → 1.2.0 (T052).
 - **v1.1.2** -- Rename "Clear Signing" → "Clear Macro" across all skill references to match updated product name (T048).
 - **v1.1.1** -- Release infrastructure fixes: restore ClawHub publish path to skill directory, flatten release archive so SKILL.md is at zip root.
 - **v1.1.0** -- Semantic Money formal specification deep research: yellowpaper foundations, BasicParticle formula, index abstraction, agreement framework, FRP connection, Haskell spec walkthrough (T042). GDA scalability deep research: O(1) distribution via PDPoolIndex, operation walkthroughs, rounding model with align2, connected vs disconnected members, practical builder advice (T042). 2 new correctness eval cases for deep research routing (T043). TOREX deep research: streaming DEX mechanics, discount model, back adjustments, Twin TOREX, liquidity mover implementations, 3 eval cases (T044). Smart contract patterns guide: GDA pool patterns, Super App callbacks, custom SuperTokens, proxy/factory, automation/operator, stream access control — distilled from 8 production repos; GDA no-app-credit and decreaseMemberUnits corrections in ABI YAMLs; 7 eval cases (T045, T046). Cross-references, SKILL.md routing, Formal Foundations section in architecture.md. Brand design guide with color palette, typography, and visual identity for Superfluid team products (T047).
