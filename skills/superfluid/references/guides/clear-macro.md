@@ -149,9 +149,24 @@ POST /v1/relay-executions
 Submit a signed EIP-712 payload for relaying. Returns `202 Accepted` with an
 execution ID.
 
-Request body: signed payload (signer address, macro address, params, signature,
-validity window, nonce). See the OpenAPI spec at `/docs/json` for the exact
-schema.
+Request body (see the OpenAPI spec at `/docs/json` for the authoritative schema):
+
+```jsonc
+{
+  "kind": "clearMacroV1",      // request kind discriminator
+  "chainId": 11155420,          // OP Sepolia
+  "macroAddress": "0x…",        // the IClearMacro contract
+  "signerAddress": "0x…",       // who signed the EIP-712 payload
+  "payload": "0x…",             // ABI-encoded payload (macro params + security struct)
+  "signature": "0x…"            // the EIP-712 signature over the payload
+  // optional: value, forceExecuteAfterPreflightRevert, clientRequestId, metadata
+}
+```
+
+Note: the validity window and ERC-4337-style nonce are **not** top-level fields —
+they live inside the ABI-encoded `payload` (the macro params plus a security
+struct). Build `payload` from the on-chain forwarder's expected encoding; do not
+flatten `validBefore`/`nonce` into the request body.
 
 **Poll status**
 
@@ -159,9 +174,15 @@ schema.
 GET /v1/relay-executions/{id}
 ```
 
-Poll until the execution reaches a terminal state (`submitted`, `confirmed`,
-`failed`). Use exponential backoff; typical confirmation time depends on OP
-Sepolia block times.
+Poll until the execution reaches a terminal state. The state machine is:
+
+- `pending` — accepted, no transaction hash yet
+- `submitted` — a transaction hash is known (not yet terminal)
+- terminal: `succeeded`, `reverted`, `rejected`, `failed`, `expired`, `canceled`
+
+Use exponential backoff; typical confirmation time depends on OP Sepolia block
+times. There is **no** `confirmed` state — a successful on-chain execution lands
+in `succeeded`.
 
 **Operations**
 
@@ -187,12 +208,14 @@ Standard health and Prometheus metrics endpoints.
    (see macro-forwarders-eip712-example.md for signTypedData mechanics)
 
 4. POST /v1/relay-executions
-   → submit { signer, macro, actionParams, signature, validUntil, nonce }
+   → submit { kind, chainId, macroAddress, signerAddress, payload, signature }
+     (validAfter/validBefore/nonce are ABI-encoded inside `payload`, not top-level)
    → receive { id }
 
 5. poll GET /v1/relay-executions/{id}
-   → repeat until state ∈ { confirmed, failed }
-   → on confirmed: execution hash; on failed: revert reason
+   → repeat until terminal state (succeeded | reverted | rejected | failed |
+     expired | canceled)
+   → on succeeded: transaction hash; on reverted/failed: revert reason
 ```
 
 The signer never submits a transaction. Gas is covered by the relay provider
@@ -206,7 +229,7 @@ scheme.
   provider is rejected.
 - **Provider binding**: a payload signed for provider A cannot be relayed by
   provider B (domain binding enforced by `ClearMacroForwarderV1`).
-- **Signature scope**: the signed payload covers `(macro, actionParams, validUntil, nonce)`.
+- **Signature scope**: the signed payload covers `(macro, actionParams, validAfter, validBefore, nonce)`.
   The relay provider cannot alter what the macro does — they only choose when to
   submit (within the validity window).
 - **Gasless only from the signer's perspective**: the provider pays gas in
