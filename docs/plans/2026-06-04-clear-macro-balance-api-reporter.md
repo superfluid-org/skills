@@ -216,18 +216,18 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
       created (lightweight, per decision)
 
 ### Task 7: Add eval cases
-- [ ] `evals/cases/skill/routing.cases.json`: add `route-clear-macro`
+- [x] `evals/cases/skill/routing.cases.json`: add `route-clear-macro`
       (gasless/relayed human-readable signed tx → `clear-macro.md`, flags testnet, Provider API;
       tags incl. `regression-t049`), `route-balance-api` (full history + GDA + CSV → Balance API,
       not Super/Accounting; `regression-t050`), `route-reporter-deeplink` (build a Reporter tax-CSV
       link → reporter.superfluid.org, params from llms.txt; `regression-t050`)
-- [ ] `evals/cases/skill/correctness.cases.json`: add `correctness-clear-macro-status` (skill flags
+- [x] `evals/cases/skill/correctness.cases.json`: add `correctness-clear-macro-status` (skill flags
       testnet/forward-looking; names `ClearMacroForwarderV1`/`IClearMacro` + capabilities→sign→relay
       →poll without hallucinating; `regression-t049`) and `correctness-balance-api-disambiguation`
       (Super vs Accounting vs Balance distinction; `regression-t050`)
-- [ ] verify JSON parses (`node -e "JSON.parse(require('fs').readFileSync('<file>','utf8'))"`)
-- [ ] run `node evals/runners/skill-eval-runner.mjs --file routing` and `--file correctness`
-      (or `--dry-run` if no model access; full run required before completion) — new cases pass
+- [x] verify JSON parses (`node -e "JSON.parse(require('fs').readFileSync('<file>','utf8'))"`)
+- [x] run `node evals/runners/skill-eval-runner.mjs --file routing` and `--file correctness`
+      (or `--dry-run` if no model access; full run required before completion) — new cases pass (dry-run verified; 5 cases recognized)
 
 ### Task 8: Version bump 1.1.2 → 1.2.0
 - [ ] `.claude-plugin/plugin.json` → `version` (source of truth)

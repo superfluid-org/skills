@@ -141,5 +141,55 @@
       "Confusing distributeFlow gas with connectPool/claimAll gas (which is per-member but only affects that member)"
     ],
     "tags": ["correctness", "gda", "scalability", "deep-research"]
+  },
+  {
+    "id": "correctness-clear-macro-status",
+    "description": "AI should flag Clear Macro as testnet-only/forward-looking and describe the correct flow without hallucinating (T049 regression)",
+    "prompt": "I heard about something called Clear Macro in Superfluid that lets users sign operations with human-readable prompts and have a relayer execute them. Can you explain how it works, what contracts are involved, and how I'd use the off-chain Provider API?",
+    "criteria": [
+      { "criterion": "flags_testnet_status", "description": "Explicitly states Clear Macro is testnet-only (OP Sepolia, chainId 11155420) and/or that it comes from an unmerged PR / is forward-looking", "weight": 3 },
+      { "criterion": "names_correct_contracts", "description": "Names ClearMacroForwarderV1 and/or IClearMacro as the on-chain contracts", "weight": 2 },
+      { "criterion": "correct_provider_flow", "description": "Describes the correct Provider API flow: GET /v1/capabilities → build + sign EIP-712 payload → POST /v1/relay-executions → poll for terminal state", "weight": 3 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate contract addresses, function names, or Provider API endpoints beyond what is documented", "weight": 3 }
+    ],
+    "golden_facts": [
+      "Clear Macro is TESTNET ONLY — currently deployed on OP Sepolia (chainId 11155420); addresses and API may change",
+      "On-chain contracts: ClearMacroForwarderV1 (verifies EIP-712 payloads, enforces provider ACL, calls Host.batchCall) and IClearMacro (EIP-712 type derivation interface)",
+      "Provider API flow: GET /v1/capabilities (get forwarder address + macro allowlist) → sign EIP-712 payload → POST /v1/relay-executions (202 + execution id) → GET /v1/relay-executions/{id} (poll until terminal)",
+      "Gasless: fees can be paid in the Super Token; relayer pays on-chain gas"
+    ],
+    "anti_patterns": [
+      "Claiming Clear Macro is live on mainnet or production-ready",
+      "Omitting the testnet/forward-looking caveat",
+      "Describing a flow that skips the capabilities step or inverts sign → POST order",
+      "Fabricating a contract address for ClearMacroForwarderV1 on mainnet"
+    ],
+    "tags": ["correctness", "clear-macro", "macro", "regression-t049"]
+  },
+  {
+    "id": "correctness-balance-api-disambiguation",
+    "description": "AI should correctly distinguish Super API, Accounting API, and Balance API by their respective capabilities (T050 regression)",
+    "prompt": "Superfluid seems to have multiple balance-related APIs. What is the difference between the Super API, the Accounting API, and the Balance API? Which one should I use if I need GDA pool history, CSV exports, and point-in-time balances?",
+    "criteria": [
+      { "criterion": "super_api_scope", "description": "Correctly describes Super API as providing only a live/current balance snapshot", "weight": 2 },
+      { "criterion": "accounting_api_scope", "description": "Correctly describes Accounting API as covering CFA + ERC-20 but lacking GDA coverage", "weight": 2 },
+      { "criterion": "balance_api_scope", "description": "Correctly describes Balance API as the most comprehensive: CFA + GDA + IDA, history, reports, CSV export", "weight": 3 },
+      { "criterion": "recommends_balance_api", "description": "Recommends Balance API (balances.superfluid.dev) for the stated use case (GDA history + CSV + point-in-time)", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate API capabilities or authentication requirements", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Super API = live balance only (single point-in-time, no history)",
+      "Accounting API = CFA + ERC-20 balances; does NOT cover GDA",
+      "Balance API (balances.superfluid.dev) = CFA + GDA + IDA, history, balance-report (daily/weekly/monthly, JSON or CSV), balance-snapshots, entries, movements — most comprehensive",
+      "Balance API is read-only and requires no authentication; available on mainnet and testnet",
+      "For GDA history or CSV exports, Balance API is the correct choice"
+    ],
+    "anti_patterns": [
+      "Claiming the Accounting API covers GDA distributions",
+      "Describing the Super API as providing historical or streaming balance data",
+      "Recommending the Super API or Accounting API for GDA history or CSV export use cases",
+      "Claiming any of these APIs requires authentication"
+    ],
+    "tags": ["correctness", "balance-api", "api", "regression-t050"]
   }
 ]

@@ -101,5 +101,73 @@
       "Using wrong endpoint URL pattern"
     ],
     "tags": ["routing", "subgraph"]
+  },
+  {
+    "id": "route-clear-macro",
+    "description": "Routes to clear-macro.md guide and Provider API for gasless/relayed human-readable signed transactions",
+    "prompt": "I want users to sign a Superfluid operation with a human-readable wallet prompt (no hex blobs), have a relayer pay the gas, and optionally pay fees in the Super Token itself. What Superfluid mechanism handles this and how does the flow work?",
+    "criteria": [
+      { "criterion": "routes_to_clear_macro", "description": "Identifies Clear Macro / ClearMacroForwarderV1 as the mechanism for EIP-712 clear signing with relaying", "weight": 3 },
+      { "criterion": "mentions_provider_api", "description": "Describes the off-chain Provider API (capabilities / relay-executions / polling) as the relay component", "weight": 2 },
+      { "criterion": "flags_testnet_status", "description": "Explicitly flags that Clear Macro is currently testnet-only (OP Sepolia, chainId 11155420) and may be in-flux", "weight": 3 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate contract addresses, function names, or API endpoints", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Clear Macro extends MacroForwarder with EIP-712 clear signing for human-readable wallet prompts",
+      "Relaying is handled off-chain via the Clear Macro Provider API (POST /v1/relay-executions, then poll)",
+      "Gasless transactions and fees paid in Super Token are supported features",
+      "TESTNET ONLY: currently deployed on OP Sepolia (chainId 11155420); PR #2148 may be unmerged"
+    ],
+    "anti_patterns": [
+      "Claiming Clear Macro is available on mainnet",
+      "Omitting the testnet/forward-looking status caveat",
+      "Describing the Provider API without the capabilities → sign → relay → poll flow order"
+    ],
+    "tags": ["routing", "clear-macro", "macro", "regression-t049"]
+  },
+  {
+    "id": "route-balance-api",
+    "description": "Routes to Balance API (not Super API or Accounting API) for full history, GDA, and CSV export",
+    "prompt": "I need to pull a full transaction history for an address including GDA pool distributions, get the running balance over time for charting, and export a CSV report. Which Superfluid API should I use?",
+    "criteria": [
+      { "criterion": "routes_to_balance_api", "description": "Recommends the Balance API (balances.superfluid.dev) as the correct choice for this use case", "weight": 3 },
+      { "criterion": "explains_why_not_others", "description": "Notes that Super API only gives a live balance snapshot and Accounting API lacks GDA coverage", "weight": 2 },
+      { "criterion": "mentions_key_endpoints", "description": "References relevant endpoints: balance-report (CSV), balance-snapshots (charting), or entries (raw ledger)", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate endpoint paths or authentication requirements", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Balance API (balances.superfluid.dev) covers CFA + GDA + IDA, history, reports, and CSV export",
+      "Super API = live balance only; Accounting API = CFA + ERC-20, no GDA",
+      "GET /v1/accounts/{account}/tokens/{token}/balance-report for daily/weekly/monthly CSV reports",
+      "GET /v1/accounts/{account}/tokens/{token}/balance-snapshots for charting",
+      "Read-only, no authentication required; available on mainnet and testnet"
+    ],
+    "anti_patterns": [
+      "Recommending the Accounting API for GDA history (it lacks GDA coverage)",
+      "Recommending the Super API for historical data (it is live-balance only)",
+      "Claiming the Balance API requires authentication"
+    ],
+    "tags": ["routing", "balance-api", "api", "regression-t050"]
+  },
+  {
+    "id": "route-reporter-deeplink",
+    "description": "Routes to Reporter (reporter.superfluid.org) for building a deep-linkable accounting/tax CSV report URL",
+    "prompt": "I want to generate a shareable URL that opens a Superfluid accounting report for a specific address on Optimism, filtered to Q1 2025, and pre-configured to export a monthly CSV. Where can I build this and what query parameters do I need?",
+    "criteria": [
+      { "criterion": "routes_to_reporter", "description": "Points to reporter.superfluid.org as the SPA frontend for building deep-linkable report URLs", "weight": 3 },
+      { "criterion": "mentions_llms_txt", "description": "References https://reporter.superfluid.org/llms.txt as the canonical source for deep-link query parameter specs", "weight": 2 },
+      { "criterion": "mentions_key_params", "description": "Mentions relevant query params such as account, chain, startDate/endDate, period, and/or export params (e_profile, e_dfmt)", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate URL structures or parameter names not documented in llms.txt", "weight": 2 }
+    ],
+    "golden_facts": [
+      "Reporter (reporter.superfluid.org) is a frontend over the Balance API with deep-linkable URLs",
+      "All report state is encoded in query params: account, chain, tokens, startDate, endDate, period, e_profile, e_rname, e_dfmt, e_fystart, etc.",
+      "Canonical param spec: https://reporter.superfluid.org/llms.txt"
+    ],
+    "anti_patterns": [
+      "Fabricating query parameter names not in the llms.txt spec",
+      "Suggesting the reporter requires login or is not deep-linkable"
+    ],
+    "tags": ["routing", "reporter", "balance-api", "regression-t050"]
   }
 ]
