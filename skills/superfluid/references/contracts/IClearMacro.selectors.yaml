@@ -1,4 +1,4 @@
-# IClearMacro selectors — computed from @sfpro/sdk ABI
+# IClearMacro selectors — computed from hardcoded NON_SDK_ABIS signatures
 
 functions:
   buildBatchOperations(address,bytes,address): 0xd052b023

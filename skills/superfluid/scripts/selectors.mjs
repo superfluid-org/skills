@@ -81,12 +81,13 @@ function padTo(str, width) {
   return str.length >= width ? str + " " : str + " ".repeat(width - str.length);
 }
 
-function formatYaml(contractName, abi) {
+function formatYaml(contractName, abi, fromSdk = true) {
   const functions = abi.filter(i => i.type === "function").sort((a, b) => a.name.localeCompare(b.name));
   const events = abi.filter(i => i.type === "event").sort((a, b) => a.name.localeCompare(b.name));
   const errors = abi.filter(i => i.type === "error").sort((a, b) => a.name.localeCompare(b.name));
 
-  const lines = [`# ${contractName} selectors — computed from @sfpro/sdk ABI`];
+  const source = fromSdk ? "computed from @sfpro/sdk ABI" : "computed from hardcoded NON_SDK_ABIS signatures";
+  const lines = [`# ${contractName} selectors — ${source}`];
 
   if (functions.length) {
     lines.push("", "functions:");
@@ -236,7 +237,7 @@ switch (command) {
       console.log(formatYaml(name, abi));
     }
     for (const [name, abi] of Object.entries(NON_SDK_ABIS)) {
-      if (abi.length) console.log(formatYaml(name, abi));
+      if (abi.length) console.log(formatYaml(name, abi, false));
     }
     break;
   }
@@ -257,7 +258,7 @@ switch (command) {
         console.log(`  skip ${name} (no selectors)`);
         continue;
       }
-      const yaml = formatYaml(name, abi);
+      const yaml = formatYaml(name, abi, false);
       const path = resolve(CONTRACTS_DIR, `${name}.selectors.yaml`);
       writeFileSync(path, yaml);
       console.log(`  wrote ${name}.selectors.yaml`);
@@ -295,7 +296,7 @@ Examples:
       if (nonSdk) {
         const abi = NON_SDK_ABIS[nonSdk];
         if (abi.length) {
-          console.log(formatYaml(nonSdk, abi));
+          console.log(formatYaml(nonSdk, abi, false));
         } else {
           console.error(`${nonSdk} has no selectors (Solidity library).`);
         }

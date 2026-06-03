@@ -81,7 +81,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 ## Quick Reference
 
 - **Skill entry**: `skills/superfluid/SKILL.md`
-- **Contracts**: `skills/superfluid/references/contracts/` (22 Rich ABI YAMLs + 24 selector sidecars + format spec)
+- **Contracts**: `skills/superfluid/references/contracts/` (24 Rich ABI YAMLs + 26 selector sidecars + format spec)
 - **Subgraphs**: `skills/superfluid/references/subgraphs/` (query-patterns, 6 `.graphql` schemas, 5 usage guides)
 - **Guides**: `skills/superfluid/references/guides/` (architecture, super-apps, smart-contract-patterns, macro-forwarders, clear-macro, sdks, scripts, api-services, sup-and-dao, flowing-balances, brand-design)
 - **Deep researches**: `skills/superfluid/references/deep-researches/` (12 ecosystem deep-dives)
