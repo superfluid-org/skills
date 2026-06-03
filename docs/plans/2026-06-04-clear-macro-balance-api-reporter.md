@@ -184,13 +184,13 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
       `*.abi.yaml` has a matching `*.selectors.yaml`
 
 ### Task 4: Wire Clear Macro into SKILL.md
-- [ ] Use-Case Map → "Macro forwarders" (~line 121): repoint the Clear Macro bullet from a bare URL
+- [x] Use-Case Map → "Macro forwarders" (~line 121): repoint the Clear Macro bullet from a bare URL
       to `references/guides/clear-macro.md` + the two YAMLs; mark "(TESTNET, OP Sepolia)"
-- [ ] Debugging Reverts (~line 204): if `ClearMacroForwarderV1` defines custom error prefixes, add a
+- [x] Debugging Reverts (~line 204): if `ClearMacroForwarderV1` defines custom error prefixes, add a
       mapping line
-- [ ] Apps section (~line 398): append the demo link to the existing "Super Tokens" entry
+- [x] Apps section (~line 398): append the demo link to the existing "Super Tokens" entry
       (`(demo: https://tokens.superfluid.org/clear/demo)`); do NOT add a standalone App entry
-- [ ] verify: `grep -n "clear-macro" skills/superfluid/SKILL.md` resolves to existing files; no
+- [x] verify: `grep -n "clear-macro" skills/superfluid/SKILL.md` resolves to existing files; no
       dangling references
 
 ### Task 5: Document the Balance API
