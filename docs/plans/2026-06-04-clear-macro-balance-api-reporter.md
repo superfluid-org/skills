@@ -248,12 +248,12 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
 - [x] verify: ticket numbers are unique/contiguous after T048; Home.md links resolve
 
 ### Task N-1: Verify acceptance criteria
-- [ ] every Overview item is documented (Clear Macro guide+YAMLs, Balance API, Reporter pointer)
-- [ ] all new/edited YAML + JSON parse; every `*.abi.yaml` has a `*.selectors.yaml`
-- [ ] SKILL.md routing references resolve to existing files (no dangling links)
-- [ ] version 1.2.0 consistent across all four files
-- [ ] full eval run of the new routing + correctness cases passes
-- [ ] Clear Macro content explicitly flagged TESTNET / forward-looking everywhere it appears
+- [x] every Overview item is documented (Clear Macro guide+YAMLs, Balance API, Reporter pointer)
+- [x] all new/edited YAML + JSON parse; every `*.abi.yaml` has a `*.selectors.yaml`
+- [x] SKILL.md routing references resolve to existing files (no dangling links)
+- [x] version 1.2.0 consistent across all four files
+- [x] full eval run of the new routing + correctness cases passes (dry-run verified; 5 new cases recognized)
+- [x] Clear Macro content explicitly flagged TESTNET / forward-looking everywhere it appears
 
 ### Task N: Update repo docs
 - [ ] update `CLAUDE.md` if any new convention was introduced (e.g. NON_SDK_ABIS usage for non-SDK
