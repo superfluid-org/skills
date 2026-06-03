@@ -18,13 +18,14 @@ evals/                   # Evaluation tests — see evals/README.md
 skills/superfluid/
   SKILL.md               # Main skill file — loaded by Claude Code on trigger
   references/
-    contracts/           # 22 Rich ABI YAML files + _rich-abi-yaml-format.md (format spec)
+    contracts/           # 24 Rich ABI YAML files + _rich-abi-yaml-format.md (format spec)
     guides/              # architecture.md + topic guides (super-apps, SDKs, etc.)
     subgraphs/           # _query-patterns.md + GraphQL schemas + per-subgraph guides
   scripts/
     abi.mjs              # Resolve raw contract ABIs from @sfpro/sdk
     balance.mjs          # Check Super Token balances
     metadata.mjs         # Resolve contract addresses, subgraph endpoints, network info
+    selectors.mjs        # Generate *.selectors.yaml sidecar files from ABIs
     tokenlist.mjs        # Resolve Super Token addresses, symbols, and types
 ```
 
@@ -48,6 +49,10 @@ bunx -p @sfpro/sdk bun skills/superfluid/scripts/abi.mjs SuperToken transfer
 - Rich ABI YAML field order within function entries: description comment, `notes`, `mutability`, `access`, `inputs`, `outputs`, `emits`, `errors`.
 - `notes:` field (YAML list) on functions and `meta.notes:` at contract level flag non-obvious behavior or common mistakes.
 - `ctx: bytes` parameter on a function means it's called through the Host, never directly.
+- Contracts with ABI YAMLs that are **not** exported by `@sfpro/sdk` go into the `NON_SDK_ABIS` map
+  in `skills/superfluid/scripts/selectors.mjs` (hardcoded ABI signature arrays — same structure as
+  `{type, name, inputs}`). Do **not** add them to `ABI_MAP` in `selectors.mjs` or `abi.mjs`.
+  `selectors.mjs generate` processes both maps and writes the `*.selectors.yaml` sidecar files.
 
 ## Project Vault (`.vault/`)
 

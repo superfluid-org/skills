@@ -256,7 +256,7 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
 - [x] Clear Macro content explicitly flagged TESTNET / forward-looking everywhere it appears
 
 ### Task N: Update repo docs
-- [ ] update `CLAUDE.md` if any new convention was introduced (e.g. NON_SDK_ABIS usage for non-SDK
+- [x] update `CLAUDE.md` if any new convention was introduced (e.g. NON_SDK_ABIS usage for non-SDK
       reference contracts), otherwise note "no change needed"
 
 ## Technical Details
