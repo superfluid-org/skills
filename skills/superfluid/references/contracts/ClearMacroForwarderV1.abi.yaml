@@ -1,0 +1,208 @@
+# ClearMacroForwarderV1 — EIP-712 clear-signing relay forwarder for Superfluid macros
+# Extends ForwarderBase with EIP-712 signing, third-party relaying (provider
+# submits on behalf of signer), gasless execution (fees in Super Token), and
+# provider ACL + domain binding.
+#
+# ⚠️ TESTNET ONLY — deployed on OP Sepolia (chainId 11155420). From PR #2148
+# (may be unmerged). Addresses and API shapes are subject to change.
+#
+# Unlike CFAv1Forwarder / GDAv1Forwarder, execution is NOT limited to msg.sender:
+# a relay provider submits the transaction on the signer's behalf. The signer
+# remains msg.sender in the Host context via EIP-2771.
+#
+# The Security struct carried in the encoded payload contains:
+#   domain       — string identifying the relay provider
+#   macroContract — must match the macro address passed to runMacro
+#   provider     — relay provider role identifier (or SELF_PROVIDER = "self")
+#   validAfter   — earliest valid block.timestamp (0 = no lower bound)
+#   validBefore  — latest valid block.timestamp (0 = no upper bound)
+#   nonce        — ERC-4337-style: (uint192 key << 64) | uint64 sequence
+
+meta:
+  name: ClearMacroForwarderV1
+  version: v1
+  notes:
+    - "TESTNET ONLY: deployed on OP Sepolia (chainId 11155420) per PR #2148. Verify current addresses from the Provider API /v1/capabilities endpoint before integrating — deployment scope may change when the PR merges."
+    - "Provider binding: Security.domain binds a signed payload to a specific provider. A payload signed for one provider cannot be relayed by another."
+    - "SELF_PROVIDER: set Security.provider to the string 'self' to allow the signer to self-submit. In this mode msg.sender must equal signer; no relay provider is involved."
+    - "Gasless only from the signer's perspective: the relay provider pays native gas and deducts cost from the signer's Super Token balance per the provider's fee scheme."
+  source:
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/1b1e2b09ffcf553fff49ec9b243277c370144eb0/packages/ethereum-contracts/contracts/utils/ClearMacroForwarderV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/1b1e2b09ffcf553fff49ec9b243277c370144eb0/packages/ethereum-contracts/contracts/interfaces/utils/IClearMacroForwarderV1.sol
+    - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/1b1e2b09ffcf553fff49ec9b243277c370144eb0/packages/ethereum-contracts/contracts/utils/ForwarderBase.sol
+  inherits: [ForwarderBase, EIP712, NonceManager]
+  implements: [IClearMacroForwarderV1]
+  deployments:
+    testnet:
+      # Address from live provider /v1/capabilities — verify before use
+      optimism-sepolia: "0xc1eab73855155d4e021f7eb4f866996bac2fe25e"
+
+# == Glossary ==
+# encodedPayload — abi.encode(Payload{action: EncodedAction{params}, security: Security{...}})
+# Security       — struct: domain, macroContract, provider, validAfter, validBefore, nonce
+# EncodedAction  — struct wrapping opaque actionParams bytes; decoded by the macro contract
+# digest         — EIP-712 hashTypedDataV4(structHash); the value the signer signs off-chain
+# domain         — string identifying the relay provider (used as AccessControl role key)
+
+# == Constants ==
+
+SELF_PROVIDER:
+  # Reserved provider string value. When Security.provider equals this, the signer
+  # must submit their own transaction (no relay); the forwarder enforces msg.sender == signer.
+  # Useful for self-service flows where the signer retains direct control.
+  mutability: view
+  access: anyone
+  inputs: []
+  outputs:
+    - "": string
+
+# == Core Execution ==
+
+runMacro:
+  # Execute a macro on behalf of a signer using a signed EIP-712 payload.
+  # The relay provider (or the signer themselves if provider is SELF_PROVIDER) calls this.
+  # Check sequence: signature validity → macroContract match → provider ACL →
+  #   nonce validation → validity window → macro.buildBatchOperations → Host.batchCall →
+  #   macro.postCheck → emit MacroExecuted.
+  notes:
+    - "Gotcha: signer is NOT msg.sender on-chain — msg.sender is the relay provider. The signer becomes msg.sender only inside the Host via EIP-2771 (appended to forwardBatchCall calldata)."
+    - "Gotcha: the nonce in Security is consumed atomically on execution. The same signed payload cannot be re-submitted."
+    - "Gotcha: msg.value is forwarded to the Host batch call. Most macros do not require ETH — only set if the macro explicitly needs it."
+    - "Gotcha: errors from the macro contract and the Host propagate through to the caller in addition to the forwarder's own errors below."
+  mutability: payable
+  access: anyone   # relay provider; or signer when Security.provider == SELF_PROVIDER
+  inputs:
+    - m: address              # IClearMacro — macro contract to execute
+    - encodedPayload: bytes   # abi.encode(Payload); build with encodeParams
+    - signer: address         # address that signed the payload (on whose behalf the macro runs)
+    - signature: bytes        # EIP-712 signature over getDigest(m, encodedPayload)
+  outputs:
+    - success: bool
+  emits: [MacroExecuted]
+  errors: [InvalidSignature, MacroContractMismatch, ProviderNotAuthorized, InvalidNonce, OutsideValidityWindow]
+
+# == Payload Construction ==
+
+encodeParams:
+  # Build the ABI-encoded payload bytes expected by runMacro.
+  # Convenience function: packs actionParams and a Security struct into a Payload and ABI-encodes it.
+  mutability: pure
+  inputs:
+    - actionParams: bytes     # macro-specific action encoding (passed to IClearMacro functions)
+    - security:
+        type: tuple
+        components:
+          - domain: string          # provider identity (e.g. "macros.superfluid.eth")
+          - macroContract: address  # must match the m argument passed to runMacro
+          - provider: string        # relay provider role identifier or SELF_PROVIDER
+          - validAfter: uint256     # earliest valid block.timestamp (0 = no lower bound)
+          - validBefore: uint256    # latest valid block.timestamp (0 = no upper bound; set to 0 to disable)
+          - nonce: uint256          # ERC-4337-style: (uint192 key << 64) | uint64 sequence; use getNonce
+  outputs:
+    - encodedPayload: bytes
+
+# == EIP-712 Inspection ==
+
+getDigest:
+  # Returns the EIP-712 digest to sign off-chain (the value for wallet.signTypedData).
+  # digest = hashTypedDataV4(getStructHash(m, encodedPayload))
+  notes:
+    - "Call this on-chain (or compute equivalently off-chain) to get the bytes32 to pass to wallet.signTypedData. The digest incorporates the contract's EIP-712 domain separator."
+  mutability: view
+  inputs:
+    - m: address
+    - encodedPayload: bytes
+  outputs:
+    - digest: bytes32
+
+getStructHash:
+  # Returns the EIP-712 struct hash of the Payload (before domain separator is applied).
+  # structHash = keccak256(abi.encode(typeHash, actionStructHash, securityStructHash))
+  mutability: view
+  inputs:
+    - m: address
+    - encodedPayload: bytes
+  outputs:
+    - structHash: bytes32
+
+getTypeHash:
+  # Returns keccak256 of the full EIP-712 type definition string.
+  # typeHash = keccak256(bytes(getTypeDefinition(m, encodedPayload)))
+  mutability: view
+  inputs:
+    - m: address
+    - encodedPayload: bytes
+  outputs:
+    - typeHash: bytes32
+
+getTypeDefinition:
+  # Returns the full EIP-712 type definition string for the given macro.
+  # Format: "<PrimaryTypeName>(Action action,Security security)<ActionTypeDef><SecurityTypeDef>"
+  # The macro supplies PrimaryTypeName and ActionTypeDef via IClearMacro.
+  # Use this when constructing the types object for wallet.signTypedData.
+  mutability: view
+  inputs:
+    - m: address
+    - encodedPayload: bytes
+  outputs:
+    - typeDef: string
+
+# == Nonce Management (ERC-4337 style) ==
+
+getNonce:
+  # Returns the next valid nonce for a (sender, key) pair.
+  # Nonce encoding: (uint256(key) << 64) | uint64(sequence).
+  # Use key=0 for a simple sequential nonce. Different keys allow independent parallel sequences.
+  # Pass the returned value as Security.nonce when building the payload.
+  mutability: view
+  inputs:
+    - sender: address
+    - key: uint192
+  outputs:
+    - nonce: uint256
+
+# == Events ==
+
+events:
+  MacroExecuted:
+    # Emitted after a signed ClearMacro payload is successfully executed.
+    indexed:
+      - signer: address         # the original signer on whose behalf the macro ran
+      - macroContract: address  # the macro contract that was executed
+      - providerRole: bytes32   # keccak256(bytes(security.provider))
+    data: []
+
+# == Errors ==
+
+errors:
+
+  # -- Signature --
+  - InvalidSignature                    # EIP-712 signature does not match the signer address
+
+  # -- Payload Validation --
+  - InvalidPayload:                     # reserved for subcontracts; payload structurally invalid
+      inputs:
+        - message: string
+  - MacroContractMismatch:              # security.macroContract != the m argument passed to runMacro
+      inputs:
+        - signedMacro: address
+        - executionMacro: address
+
+  # -- Provider Authorization --
+  - ProviderNotAuthorized:              # msg.sender does not hold the required provider role in the ACL
+      inputs:
+        - provider: string
+        - msgSender: address
+
+  # -- Validity Window --
+  - OutsideValidityWindow:              # block.timestamp outside [validAfter, validBefore]
+      inputs:
+        - blockTimestamp: uint256
+        - validAfter: uint256
+        - validBefore: uint256
+
+  # -- Nonce --
+  - InvalidNonce:                       # nonce already used or sequence number out of order
+      inputs:
+        - sender: address
+        - nonce: uint256

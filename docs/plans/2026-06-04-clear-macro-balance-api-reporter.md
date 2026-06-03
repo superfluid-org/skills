@@ -162,16 +162,16 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
       (`grep -o 'references/[^ )]*' clear-macro.md` → each path exists)
 
 ### Task 2: Author Clear Macro Rich ABI YAMLs (from PR #2148 source, NOT the SDK)
-- [ ] fetch `ClearMacroForwarderV1` + `IClearMacro` Solidity source from PR #2148 (raw GitHub)
-- [ ] create `skills/superfluid/references/contracts/ClearMacroForwarderV1.abi.yaml` following the
+- [x] fetch `ClearMacroForwarderV1` + `IClearMacro` Solidity source from PR #2148 (raw GitHub)
+- [x] create `skills/superfluid/references/contracts/ClearMacroForwarderV1.abi.yaml` following the
       field-order convention (description, `notes`, `mutability`, `access`, `inputs`, `outputs`,
       `emits`, `errors`) with a `meta` block (name, version, source URLs, inherits) and a
       `meta.note` flagging testnet/OP-Sepolia-only + the deployment address
-- [ ] create `skills/superfluid/references/contracts/IClearMacro.abi.yaml` documenting the EIP-712
+- [x] create `skills/superfluid/references/contracts/IClearMacro.abi.yaml` documenting the EIP-712
       extension functions (`getPrimaryTypeName`, `getActionTypeDefinition`, `getActionStructHash`)
       and the inherited `IUserDefinedMacro` surface
-- [ ] do NOT add these to `abi.mjs`/`selectors.mjs` `ABI_MAP` (not in `@sfpro/sdk`)
-- [ ] verify: both files parse (`bunx js-yaml <file>` exits 0) and follow `_rich-abi-yaml-format.md`
+- [x] do NOT add these to `abi.mjs`/`selectors.mjs` `ABI_MAP` (not in `@sfpro/sdk`)
+- [x] verify: both files parse (`bunx js-yaml <file>` exits 0) and follow `_rich-abi-yaml-format.md`
 
 ### Task 3: Generate selectors via the NON_SDK_ABIS path
 - [ ] add `ClearMacroForwarderV1` (and `IClearMacro` if it has selectable functions/errors) ABI
