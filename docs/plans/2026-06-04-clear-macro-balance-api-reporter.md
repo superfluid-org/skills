@@ -174,13 +174,13 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
 - [x] verify: both files parse (`bunx js-yaml <file>` exits 0) and follow `_rich-abi-yaml-format.md`
 
 ### Task 3: Generate selectors via the NON_SDK_ABIS path
-- [ ] add `ClearMacroForwarderV1` (and `IClearMacro` if it has selectable functions/errors) ABI
+- [x] add `ClearMacroForwarderV1` (and `IClearMacro` if it has selectable functions/errors) ABI
       signature arrays to the `NON_SDK_ABIS` map in `skills/superfluid/scripts/selectors.mjs:157`
       (mirror the `CFASuperAppBase` precedent — functions/events/errors with `type`/`name`/`inputs`)
-- [ ] run `bunx -p @sfpro/sdk -p js-sha3 bun skills/superfluid/scripts/selectors.mjs generate`
-- [ ] confirm `ClearMacroForwarderV1.selectors.yaml` (and `IClearMacro.selectors.yaml` if applicable)
+- [x] run `bunx -p @sfpro/sdk -p js-sha3 bun skills/superfluid/scripts/selectors.mjs generate`
+- [x] confirm `ClearMacroForwarderV1.selectors.yaml` (and `IClearMacro.selectors.yaml` if applicable)
       were written to `references/contracts/`
-- [ ] verify: `selectors.mjs ClearMacroForwarderV1` prints selectors without error, and every new
+- [x] verify: `selectors.mjs ClearMacroForwarderV1` prints selectors without error, and every new
       `*.abi.yaml` has a matching `*.selectors.yaml`
 
 ### Task 4: Wire Clear Macro into SKILL.md

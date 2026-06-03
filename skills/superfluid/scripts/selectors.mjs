@@ -161,6 +161,53 @@ const NON_SDK_ABIS = {
     { type: "error", name: "NotAcceptedSuperToken", inputs: [] },
   ],
   SuperTokenV1Library: [], // Solidity library — no selectors (all calls go through the token)
+
+  // ⚠️ TESTNET ONLY (OP Sepolia, PR #2148) — not yet in @sfpro/sdk
+  ClearMacroForwarderV1: [
+    // Functions
+    { type: "function", name: "SELF_PROVIDER", inputs: [] },
+    { type: "function", name: "runMacro", inputs: [
+      { type: "address" },
+      { type: "bytes" },
+      { type: "address" },
+      { type: "bytes" },
+    ]},
+    { type: "function", name: "encodeParams", inputs: [
+      { type: "bytes" },
+      { type: "tuple", components: [
+        { type: "string" },
+        { type: "address" },
+        { type: "string" },
+        { type: "uint256" },
+        { type: "uint256" },
+        { type: "uint256" },
+      ]},
+    ]},
+    { type: "function", name: "getDigest", inputs: [{ type: "address" }, { type: "bytes" }] },
+    { type: "function", name: "getStructHash", inputs: [{ type: "address" }, { type: "bytes" }] },
+    { type: "function", name: "getTypeHash", inputs: [{ type: "address" }, { type: "bytes" }] },
+    { type: "function", name: "getTypeDefinition", inputs: [{ type: "address" }, { type: "bytes" }] },
+    { type: "function", name: "getNonce", inputs: [{ type: "address" }, { type: "uint192" }] },
+    // Events
+    { type: "event", name: "MacroExecuted", inputs: [{ type: "address" }, { type: "address" }, { type: "bytes32" }] },
+    // Errors
+    { type: "error", name: "InvalidSignature", inputs: [] },
+    { type: "error", name: "InvalidPayload", inputs: [{ type: "string" }] },
+    { type: "error", name: "MacroContractMismatch", inputs: [{ type: "address" }, { type: "address" }] },
+    { type: "error", name: "ProviderNotAuthorized", inputs: [{ type: "string" }, { type: "address" }] },
+    { type: "error", name: "OutsideValidityWindow", inputs: [{ type: "uint256" }, { type: "uint256" }, { type: "uint256" }] },
+    { type: "error", name: "InvalidNonce", inputs: [{ type: "address" }, { type: "uint256" }] },
+  ],
+
+  // ⚠️ TESTNET ONLY (OP Sepolia, PR #2148) — interface; not deployed standalone
+  IClearMacro: [
+    // Functions (EIP-712 type derivation + IMacro surface)
+    { type: "function", name: "getPrimaryTypeName", inputs: [{ type: "bytes" }] },
+    { type: "function", name: "getActionTypeDefinition", inputs: [{ type: "bytes" }] },
+    { type: "function", name: "getActionStructHash", inputs: [{ type: "bytes" }] },
+    { type: "function", name: "buildBatchOperations", inputs: [{ type: "address" }, { type: "bytes" }, { type: "address" }] },
+    { type: "function", name: "postCheck", inputs: [{ type: "address" }, { type: "bytes" }, { type: "address" }] },
+  ],
 };
 
 // -- File writing --
