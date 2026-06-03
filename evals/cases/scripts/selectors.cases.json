@@ -7,7 +7,7 @@
       "exitCode": 0,
       "stdout": {
         "type": "text",
-        "contains": ["CFAv1Forwarder", "SuperToken", "FluidLocker", "CFASuperAppBase (non-SDK)"]
+        "contains": ["CFAv1Forwarder", "SuperToken", "FluidLocker", "CFASuperAppBase (non-SDK)", "ClearMacroForwarderV1 (non-SDK)", "IClearMacro (non-SDK)"]
       }
     },
     "tags": ["smoke", "selectors"]
@@ -46,6 +46,46 @@
       }
     },
     "tags": ["selectors"]
+  },
+  {
+    "id": "selectors-non-sdk-forwarder",
+    "description": "Generates correct selectors for ClearMacroForwarderV1 from NON_SDK_ABIS",
+    "command": ["selectors.mjs", "ClearMacroForwarderV1"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "text",
+        "contains": [
+          "# ClearMacroForwarderV1 selectors — computed from hardcoded NON_SDK_ABIS signatures",
+          "runMacro(address,bytes,address,bytes):",
+          "0xd3bc881e",
+          "SELF_PROVIDER():",
+          "0xdc254546",
+          "InvalidSignature():",
+          "0x8baa579f"
+        ]
+      }
+    },
+    "tags": ["selectors", "regression-t049"]
+  },
+  {
+    "id": "selectors-non-sdk-interface",
+    "description": "Generates correct selectors for IClearMacro from NON_SDK_ABIS",
+    "command": ["selectors.mjs", "IClearMacro"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "text",
+        "contains": [
+          "# IClearMacro selectors — computed from hardcoded NON_SDK_ABIS signatures",
+          "getPrimaryTypeName(bytes):",
+          "0x390b89cb",
+          "getActionTypeDefinition(bytes):",
+          "0x39f05f94"
+        ]
+      }
+    },
+    "tags": ["selectors", "regression-t049"]
   },
   {
     "id": "selectors-unknown-contract",

@@ -39,8 +39,8 @@ Base URL: `https://balances.superfluid.dev` · Read-only, no auth · mainnet + t
 - `GET /v1/accounts/{account}/tokens/{token}/balance-snapshots` — historical snapshots (for charting)
 - `GET /v1/accounts/{account}/tokens/{token}/entries` — raw ledger entries
 - `GET /v1/accounts/{account}/tokens/{token}/balance-report` — aggregated report:
-  params `period` (daily/weekly/monthly), `format` (json|csv), `groupBy` (by_counterparty|by_category),
-  `extrapolate` (boolean), `startDate`/`endDate`
+  required `chain`, `startDate`, `endDate`; optional `period` (daily/weekly/monthly),
+  `format` (json|csv), `view` (totals|by_counterparty|by_category), `extrapolate` (boolean)
 - `GET /v1/accounts/{account}/tokens/{token}/movements` — bank-statement view; cursor pagination
 
 ## CMS

@@ -56,23 +56,27 @@ See `ClearMacroForwarderV1.abi.yaml` for the full function surface.
 
 ### IClearMacro
 
-Interface that a Clear Macro contract must implement. Extends `IUserDefinedMacro`
-with three EIP-712 type-derivation functions used by `ClearMacroForwarderV1`
-to construct the typed-data domain and struct hash:
+Interface that a Clear Macro contract must implement. Extends `IMacro` (the
+PR #2148 base macro interface — same `buildBatchOperations` / `postCheck` role as
+`IUserDefinedMacro` in the base forwarder) with three EIP-712 type-derivation
+functions used by `ClearMacroForwarderV1` to construct the typed-data domain and
+struct hash:
 
 ```solidity
-interface IClearMacro is IUserDefinedMacro {
-    function getPrimaryTypeName() external view returns (string memory);
-    function getActionTypeDefinition() external view returns (string memory);
+interface IClearMacro is IMacro {
+    function getPrimaryTypeName(bytes memory encodedPayload) external view returns (string memory);
+    function getActionTypeDefinition(bytes memory encodedPayload) external view returns (string memory);
     function getActionStructHash(bytes memory actionParams) external view returns (bytes32);
 }
 ```
 
-- `getPrimaryTypeName` — returns the EIP-712 primary type string (e.g. `"SetDCAPosition"`)
-- `getActionTypeDefinition` — returns the full type definition string used to
-  build the EIP-712 `types` object
+- `getPrimaryTypeName` — given the full `encodedPayload`, returns the EIP-712
+  primary type string (e.g. `"SetDCAPosition"`)
+- `getActionTypeDefinition` — given the full `encodedPayload`, returns the type
+  definition string used to build the EIP-712 `types` object
 - `getActionStructHash` — computes the struct hash for a given `actionParams`
-  payload; combined with the domain separator to form the final digest
+  payload (`Payload.action.params` only); combined with the domain separator to
+  form the final digest
 
 For the client-side `signTypedData` call and how to assemble the domain + types
 objects, see `macro-forwarders-eip712-example.md`.
@@ -94,8 +98,8 @@ function runPermit2AndMacro(
 ```
 
 This removes the separate ERC-20 approval step for users wrapping an underlying
-token before running a macro. Documented here for reference; no separate YAML
-(covered by `ClearMacroForwarderV1.abi.yaml` notes).
+token before running a macro. Documented here for reference; no separate YAML —
+consult the Solidity source in PR #2148.
 
 ### DashboardClearMacro (Example)
 

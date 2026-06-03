@@ -1,4 +1,4 @@
-# ClearMacroForwarderV1 selectors — computed from @sfpro/sdk ABI
+# ClearMacroForwarderV1 selectors — computed from hardcoded NON_SDK_ABIS signatures
 
 functions:
   encodeParams(bytes,(string,address,string,uint256,uint256,uint256)): 0x9c487a21
