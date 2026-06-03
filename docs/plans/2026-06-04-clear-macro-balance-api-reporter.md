@@ -149,16 +149,16 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
 ## Implementation Steps
 
 ### Task 1: Author the Clear Macro guide
-- [ ] create `skills/superfluid/references/guides/clear-macro.md` with a **Status/Stability banner**
+- [x] create `skills/superfluid/references/guides/clear-macro.md` with a **Status/Stability banner**
       (TESTNET ONLY, OP Sepolia 11155420, PR #2148 possibly unmerged, addresses/API may change)
-- [ ] add sections: What is Clear Macro (5 value props + relation to base MacroForwarder); On-chain
+- [x] add sections: What is Clear Macro (5 value props + relation to base MacroForwarder); On-chain
       contracts (`ClearMacroForwarderV1`, `IClearMacro`, `ClearMacroForwarderV1WithPermit2`,
       `DashboardClearMacro` example @ `0x7723…b898`); Off-chain Provider API (capabilities /
       relay-executions / poll + ops endpoints); Dapp flow (numbered); Links & Source
-- [ ] for EIP-712 signTypedData mechanics, **link** to `macro-forwarders-eip712-example.md` rather
+- [x] for EIP-712 signTypedData mechanics, **link** to `macro-forwarders-eip712-example.md` rather
       than re-document
-- [ ] cross-link the new guide from `macro-forwarders.md` ("What & Why" + "Links & Source Code")
-- [ ] verify: file parses as markdown and all referenced sibling paths exist
+- [x] cross-link the new guide from `macro-forwarders.md` ("What & Why" + "Links & Source Code")
+- [x] verify: file parses as markdown and all referenced sibling paths exist
       (`grep -o 'references/[^ )]*' clear-macro.md` → each path exists)
 
 ### Task 2: Author Clear Macro Rich ABI YAMLs (from PR #2148 source, NOT the SDK)

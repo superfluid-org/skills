@@ -21,6 +21,10 @@ Key properties:
 - **View-only building** — `buildBatchOperations` is a `view` function, so
   macros cannot mutate state during operation construction
 
+> **Clear Macro** (testnet-only, OP Sepolia) extends MacroForwarder with
+> EIP-712 clear signing, third-party relaying, and gasless execution.
+> See `clear-macro.md` for the extended system.
+
 ## MacroForwarder Contract
 
 **Address**: `0xFD0268E33111565dE546af2675351A4b1587F89F` (same on all networks)
@@ -465,3 +469,4 @@ data), see `macro-forwarders-eip712-example.md`. It covers:
 - [ForwarderBase.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/ForwarderBase.sol) — shared base for all trusted forwarders
 - [MacroForwarder.t.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/40d34958f31b55fa0f9271f07794786c56a01a65/packages/ethereum-contracts/test/foundry/utils/MacroForwarder.t.sol) — Foundry tests with additional example macros
 - [Superfluid Macros wiki](https://github.com/superfluid-org/protocol-monorepo/wiki/Superfluid-Macros) — design write-up
+- `clear-macro.md` — Clear Macro extension (EIP-712 clear signing, relaying, gasless; testnet-only)
