@@ -118,7 +118,7 @@ See `references/guides/super-apps.md` for the full guide.
 - MacroForwarder contract address and interface → also `references/guides/macro-forwarders.md`
 - Batch operation types and encoding rules → also `references/contracts/Superfluid.abi.yaml` (batch_operation_types)
 - EIP-712 signed macro patterns → `references/guides/macro-forwarders-eip712-example.md`
-- **Clear Macro** — supersedes MacroForwarder with native EIP-712 clear signing for Super Token operations. Human-readable transaction display (multilingual), third-party relaying (not limited to `msg.sender`), gasless transactions (fees paid in the Super Token), and custom fee schemes. https://tokens.superfluid.org/clear
+- **Clear Macro** (TESTNET, OP Sepolia) — extends MacroForwarder with EIP-712 clear signing for human-readable wallet prompts (multilingual), third-party relaying (not limited to `msg.sender`), gasless transactions (fees paid in the Super Token), and custom fee schemes → `references/guides/clear-macro.md`, `references/contracts/ClearMacroForwarderV1.abi.yaml`, `references/contracts/IClearMacro.abi.yaml`
 
 ### Sentinels and liquidation
 
@@ -221,6 +221,7 @@ Error prefixes map to contracts:
 - `NOT_APPROVED_LOCKER`, `NOT_LOCKER_FACTORY`, `NOT_PROGRAM_MANAGER` → StakingRewardController
 - `NOT_CONNECTED_LOCKER`, `NO_ACTIVE_UNLOCK`, `TOO_EARLY_TO_TERMINATE_UNLOCK` → Fontaine
 - `NotAgentOwner`, `AlreadyJoined`, `AgentNotRegistered`, `InsufficientFee`, `FeeTransferFailed` → AgentPoolDistributor
+- `InvalidSignature`, `InvalidPayload`, `MacroContractMismatch`, `ProviderNotAuthorized`, `OutsideValidityWindow`, `InvalidNonce` → ClearMacroForwarderV1 (TESTNET, OP Sepolia)
 
 Each YAML's `errors:` section is the complete error index for that contract,
 with descriptions. Per-function `errors:` fields show which errors a specific
@@ -395,7 +396,7 @@ resolved URL for a specific chain.
 
 ### Apps
 
-- Super Tokens https://tokens.superfluid.org — Official Super Tokens site: ERC20x overview, Clear Macro, Super App hooks, and token listing
+- Super Tokens https://tokens.superfluid.org — Official Super Tokens site: ERC20x overview, Clear Macro, Super App hooks, and token listing (Clear Macro demo: https://tokens.superfluid.org/clear/demo)
 - Dashboard https://app.superfluid.org — Stream management for end-users
 - Explorer https://explorer.superfluid.org — Block explorer for Superfluid Protocol
 - Claim https://claim.superfluid.org — SUP token, SUP points, reserves/lockers
