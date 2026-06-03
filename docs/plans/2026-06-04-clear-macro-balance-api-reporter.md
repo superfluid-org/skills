@@ -206,13 +206,13 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
       documented shape — confirmed (returns `{"chains":[{"chainId":10,"canonical":"optimism-mainnet",...}]}`)
 
 ### Task 6: Add the Reporter pointer
-- [ ] SKILL.md Apps section: add a Reporter entry
+- [x] SKILL.md Apps section: add a Reporter entry
       (`https://reporter.superfluid.org — accounting/tax CSV reports over the Balance API;
       deep-linkable via query params; param spec: https://reporter.superfluid.org/llms.txt`)
-- [ ] SKILL.md Use-Case Map → "Ecosystem & tooling" (~line 158): add routes for comprehensive
+- [x] SKILL.md Use-Case Map → "Ecosystem & tooling" (~line 158): add routes for comprehensive
       balances/CSV → Balance API, and "generate/deep-link an accounting report" → Reporter + llms.txt;
       note Balance API is more comprehensive than the existing Accounting line
-- [ ] verify: `curl -s https://reporter.superfluid.org/llms.txt` is reachable; no dedicated guide
+- [x] verify: `curl -s https://reporter.superfluid.org/llms.txt` is reachable; no dedicated guide
       created (lightweight, per decision)
 
 ### Task 7: Add eval cases
