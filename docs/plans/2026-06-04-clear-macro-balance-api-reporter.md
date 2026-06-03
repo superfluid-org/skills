@@ -230,11 +230,11 @@ guide; tracked as 4 vault tickets (T049–T052); version bump 1.1.2 → **1.2.0*
       (or `--dry-run` if no model access; full run required before completion) — new cases pass (dry-run verified; 5 cases recognized)
 
 ### Task 8: Version bump 1.1.2 → 1.2.0
-- [ ] `.claude-plugin/plugin.json` → `version` (source of truth)
-- [ ] `.claude-plugin/marketplace.json` → `plugins[0].version`
-- [ ] `skills/superfluid/SKILL.md` → frontmatter `metadata.version`
-- [ ] `landing-page/index.html` → version badge text
-- [ ] verify: `grep -rn "1\.2\.0" .claude-plugin/ skills/superfluid/SKILL.md landing-page/index.html`
+- [x] `.claude-plugin/plugin.json` → `version` (source of truth)
+- [x] `.claude-plugin/marketplace.json` → `plugins[0].version`
+- [x] `skills/superfluid/SKILL.md` → frontmatter `metadata.version`
+- [x] `landing-page/index.html` → version badge text
+- [x] verify: `grep -rn "1\.2\.0" .claude-plugin/ skills/superfluid/SKILL.md landing-page/index.html`
       shows all four and no stray `1.1.2` remains
 
 ### Task 9: Vault bookkeeping (tickets + roadmap)
