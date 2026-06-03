@@ -162,7 +162,9 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - API endpoint details, Swagger links, gotchas → `references/guides/api-services.md`
 - SUP token, governance, DAO, distribution → `references/guides/sup-and-dao.md`
 - Token prices, filtered token list, CoinGecko IDs → See API Services (CMS) below
-- Stream accounting, per-day chunking → See API Services (Accounting) below
+- Stream accounting, per-day chunking → See API Services (Accounting) below (CFA + ERC-20 only, no GDA)
+- Comprehensive balances / history / CSV exports (CFA + GDA + IDA) → See API Services (Balance API) below
+- Generate or deep-link an accounting/tax report → https://reporter.superfluid.org; param spec: https://reporter.superfluid.org/llms.txt
 - Resolve ENS / Farcaster / Lens handles → See API Services (Whois) below
 - Query protocol data via GraphQL → See Subgraphs below
 - Run a sentinel / liquidation bot → See Sentinels below
@@ -406,6 +408,7 @@ resolved URL for a specific chain.
 - Campaigns https://campaigns.superfluid.org — Mint exclusive NFTs powered by Superfluid, with SUP reward campaigns
 - x402 https://x402.superfluid.org — Open standard for internet-native subscriptions via HTTP 402 + Superfluid streams. One-time EIP-712 signature, no gas fees, real-time payment verification, zero protocol fees. Works for human users and AI agents.
 - 8004 Agent Pool https://8004-demo.superfluid.org/ — AI agent pool powered by ERC-8004 identity and Superfluid GDA. Agents register, join a pool, and earn proportional SUP distributions.
+- Reporter https://reporter.superfluid.org — accounting/tax CSV reports over the Balance API; deep-linkable via query params (account, chain, tokens, startDate/endDate, period, export params); param spec: https://reporter.superfluid.org/llms.txt
 
 Repos:
 [Dashboard](https://github.com/superfluid-org/superfluid-dashboard) ·
