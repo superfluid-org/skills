@@ -157,12 +157,32 @@ function parseEIP712TypeDef(typeDef) {
 }
 
 const types = parseEIP712TypeDef(typeDef)
-// e.g. { CreateStream: [{type:'Action',name:'action'},{type:'Security',name:'security'}],
-//         Action: [{type:'bytes',name:'params'}],
-//         Security: [{type:'string',name:'domain'}, ...] }
+// e.g. for a CreateStream macro with getActionTypeDefinition() ==
+//      "Action(address token,address receiver,int96 flowRate)":
+// { CreateStream: [{type:'Action',name:'action'},{type:'Security',name:'security'}],
+//   Action: [{type:'address',name:'token'},{type:'address',name:'receiver'},{type:'int96',name:'flowRate'}],
+//   Security: [{type:'string',name:'domain'}, ...] }
 ```
 
 In practice you may also hardcode `types` for a specific macro rather than parsing at runtime.
+
+### The Action is flat macro-specific fields — not opaque bytes
+
+⚠️ Critical: `actionParams` (the `bytes` from the macro's `encodeAction` helper) is **only the wire
+payload** — it is what you pass to `encodeParams` and what the forwarder hands to
+`m.getActionStructHash(...)` on-chain. It is **not** what goes into the EIP-712 `message`.
+
+The macro's `getActionTypeDefinition()` returns a **flat, macro-specific** `Action` type whose name
+is exactly `Action` (e.g. `Action(address token,address receiver,int96 flowRate)`) — never
+`Action(bytes params)`. For the wallet signature to match the on-chain digest, `message.action` must
+hold the **decoded** macro fields that match that type definition (the same fields
+`getActionStructHash` decodes out of `actionParams`). Signing `{ params: actionParams }` against a
+real macro's type will either revert with `InvalidSignature` (the message shape doesn't match the
+type from `getTypeDefinition`) or, for a macro that literally typed its action as `bytes`, collapse
+the wallet prompt back to opaque bytes — defeating clear signing.
+
+Practically: you already have the action fields as variables (you encoded them into `actionParams`).
+Pass those same values as `message.action`.
 
 ## Execution Mode 1 — Self-Submit
 
@@ -185,12 +205,19 @@ const nonce = await publicClient.readContract({
   args: [account.address, 0n],
 })
 
-// 2. Obtain actionParams from the macro's encode helper (macro-specific)
+// 2. Build the macro-specific action fields, then encode them to the wire `bytes`.
+//    `actionFields` holds the DECODED fields matching getActionTypeDefinition();
+//    `actionParams` is their ABI-encoded form (the wire payload).
+const actionFields = {
+  token: '0x…',      // example fields for a CreateStream macro:
+  receiver: '0x…',   //   Action(address token,address receiver,int96 flowRate)
+  flowRate: 0n,
+}
 const actionParams = await publicClient.readContract({
   address: macroAddr,
   abi: macroHelperAbi,
   functionName: 'encodeAction',
-  args: [/* macro-specific args */],
+  args: [actionFields.token, actionFields.receiver, actionFields.flowRate],
 })
 
 // 3. Build security struct (self-submit)
@@ -243,7 +270,10 @@ const signature = await walletClient.signTypedData({
   primaryType,
   message: {
     // The message struct matches the primaryType; it contains action and security.
-    action: { params: actionParams },
+    // `action` holds the DECODED macro-specific fields matching getActionTypeDefinition()
+    // — NOT { params: actionParams }. These must hash to the same value the forwarder
+    // computes via m.getActionStructHash(actionParams).
+    action: actionFields,
     security,
   },
 })
@@ -422,7 +452,9 @@ interface IClearMacro is IMacro {
 ```
 
 - `getPrimaryTypeName` — returns the EIP-712 primary type name (e.g. `"CreateStream"`)
-- `getActionTypeDefinition` — returns the action type definition string (e.g. `"Action(bytes params)"`)
+- `getActionTypeDefinition` — returns the action type definition string. The type name must be
+  exactly `Action` and the fields must be **flat** macro-specific primitives
+  (e.g. `"Action(address token,address receiver,int96 flowRate)"`), never `"Action(bytes params)"`
 - `getActionStructHash` — computes the struct hash for `actionParams`; used by the forwarder to
   assemble the full struct hash for signature verification
 
