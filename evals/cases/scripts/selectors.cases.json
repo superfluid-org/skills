@@ -7,7 +7,7 @@
       "exitCode": 0,
       "stdout": {
         "type": "text",
-        "contains": ["CFAv1Forwarder", "SuperToken", "FluidLocker", "CFASuperAppBase (non-SDK)", "ClearMacroForwarderV1 (non-SDK)", "IClearMacro (non-SDK)"]
+        "contains": ["CFAv1Forwarder", "SuperToken", "FluidLocker", "ClearMacroForwarder", "BlindMacroForwarder", "CFASuperAppBase (non-SDK)", "IClearMacro (non-SDK)"]
       }
     },
     "tags": ["smoke", "selectors"]
@@ -48,15 +48,15 @@
     "tags": ["selectors"]
   },
   {
-    "id": "selectors-non-sdk-forwarder",
-    "description": "Generates correct selectors for ClearMacroForwarderV1 from NON_SDK_ABIS",
-    "command": ["selectors.mjs", "ClearMacroForwarderV1"],
+    "id": "selectors-sdk-forwarder",
+    "description": "Generates correct selectors for ClearMacroForwarder from SDK ABI (not NON_SDK_ABIS)",
+    "command": ["selectors.mjs", "ClearMacroForwarder"],
     "expect": {
       "exitCode": 0,
       "stdout": {
         "type": "text",
         "contains": [
-          "# ClearMacroForwarderV1 selectors — computed from hardcoded NON_SDK_ABIS signatures",
+          "# ClearMacroForwarder selectors — computed from @sfpro/sdk ABI",
           "runMacro(address,bytes,address,bytes):",
           "0xd3bc881e",
           "SELF_PROVIDER():",
@@ -66,7 +66,7 @@
         ]
       }
     },
-    "tags": ["selectors", "regression-t049"]
+    "tags": ["selectors", "regression-t053"]
   },
   {
     "id": "selectors-non-sdk-interface",

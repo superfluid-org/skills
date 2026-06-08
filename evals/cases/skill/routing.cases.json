@@ -107,23 +107,44 @@
     "description": "Routes to clear-macro.md guide and Provider API for gasless/relayed human-readable signed transactions",
     "prompt": "I want users to sign a Superfluid operation with a human-readable wallet prompt (no hex blobs), have a relayer pay the gas, and optionally pay fees in the Super Token itself. What Superfluid mechanism handles this and how does the flow work?",
     "criteria": [
-      { "criterion": "routes_to_clear_macro", "description": "Identifies Clear Macro / ClearMacroForwarderV1 as the mechanism for EIP-712 clear signing with relaying", "weight": 3 },
+      { "criterion": "routes_to_clear_macro", "description": "Identifies ClearMacroForwarder as the mechanism for EIP-712 clear signing with relaying; does NOT claim it is testnet-only or OP-Sepolia-only", "weight": 3 },
       { "criterion": "mentions_provider_api", "description": "Describes the off-chain Provider API (capabilities / relay-executions / polling) as the relay component", "weight": 2 },
-      { "criterion": "flags_testnet_status", "description": "Explicitly flags that Clear Macro is currently testnet-only (OP Sepolia, chainId 11155420) and may be in-flux", "weight": 3 },
+      { "criterion": "sdk_shipped_multi_network", "description": "Notes that ClearMacroForwarder is SDK-shipped (@sfpro/sdk 0.2.1) and available across multiple production networks", "weight": 3 },
       { "criterion": "no_hallucination", "description": "Does not fabricate contract addresses, function names, or API endpoints", "weight": 2 }
     ],
     "golden_facts": [
-      "Clear Macro extends MacroForwarder with EIP-712 clear signing for human-readable wallet prompts",
+      "ClearMacroForwarder (underlying contract: ClearMacroForwarderV1WithPermit2) ships in @sfpro/sdk 0.2.1, deployed deterministically at 0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e across ~16 networks",
       "Relaying is handled off-chain via the Clear Macro Provider API (POST /v1/relay-executions, then poll)",
       "Gasless transactions and fees paid in Super Token are supported features",
-      "TESTNET ONLY: currently deployed on OP Sepolia (chainId 11155420); PR #2148 may be unmerged"
+      "runMacro is the first-class path; runPermit2AndMacro is optional for bundled Permit2 token upgrades"
     ],
     "anti_patterns": [
-      "Claiming Clear Macro is available on mainnet",
-      "Omitting the testnet/forward-looking status caveat",
+      "Claiming ClearMacroForwarder is testnet-only or OP-Sepolia-only",
+      "Referencing PR #2148 as unmerged — it is merged",
       "Describing the Provider API without the capabilities → sign → relay → poll flow order"
     ],
-    "tags": ["routing", "clear-macro", "macro", "regression-t049"]
+    "tags": ["routing", "clear-macro", "macro", "regression-t053"]
+  },
+  {
+    "id": "route-clear-macro-not-testnet",
+    "description": "Regression (T053): AI must NOT describe ClearMacroForwarder as testnet-only or unmerged",
+    "prompt": "Is ClearMacroForwarder available on mainnet Ethereum or other production chains, or is it testnet-only?",
+    "criteria": [
+      { "criterion": "states_mainnet_available", "description": "Confirms ClearMacroForwarder is deployed on production chains — NOT testnet-only", "weight": 3 },
+      { "criterion": "mentions_sdk_or_address", "description": "Mentions SDK export (clearMacroForwarderAbi / clearMacroForwarderAddress) or the deterministic address 0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate deployment statuses or addresses", "weight": 2 }
+    ],
+    "golden_facts": [
+      "ClearMacroForwarder is shipped in @sfpro/sdk 0.2.1 and deployed across ~16 production networks",
+      "Address 0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e is deterministic across networks",
+      "PR #2148 is merged in dev; this is NOT a forward-looking/preview feature"
+    ],
+    "anti_patterns": [
+      "Claiming ClearMacroForwarder is testnet-only or OP-Sepolia-only",
+      "Stating PR #2148 is unmerged or the feature is forward-looking",
+      "Stating it is not available on mainnet"
+    ],
+    "tags": ["routing", "clear-macro", "macro", "regression-t053"]
   },
   {
     "id": "route-balance-api",
