@@ -1,8 +1,9 @@
 ---
-status: open
+status: done
 priority: high
 tags: [skill, contracts, scripts, enhancement]
 created: 2026-06-08
+resolved: 2026-06-08
 ---
 
 # T053 — Clear Macro SDK reconciliation
@@ -63,4 +64,6 @@ All Reference section facts in the plan match the live SDK. Proceed with all tas
 
 ## Resolution
 
-Pending — see plan `docs/plans/2026-06-08-clearmacroforwarder-sdk-reconciliation.md`.
+Completed 2026-06-08 via the autonomous ralphex plan `docs/plans/2026-06-08-clearmacroforwarder-sdk-reconciliation.md`.
+
+All 11 tasks completed: ABI YAML renamed and expanded (all 7 functions + PERMIT2/SELF_PROVIDER/Permit2UpgradeExecuted), ClearMacro migrated from NON_SDK_ABIS to SDK ABI_MAP, BlindMacroForwarder added to abi.mjs/selectors.mjs, selector sidecars regenerated, clear-macro guide rewritten end-to-end (Payload shape, EIP-712, self-submit, relay, Permit2 witness), macro-forwarders guide reframed, SKILL.md routing updated, eval cases updated and regression added, version bumped 1.2.0 → 1.2.1.

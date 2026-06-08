@@ -1,5 +1,5 @@
 ---
-updated: 2026-06-04
+updated: 2026-06-08
 ---
 
 # Roadmap
@@ -30,6 +30,7 @@ v1.1.0 released — formal specification deep researches, GDA scalability analys
 
 ## Completed
 
+- **v1.2.1** -- Clear Macro SDK reconciliation (T053): migrated `ClearMacroForwarder` from `NON_SDK_ABIS` to SDK `ABI_MAP` (`clearMacroForwarderAbi`); canonical name `ClearMacroForwarder` (underlying `ClearMacroForwarderV1WithPermit2`); added `BlindMacroForwarder` SDK path; expanded ABI YAML with all 7 functions + `PERMIT2`/`SELF_PROVIDER` constants, `Permit2UpgradeExecuted` event; rewrote clear-macro guide with Payload shape, EIP-712 assembly, self-submit vs provider-relay, `runPermit2AndMacro` witness flow; updated macro-forwarders guide, SKILL.md routing, and eval cases; removed all testnet/OP-Sepolia/PR-2148 framing.
 - **v1.2.0** -- Clear Macro guide + Rich ABI YAMLs (`ClearMacroForwarderV1`, `IClearMacro`): EIP-712
   clear signing, relaying, gasless transactions, Provider API; TESTNET ONLY (OP Sepolia 11155420,
   PR #2148); selectors via `NON_SDK_ABIS` path (not in `@sfpro/sdk`) (T049). Balance API
