@@ -213,21 +213,21 @@ verification, local/private-key signing, and parity checks — not the browser U
       nothing (or only an intentional historical note)
 
 ### Task 10: Fix and extend eval cases
-- [ ] rewrite `correctness-clear-macro-status` to assert SDK-shipped/multi-network status, canonical
+- [x] rewrite `correctness-clear-macro-status` to assert SDK-shipped/multi-network status, canonical
       `ClearMacroForwarder`, `runMacro` (first-class) vs optional `runPermit2AndMacro` (one Permit2
       witness signature), and self vs provider modes
-- [ ] in `evals/cases/skill/routing.cases.json`: remove the `flags_testnet_status` criteria and FLIP
+- [x] in `evals/cases/skill/routing.cases.json`: remove the `flags_testnet_status` criteria and FLIP
       the testnet anti-patterns (testnet-only / OP-Sepolia-only / unmerged should now be the
       anti-pattern); repoint any `ClearMacroForwarderV1.abi.yaml` references to the new file name
-- [ ] **`evals/cases/scripts/selectors.cases.json`**: this hard-codes `ClearMacroForwarderV1
+- [x] **`evals/cases/scripts/selectors.cases.json`**: this hard-codes `ClearMacroForwarderV1
       (non-SDK)` and `IClearMacro (non-SDK)` expectations — rewrite so `ClearMacroForwarder` is
       SDK-backed and `IClearMacro` remains non-SDK; update any `selectors.mjs list` expected output
-- [ ] add a regression case (anti-pattern) that FAILS if an answer calls Clear Macro testnet-only /
+- [x] add a regression case (anti-pattern) that FAILS if an answer calls Clear Macro testnet-only /
       OP-Sepolia-only / unmerged; tag `regression-t053`
-- [ ] verify: all touched JSON parses; run `skill-eval-runner --file routing` / `--file correctness`
+- [x] verify: all touched JSON parses; run `skill-eval-runner --file routing` / `--file correctness`
       and `script-runner --file selectors`. **If the model eval cannot run after one attempt** (no
       credentials), fall back to `--dry-run`, record the exact failure in T053, and do NOT claim a
-      full eval pass
+      full eval pass — `script-runner --file selectors` 6/6 pass; `--dry-run` confirms routing/correctness structure valid; model eval skipped (no credentials)
 
 ### Task 11: Version bump + roadmap
 - [ ] bump **1.2.0 → 1.2.1** (reconciliation/patch) across all four version files. This is the fixed

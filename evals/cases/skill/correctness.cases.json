@@ -144,27 +144,30 @@
   },
   {
     "id": "correctness-clear-macro-status",
-    "description": "AI should flag Clear Macro as testnet-only/forward-looking and describe the correct flow without hallucinating (T049 regression)",
+    "description": "AI should describe ClearMacroForwarder as SDK-shipped/multi-network, identify runMacro as first-class, and explain self-submit vs provider relay (T053 reconciliation)",
     "prompt": "I heard about something called Clear Macro in Superfluid that lets users sign operations with human-readable prompts and have a relayer execute them. Can you explain how it works, what contracts are involved, and how I'd use the off-chain Provider API?",
     "criteria": [
-      { "criterion": "flags_testnet_status", "description": "Explicitly states Clear Macro is testnet-only (OP Sepolia, chainId 11155420) and/or that it comes from an unmerged PR / is forward-looking", "weight": 3 },
-      { "criterion": "names_correct_contracts", "description": "Names ClearMacroForwarderV1 and/or IClearMacro as the on-chain contracts", "weight": 2 },
+      { "criterion": "sdk_shipped_status", "description": "Identifies ClearMacroForwarder as SDK-shipped (@sfpro/sdk 0.2.1) and available across multiple networks — NOT testnet-only", "weight": 3 },
+      { "criterion": "names_correct_contracts", "description": "Names ClearMacroForwarder (canonical skill-facing name) and/or IClearMacro as the on-chain contracts; does NOT present ClearMacroForwarderV1 as the canonical user-facing name", "weight": 2 },
+      { "criterion": "runMacro_first_class", "description": "Describes runMacro as the primary/simpler execution path; runPermit2AndMacro as an optional Permit2 witness flow, not the default", "weight": 2 },
       { "criterion": "correct_provider_flow", "description": "Describes the correct Provider API flow: GET /v1/capabilities → build + sign EIP-712 payload → POST /v1/relay-executions → poll for terminal state", "weight": 3 },
       { "criterion": "no_hallucination", "description": "Does not fabricate contract addresses, function names, or Provider API endpoints beyond what is documented", "weight": 3 }
     ],
     "golden_facts": [
-      "Clear Macro is TESTNET ONLY — currently deployed on OP Sepolia (chainId 11155420); addresses and API may change",
-      "On-chain contracts: ClearMacroForwarderV1 (verifies EIP-712 payloads, enforces provider ACL, calls Host.batchCall) and IClearMacro (EIP-712 type derivation interface)",
-      "Provider API flow: GET /v1/capabilities (get forwarder address + macro allowlist) → sign EIP-712 payload → POST /v1/relay-executions (202 + execution id) → GET /v1/relay-executions/{id} (poll until terminal)",
+      "ClearMacroForwarder (underlying: ClearMacroForwarderV1WithPermit2) is shipped in @sfpro/sdk 0.2.1, deployed deterministically at 0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e across ~16 networks",
+      "runMacro(m, encodedPayload, signer, signature) is the first-class execution path; runPermit2AndMacro is optional for bundled Permit2 token upgrades",
+      "Two modes: self-submit (security.provider = 'self', tx executor must equal signer) and provider-relay (relayer holds ACL role, gasless for signer)",
+      "Provider API flow: GET /v1/capabilities → sign EIP-712 payload → POST /v1/relay-executions (202 + execution id) → GET /v1/relay-executions/{id} (poll until terminal)",
       "Gasless: fees can be paid in the Super Token; relayer pays on-chain gas"
     ],
     "anti_patterns": [
-      "Claiming Clear Macro is live on mainnet or production-ready",
-      "Omitting the testnet/forward-looking caveat",
+      "Claiming Clear Macro is testnet-only or OP-Sepolia-only",
+      "Claiming Clear Macro comes from an unmerged PR or is forward-looking/preview",
+      "Describing runPermit2AndMacro as the default or primary path",
       "Describing a flow that skips the capabilities step or inverts sign → POST order",
-      "Fabricating a contract address for ClearMacroForwarderV1 on mainnet"
+      "Fabricating a contract address for ClearMacroForwarder on any chain"
     ],
-    "tags": ["correctness", "clear-macro", "macro", "regression-t049"]
+    "tags": ["correctness", "clear-macro", "macro", "regression-t053"]
   },
   {
     "id": "correctness-balance-api-disambiguation",
