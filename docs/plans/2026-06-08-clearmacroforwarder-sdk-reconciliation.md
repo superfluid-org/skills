@@ -179,19 +179,19 @@ verification, local/private-key signing, and parity checks — not the browser U
       `ClearMacroForwarderV1.*` files remain; every `*.abi.yaml` has a matching `*.selectors.yaml`
 
 ### Task 7: Rewrite the Clear Macro guide
-- [ ] rewrite `clear-macro.md`: SDK-shipped wording, canonical `ClearMacroForwarder`, SDK import
+- [x] rewrite `clear-macro.md`: SDK-shipped wording, canonical `ClearMacroForwarder`, SDK import
       (`clearMacroForwarderAbi`/`clearMacroForwarderAddress`), address `0xC1Ea…`/metadata
-- [ ] document end-to-end usage: Payload shape, EIP-712 type assembly, `getNonce`, security fields;
+- [x] document end-to-end usage: Payload shape, EIP-712 type assembly, `getNonce`, security fields;
       a **self-submit** viem example AND a **provider-relay** flow (capabilities → sign → POST
       relay-executions → poll); the `runPermit2AndMacro` OPTIONAL one-signature witness flow (both
       `upgradeSuperToken` modes + the spender gotcha) framed as optional, not the default
-- [ ] signing: examples MUST use `signTypedData` (macro-derived type + message) for the clear-signing
+- [x] signing: examples MUST use `signTypedData` (macro-derived type + message) for the clear-signing
       wallet prompt; show `getDigest` only for verification/parity, not as the browser signing path;
       for Permit2 use the witness helpers, not the plain `runMacro` type formula
-- [ ] addresses: forwarder from `clearMacroForwarderAddress`/metadata; **Provider API relay chain
+- [x] addresses: forwarder from `clearMacroForwarderAddress`/metadata; **Provider API relay chain
       support comes from `/v1/capabilities`, not SDK metadata**; macro address is user-supplied
-- [ ] keep a short "re-verify Provider API schema at /docs/json" note
-- [ ] verify: markdown links resolve; `grep -E "TESTNET ONLY|OP Sepolia|PR #2148"` returns nothing;
+- [x] keep a short "re-verify Provider API schema at /docs/json" note
+- [x] verify: markdown links resolve; `grep -E "TESTNET ONLY|OP Sepolia|PR #2148"` returns nothing;
       examples distinguish `signTypedData` from raw-digest signing
 
 ### Task 8: Reframe macro-forwarders.md (legacy → BlindMacroForwarder)
