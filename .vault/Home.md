@@ -12,7 +12,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Open Tickets
 
-(none)
+- [[T053-clear-macro-sdk-reconciliation]] -- Clear Macro SDK reconciliation: migrate to @sfpro/sdk 0.2.1 exports, canonical naming, selectors, guide rewrite
 
 ## Resolved Tickets
 
