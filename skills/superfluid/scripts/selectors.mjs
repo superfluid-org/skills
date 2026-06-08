@@ -52,6 +52,7 @@ const ALIASES = {
   sup: "SUPToken",
   clearmacroforwarder: "ClearMacroForwarder", clearmacro: "ClearMacroForwarder",
   blindmacroforwarder: "BlindMacroForwarder", blindmacro: "BlindMacroForwarder",
+  macroforwarder: "BlindMacroForwarder",
 };
 
 // -- ABI signature helpers --

@@ -28,10 +28,10 @@ evals/
       abi.cases.json         #   7 cases
       balance.cases.json     #   4 cases
       metadata.cases.json    #   8 cases
-      selectors.cases.json   #   6 cases
+      selectors.cases.json   #   7 cases
       tokenlist.cases.json   #   5 cases
     skill/                   # Skill eval cases (JSON)
-      routing.cases.json     #   8 cases
+      routing.cases.json     #  10 cases
       correctness.cases.json #   9 cases
       code-generation.cases.json  # 2 cases
   configs/

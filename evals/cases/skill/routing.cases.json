@@ -147,6 +147,29 @@
     "tags": ["routing", "clear-macro", "macro", "regression-t053"]
   },
   {
+    "id": "route-blind-vs-clear-macro",
+    "description": "Disambiguates BlindMacroForwarder (caller self-submits) from ClearMacroForwarder (relayed/gasless EIP-712)",
+    "prompt": "I built a macro contract that bundles wrap + approve + createFlow into one atomic batch. My users will submit and pay for the transaction from their own wallets — no relayer, no gasless flow. Which Superfluid macro forwarder should I call, and what is the function signature?",
+    "criteria": [
+      { "criterion": "routes_to_blind", "description": "Recommends BlindMacroForwarder (Solidity MacroForwarder) for the caller-self-submits case, NOT ClearMacroForwarder", "weight": 3 },
+      { "criterion": "correct_function", "description": "Identifies runMacro(macro, params) — the two-argument runMacro(address,bytes) signature — as the call", "weight": 2 },
+      { "criterion": "explains_distinction", "description": "Explains that ClearMacroForwarder is for relayed/gasless EIP-712 signed execution, which this use case does not need", "weight": 2 },
+      { "criterion": "no_hallucination", "description": "Does not fabricate addresses, function names, or signatures; does not conflate the two forwarders' runMacro selectors", "weight": 2 }
+    ],
+    "golden_facts": [
+      "BlindMacroForwarder (SDK: blindMacroForwarderAbi, addr 0xFD0268E33111565dE546af2675351A4b1587F89F) is the path when the caller is also the signer and submits the tx directly",
+      "BlindMacroForwarder.runMacro(IUserDefinedMacro m, bytes params) — two arguments, signature runMacro(address,bytes)",
+      "ClearMacroForwarder is for delegated/relayed execution with EIP-712 clear signing and optional Permit2 — not needed when the caller self-submits",
+      "Both are permissionless and reuse the same IUserDefinedMacro macro contracts"
+    ],
+    "anti_patterns": [
+      "Recommending ClearMacroForwarder for a caller-self-submits, non-gasless flow",
+      "Conflating BlindMacroForwarder.runMacro(address,bytes) with ClearMacroForwarder.runMacro(address,bytes,address,bytes)",
+      "Claiming BlindMacroForwarder supports Permit2 or relayed gasless execution"
+    ],
+    "tags": ["routing", "macro", "clear-macro", "regression-t053"]
+  },
+  {
     "id": "route-balance-api",
     "description": "Routes to Balance API (not Super API or Accounting API) for full history, GDA, and CSV export",
     "prompt": "I need to pull a full transaction history for an address including GDA pool distributions, get the running balance over time for charting, and export a CSV report. Which Superfluid API should I use?",
