@@ -69,6 +69,25 @@
     "tags": ["selectors", "regression-t053"]
   },
   {
+    "id": "selectors-blind-forwarder",
+    "description": "Generates correct selectors for BlindMacroForwarder from SDK ABI; runMacro(address,bytes) selector differs from ClearMacroForwarder",
+    "command": ["selectors.mjs", "BlindMacroForwarder"],
+    "expect": {
+      "exitCode": 0,
+      "stdout": {
+        "type": "text",
+        "contains": [
+          "# BlindMacroForwarder selectors — computed from @sfpro/sdk ABI",
+          "runMacro(address,bytes):",
+          "0x651aeb70",
+          "buildBatchOperations(address,bytes):",
+          "0xb54bbfa0"
+        ]
+      }
+    },
+    "tags": ["selectors", "regression-t053"]
+  },
+  {
     "id": "selectors-non-sdk-interface",
     "description": "Generates correct selectors for IClearMacro from NON_SDK_ABIS",
     "command": ["selectors.mjs", "IClearMacro"],

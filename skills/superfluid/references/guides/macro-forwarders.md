@@ -51,7 +51,7 @@ Permit2 token upgrade bundled with the macro call. See `clear-macro.md`.
 
 ## BlindMacroForwarder Contract
 
-**SDK**: `blindMacroForwarderAbi`, `blindMacroForwarderAddress` from `@sfpro/sdk`
+**SDK**: `blindMacroForwarderAbi`, `blindMacroForwarderAddress` from `@sfpro/sdk/abi`
 
 **Address**: `0xFD0268E33111565dE546af2675351A4b1587F89F` (same on all networks)
 
@@ -280,7 +280,7 @@ For simple macros where the batch operations themselves revert on failure
 The most common pattern. The user's wallet signs the transaction directly.
 
 ```typescript
-import { blindMacroForwarderAbi, blindMacroForwarderAddress } from '@sfpro/sdk'
+import { blindMacroForwarderAbi, blindMacroForwarderAddress } from '@sfpro/sdk/abi'
 
 const chainId = 10 // example: OP Mainnet
 const BLIND_MACRO_FORWARDER = blindMacroForwarderAddress[chainId]
@@ -327,7 +327,7 @@ message in their wallet instead of raw calldata.
 
 ```typescript
 import { encodeAbiParameters, parseAbiParameters, parseSignature } from 'viem'
-import { blindMacroForwarderAbi, blindMacroForwarderAddress } from '@sfpro/sdk'
+import { blindMacroForwarderAbi, blindMacroForwarderAddress } from '@sfpro/sdk/abi'
 
 const BLIND_MACRO_FORWARDER = blindMacroForwarderAddress[chainId]
 
