@@ -202,14 +202,14 @@ verification, local/private-key signing, and parity checks — not the browser U
       no contradictory naming
 
 ### Task 9: Update SKILL.md routing, Apps, Ecosystem, Debugging Reverts, version
-- [ ] Use-Case Map "Macro forwarders": route to `clear-macro.md`, `ClearMacroForwarder.abi.yaml`,
+- [x] Use-Case Map "Macro forwarders": route to `clear-macro.md`, `ClearMacroForwarder.abi.yaml`,
       `IClearMacro.abi.yaml`; drop testnet phrasing; add SDK-address/metadata + self-submit vs relay note
-- [ ] Apps/Ecosystem: keep `tokens.superfluid.org/clear` as a demo link, not the address source;
+- [x] Apps/Ecosystem: keep `tokens.superfluid.org/clear` as a demo link, not the address source;
       add Clear/Blind forwarder to any SDK/contract listing
-- [ ] Debugging Reverts: ensure ClearMacroForwarder custom errors (`InvalidSignature`,
+- [x] Debugging Reverts: ensure ClearMacroForwarder custom errors (`InvalidSignature`,
       `InvalidNonce`, `MacroContractMismatch`, `ProviderNotAuthorized`, `OutsideValidityWindow`,
       `InvalidPayload`) map correctly
-- [ ] verify: all referenced files exist; `grep ClearMacroForwarderV1.abi.yaml SKILL.md` returns
+- [x] verify: all referenced files exist; `grep ClearMacroForwarderV1.abi.yaml SKILL.md` returns
       nothing (or only an intentional historical note)
 
 ### Task 10: Fix and extend eval cases
