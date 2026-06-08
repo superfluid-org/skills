@@ -230,12 +230,12 @@ verification, local/private-key signing, and parity checks — not the browser U
       full eval pass — `script-runner --file selectors` 6/6 pass; `--dry-run` confirms routing/correctness structure valid; model eval skipped (no credentials)
 
 ### Task 11: Version bump + roadmap
-- [ ] bump **1.2.0 → 1.2.1** (reconciliation/patch) across all four version files. This is the fixed
+- [x] bump **1.2.0 → 1.2.1** (reconciliation/patch) across all four version files. This is the fixed
       default for autonomous execution — do NOT derive release policy from `git log`. (If the
       maintainer wants 1.3.0 or to fold into an unreleased 1.2.0, they edit this line before the run.)
-- [ ] add the T053 entry to `.vault/vision/roadmap.md` (SDK reconciliation, canonical naming,
+- [x] add the T053 entry to `.vault/vision/roadmap.md` (SDK reconciliation, canonical naming,
       selector migration, docs/eval refresh); update Home.md + `updated:` date
-- [ ] verify: `grep -rn` the chosen version across the four files; no stale version; vault links resolve
+- [x] verify: `grep -rn` the chosen version across the four files; no stale version; vault links resolve
 
 ### Task N-1: Verify acceptance criteria
 - [ ] every Overview goal met; no `TESTNET`/`OP Sepolia`/`PR #2148`/`ClearMacroForwarderV1` naming

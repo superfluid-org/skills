@@ -12,10 +12,9 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Open Tickets
 
-- [[T053-clear-macro-sdk-reconciliation]] -- Clear Macro SDK reconciliation: migrate to @sfpro/sdk 0.2.1 exports, canonical naming, selectors, guide rewrite
-
 ## Resolved Tickets
 
+- [[T053-clear-macro-sdk-reconciliation]] -- Clear Macro SDK reconciliation: migrate to @sfpro/sdk 0.2.1 exports, canonical naming, selectors, guide rewrite
 - [[T052-version-bump-1.2.0]] -- Version bump 1.1.2 → 1.2.0
 - [[T051-clear-macro-balance-api-evals]] -- Eval cases for Clear Macro, Balance API, and Reporter
 - [[T050-balance-api-and-reporter]] -- Balance API + Reporter documentation
