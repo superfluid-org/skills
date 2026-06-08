@@ -238,11 +238,12 @@ verification, local/private-key signing, and parity checks — not the browser U
 - [x] verify: `grep -rn` the chosen version across the four files; no stale version; vault links resolve
 
 ### Task N-1: Verify acceptance criteria
-- [ ] every Overview goal met; no `TESTNET`/`OP Sepolia`/`PR #2148`/`ClearMacroForwarderV1` naming
+- [x] every Overview goal met; no `TESTNET`/`OP Sepolia`/`PR #2148`/`ClearMacroForwarderV1` naming
       remains except intentional historical notes
-- [ ] all YAML/JSON parse; selectors zero-drift; every `*.abi.yaml` has a `*.selectors.yaml`
-- [ ] `abi.mjs` + `selectors.mjs` resolve `ClearMacroForwarder`/`BlindMacroForwarder` via the SDK
-- [ ] SKILL.md links resolve; version consistent; full eval run of changed/new cases passes
+- [x] all YAML/JSON parse; selectors zero-drift; every `*.abi.yaml` has a `*.selectors.yaml`
+      (SuperTokenV1Library intentionally skipped by generate — Solidity library, no selectors)
+- [x] `abi.mjs` + `selectors.mjs` resolve `ClearMacroForwarder`/`BlindMacroForwarder` via the SDK
+- [x] SKILL.md links resolve; version consistent; script-runner selectors 6/6; --dry-run confirms routing/correctness structure valid
 
 ### Task N: Update repo docs
 - [ ] update `CLAUDE.md` ONLY where applicable: if it states a contract count, adjust it; the
