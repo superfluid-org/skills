@@ -1,10 +1,18 @@
 #!/usr/bin/env node
-// Skill Eval Runner — Claude Code CLI
-// Zero-dependency. Evaluates skill quality by running prompts through the Claude
-// Code CLI with --plugin-dir, then judging responses via a second claude call.
-// Uses the CC subscription — no API key needed.
+// Skill Eval Runner — Claude Code / Codex CLI
+// Zero-dependency. Evaluates skill quality by running prompts through a CLI (Claude
+// Code with --plugin-dir, or Codex pointed at the skill files), then judging the
+// response with a second CLI call. Uses the chosen provider's subscription — no API
+// key needed.
 //
-// Requires: `claude` CLI installed and authenticated.
+// Provider+model are selected per role via a prefix in the model string:
+//   sonnet | opus            -> Claude (bare names, backward compatible)
+//   claude:opus              -> Claude, explicit
+//   codex                    -> Codex with its configured default model
+//   codex:gpt-5-codex        -> Codex with a specific model
+//
+// Requires: the `claude` and/or `codex` CLI installed and authenticated for whichever
+// providers you use (`claude` login, or `codex login`).
 //
 // Usage:
 //   node skill-eval-runner.mjs                              # Run all cases (sonnet gen + judge)
@@ -13,10 +21,14 @@
 //   node skill-eval-runner.mjs --dry-run                    # Preview what would run
 //   node skill-eval-runner.mjs --model sonnet               # Override generation model
 //   node skill-eval-runner.mjs --judge-model opus           # Override judge model
+//   node skill-eval-runner.mjs --judge-model codex          # Judge on Codex (subscription)
+//   node skill-eval-runner.mjs --model codex --judge-model codex   # Both roles on Codex
 //   node skill-eval-runner.mjs --compare configs.json       # Multi-model comparison
 
-import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, unlinkSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { tmpdir } from "node:os";
+import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { spawn, execFileSync } from "node:child_process";
 
@@ -45,9 +57,45 @@ const cliModel = flagVal("--model") || "sonnet";
 const cliJudgeModel = flagVal("--judge-model") || "sonnet";
 const comparePath = flagVal("--compare");
 
-// -- Check claude CLI --
+// -- Model spec parsing (provider:model) --
 
-async function checkClaude() {
+// "opus"|"sonnet"        -> { provider: "claude", model: "opus" }   (bare, back-compat)
+// "claude:opus"          -> { provider: "claude", model: "opus" }
+// "codex"                -> { provider: "codex",  model: null }      (codex default model)
+// "codex:gpt-5-codex"    -> { provider: "codex",  model: "gpt-5-codex" }
+// Unknown prefix (e.g. "code:foo") throws — fail fast on typos.
+function parseModelSpec(spec) {
+  const i = spec.indexOf(":");
+  if (i !== -1) {
+    const p = spec.slice(0, i);
+    if (p === "codex" || p === "claude") return { provider: p, model: spec.slice(i + 1) || null, raw: spec };
+    throw new Error(`Unsupported provider prefix "${p}" in "${spec}" (expected "codex:" or "claude:")`);
+  }
+  if (spec === "codex") return { provider: "codex", model: null, raw: spec };
+  return { provider: "claude", model: spec, raw: spec };
+}
+
+// -- Check provider CLIs --
+
+async function checkProvider(provider) {
+  if (provider === "codex") {
+    try {
+      execFileSync("codex", ["--version"], { timeout: 5000, stdio: "ignore" });
+    } catch {
+      console.error("Error: `codex` CLI not found. Install it and authenticate first (`codex login`).");
+      process.exit(1);
+    }
+    // `codex --version` only proves it's installed — verify auth/headless readiness
+    // with a tiny exec probe so a missing login fails now, not mid-run.
+    try {
+      await runCodex("Reply with: OK", null, { sandbox: "read-only", timeout: 30_000 });
+    } catch (err) {
+      console.error(`Error: \`codex exec\` probe failed — is Codex authenticated? Run \`codex login\`.\n  ${err.message}`);
+      process.exit(1);
+    }
+    return;
+  }
+  // claude
   try {
     execFileSync("claude", ["--version"], { timeout: 5000, stdio: "ignore" });
   } catch {
@@ -99,7 +147,7 @@ function runClaude(prompt, model, opts = {}) {
           const msg = data.errors?.map(e => e.message || e).join("; ") || "unknown error";
           return reject(new Error(`claude CLI error: ${msg}`));
         }
-        resolve(data);
+        resolve({ result: data.result, sessionId: data.session_id });
       } catch {
         reject(new Error(`claude CLI returned non-JSON: ${stdout.slice(0, 300)}`));
       }
@@ -112,26 +160,147 @@ function runClaude(prompt, model, opts = {}) {
   });
 }
 
+// -- Run codex CLI --
+// Mirrors runClaude. Prompt is passed over stdin (avoids ARG_MAX on big judge
+// prompts). The final assistant message is captured via --output-last-message.
+// read-only sandbox protects the filesystem but NOT the network, so web search is
+// disabled to keep evals deterministic and repo-local.
+
+function runCodex(prompt, model, opts = {}) {
+  const outFile = join(tmpdir(), `codex-out-${randomUUID()}.txt`);
+  const args = [
+    "exec",
+    "--ephemeral",
+    "--skip-git-repo-check",
+    "--color", "never",
+    "-s", opts.sandbox || "read-only",
+    "-c", 'web_search="disabled"',
+    "-o", outFile,
+  ];
+  if (model)          args.push("-m", model);
+  if (opts.cwd)       args.push("-C", opts.cwd);
+  if (opts.schemaFile) args.push("--output-schema", opts.schemaFile);
+
+  const cleanup = () => { try { unlinkSync(outFile); } catch {} };
+
+  return new Promise((resolve, reject) => {
+    const child = spawn("codex", args, {
+      stdio: ["pipe", "pipe", "pipe"],
+      cwd: opts.cwd,
+    });
+
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (d) => { stdout += d; });
+    child.stderr.on("data", (d) => { stderr += d; });
+
+    const timer = setTimeout(() => {
+      child.kill();
+      cleanup();
+      reject(new Error(`codex CLI timed out after ${opts.timeout || 120_000}ms`));
+    }, opts.timeout || 120_000);
+
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      if (code !== 0) {
+        const detail = stderr.trim() || stdout.trim().slice(0, 300);
+        cleanup();
+        return reject(new Error(`codex CLI exited ${code}: ${detail}`));
+      }
+      let text;
+      try {
+        text = readFileSync(outFile, "utf-8").trim();
+      } catch {
+        cleanup();
+        return reject(new Error(`codex CLI produced no output file (${outFile})`));
+      }
+      cleanup();
+      if (!text) return reject(new Error("codex CLI returned an empty final message"));
+      resolve({ result: text, sessionId: null });
+    });
+
+    child.on("error", (err) => {
+      clearTimeout(timer);
+      cleanup();
+      reject(new Error(`codex CLI spawn failed: ${err.message}`));
+    });
+
+    child.stdin.write(prompt);
+    child.stdin.end();
+  });
+}
+
+// -- Provider dispatcher --
+
+function runModel(spec, prompt, opts = {}) {
+  return spec.provider === "codex"
+    ? runCodex(prompt, spec.model, opts)
+    : runClaude(prompt, spec.model, opts);
+}
+
 // -- Generate with skill via CC CLI --
 
-async function generate(prompt, model) {
-  const fullPrompt = prompt + "\n\nIMPORTANT: Respond with your complete answer directly in your message. Do not create plan files or say you've created a plan — include all content inline.";
-  const result = await runClaude(fullPrompt, model, {
-    pluginDir: PLUGIN_DIR,
-    allowedTools: ["Read", "Glob", "Grep", "Bash"],
-    maxTurns: MAX_TURNS,
-    timeout: 300_000,
-  });
-  const text = result.result;
-  if (!text?.trim()) {
-    throw new Error(`Claude returned empty response (session: ${result.session_id})`);
+async function generate(prompt, spec) {
+  const inline = "\n\nIMPORTANT: Respond with your complete answer directly in your message. Do not create plan files or say you've created a plan — include all content inline.";
+
+  let fullPrompt;
+  const opts = { timeout: 300_000 };
+  if (spec.provider === "codex") {
+    // Codex has no plugin/skill auto-discovery — point it at the skill files and
+    // forbid network use (read-only sandbox does not block the network).
+    fullPrompt =
+      "A Superfluid knowledge-base skill lives in this repository at skills/superfluid/SKILL.md. " +
+      "Read it and the files it references before answering. " +
+      "Do not use web search or any network access; rely only on the repository files.\n\n" +
+      prompt + inline;
+    opts.cwd = PLUGIN_DIR;
+    opts.sandbox = "read-only";
+  } else {
+    fullPrompt = prompt + inline;
+    opts.pluginDir = PLUGIN_DIR;
+    opts.allowedTools = ["Read", "Glob", "Grep", "Bash"];
+    opts.maxTurns = MAX_TURNS;
   }
-  return { text, sessionId: result.session_id };
+
+  const { result, sessionId } = await runModel(spec, fullPrompt, opts);
+  if (!result?.trim()) {
+    throw new Error(`${spec.provider} returned empty response (session: ${sessionId})`);
+  }
+  return { text: result, sessionId };
 }
 
 // -- Judge response via CC CLI --
 
-async function judgeResponse(testCase, response, judgeModel) {
+// JSON Schema for the judge verdict — used with Codex's --output-schema so the final
+// message is guaranteed-parseable JSON (no regex extraction needed).
+function judgeSchema(criteriaCount) {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["criteria", "anti_patterns_found", "overall"],
+    properties: {
+      criteria: {
+        type: "array",
+        minItems: criteriaCount,
+        maxItems: criteriaCount,
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["index", "result", "reason"],
+          properties: {
+            index: { type: "integer" },
+            result: { type: "string", enum: ["PASS", "FAIL"] },
+            reason: { type: "string" },
+          },
+        },
+      },
+      anti_patterns_found: { type: "array", items: { type: "string" } },
+      overall: { type: "string" },
+    },
+  };
+}
+
+async function judgeResponse(testCase, response, judgeSpec) {
   const criteriaList = testCase.criteria
     .map((c, i) => `${i + 1}. [weight: ${c.weight}] ${c.description}`)
     .join("\n");
@@ -169,12 +338,22 @@ Respond in this exact JSON format (no markdown fences):
   "overall": "brief overall assessment"
 }`;
 
-  const result = await runClaude(prompt, judgeModel, {
-    timeout: 90_000,
-  });
+  if (judgeSpec.provider === "codex") {
+    // Force a schema-conforming JSON final message, then parse it whole.
+    // Codex judging is slower than Claude's (reasoning + schema) — allow more time.
+    const schemaFile = join(tmpdir(), `codex-judge-schema-${randomUUID()}.json`);
+    writeFileSync(schemaFile, JSON.stringify(judgeSchema(testCase.criteria.length)));
+    try {
+      const { result } = await runModel(judgeSpec, prompt, { timeout: 240_000, schemaFile });
+      if (!result) throw new Error("Judge returned no result");
+      return JSON.parse(result);
+    } finally {
+      try { unlinkSync(schemaFile); } catch {}
+    }
+  }
 
-  const raw = result.result;
-  if (!raw) throw new Error(`Judge returned no result (keys: ${Object.keys(result).join(", ")})`);
+  const { result: raw } = await runModel(judgeSpec, prompt, { timeout: 90_000 });
+  if (!raw) throw new Error("Judge returned no result");
   const jsonMatch = raw.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error(`Judge did not return valid JSON: ${raw.slice(0, 200)}`);
   return JSON.parse(jsonMatch[0]);
@@ -228,7 +407,7 @@ function buildRunSummary(results, totalScore, totalPossible) {
   return { results, totalScore, totalPossible, avgScore: Number(avgScore), scored, errors };
 }
 
-async function runCases(cases, model, judgeModel, onProgress) {
+async function runCases(cases, genSpec, judgeSpec, onProgress) {
   const results = [];
   let currentFile = "";
   let totalScore = 0;
@@ -241,9 +420,9 @@ async function runCases(cases, model, judgeModel, onProgress) {
     process.stdout.write(`  ${testCase.id} — generating...`);
 
     try {
-      const { text: response, sessionId } = await generate(testCase.prompt, model);
+      const { text: response, sessionId } = await generate(testCase.prompt, genSpec);
       process.stdout.write(` ${elapsed(t0)} — judging...`);
-      const judgeResult = await judgeResponse(testCase, response, judgeModel);
+      const judgeResult = await judgeResponse(testCase, response, judgeSpec);
       process.stdout.write(` ${elapsed(t0)}\n`);
       const score = computeScore(testCase, judgeResult);
 
@@ -360,17 +539,21 @@ function printSummary(totalCases, run) {
   console.log(`\nSummary: ${totalCases} cases (${parts.join(", ")}), avg score ${run.avgScore}%`);
 }
 
-if (!dryRun) await checkClaude();
+async function checkProviders(providers) {
+  for (const p of [...new Set(providers)]) await checkProvider(p);
+}
 
 if (comparePath) {
   // -- Compare mode --
   const configFile = JSON.parse(readFileSync(comparePath, "utf-8"));
   const configs = configFile.configs;
-  const judgeModel = configFile.judge_model || cliJudgeModel;
+  const judgeSpec = parseModelSpec(configFile.judge_model || cliJudgeModel);
+  // Parse all generation specs up front so bad prefixes fail fast (even on --dry-run).
+  for (const config of configs) config.genSpec = parseModelSpec(config.model);
 
   console.log(`Skill Eval Runner — Compare Mode`);
   console.log(`  Configs: ${configs.length} (${configs.map(c => c.label).join(", ")})`);
-  console.log(`  Judge model: ${judgeModel}`);
+  console.log(`  Judge model: ${judgeSpec.raw}`);
   console.log(`  Cases: ${cases.length}`);
   console.log(`  Mode: ${dryRun ? "DRY RUN" : "LIVE"}`);
 
@@ -387,6 +570,8 @@ if (comparePath) {
     process.exit(0);
   }
 
+  await checkProviders([...configs.map(c => c.genSpec.provider), judgeSpec.provider]);
+
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const configResults = [];
 
@@ -396,7 +581,7 @@ if (comparePath) {
     console.log("=".repeat(60));
 
     const saveFn = (run) => {
-      try { saveResults(timestamp, config.label, { model: config.model, judgeModel }, run, { silent: true }); } catch {}
+      try { saveResults(timestamp, config.label, { model: config.model, judgeModel: judgeSpec.raw }, run, { silent: true }); } catch {}
     };
 
     // Save partial results on Ctrl+C
@@ -410,7 +595,7 @@ if (comparePath) {
     };
     process.on("SIGINT", sigHandler);
 
-    const run = await runCases(cases, config.model, judgeModel, (partialRun) => {
+    const run = await runCases(cases, config.genSpec, judgeSpec, (partialRun) => {
       latestRun = partialRun;
       saveFn(partialRun);
     });
@@ -420,7 +605,7 @@ if (comparePath) {
     printSummary(cases.length, run);
 
     try {
-      saveResults(timestamp, config.label, { model: config.model, judgeModel }, run);
+      saveResults(timestamp, config.label, { model: config.model, judgeModel: judgeSpec.raw }, run);
     } catch (err) {
       console.error(`  Could not save results for ${config.label}: ${err.message}`);
     }
@@ -435,7 +620,7 @@ if (comparePath) {
     const summary = {
       timestamp: new Date().toISOString(),
       runner: "skill-eval-cc",
-      judge_model: judgeModel,
+      judge_model: judgeSpec.raw,
       configs: configResults.map(cr => {
         const perCase = {};
         for (const r of cr.run.results) {
@@ -465,12 +650,12 @@ if (comparePath) {
 
 } else {
   // -- Single model mode --
-  const genModel = cliModel;
-  const judgeModel = cliJudgeModel;
+  const genSpec = parseModelSpec(cliModel);
+  const judgeSpec = parseModelSpec(cliJudgeModel);
 
   console.log(`Skill Eval Runner`);
-  console.log(`  Generation model: ${genModel}`);
-  console.log(`  Judge model: ${judgeModel}`);
+  console.log(`  Generation model: ${genSpec.raw}`);
+  console.log(`  Judge model: ${judgeSpec.raw}`);
   console.log(`  Cases: ${cases.length}`);
   console.log(`  Mode: ${dryRun ? "DRY RUN" : "LIVE"}\n`);
 
@@ -482,12 +667,14 @@ if (comparePath) {
       console.log(`    Prompt: ${c.prompt.slice(0, 80)}...`);
       console.log(`    Criteria: ${c.criteria.length} (total weight: ${c.criteria.reduce((s, cr) => s + cr.weight, 0)})`);
     }
-    console.log(`\nDry run complete. Install claude CLI and remove --dry-run to execute.`);
+    console.log(`\nDry run complete. Install the ${genSpec.provider === judgeSpec.provider ? `\`${genSpec.provider}\`` : `\`${genSpec.provider}\`/\`${judgeSpec.provider}\``} CLI and remove --dry-run to execute.`);
     process.exit(0);
   }
 
+  await checkProviders([genSpec.provider, judgeSpec.provider]);
+
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const config = { model: genModel, judgeModel };
+  const config = { model: genSpec.raw, judgeModel: judgeSpec.raw };
   const saveFn = (run) => {
     try { saveResults(timestamp, null, config, run, { silent: true }); } catch {}
   };
@@ -502,7 +689,7 @@ if (comparePath) {
     process.exit(1);
   });
 
-  const run = await runCases(cases, genModel, judgeModel, (partialRun) => {
+  const run = await runCases(cases, genSpec, judgeSpec, (partialRun) => {
     latestRun = partialRun;
     saveFn(partialRun);
   });

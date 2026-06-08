@@ -8,9 +8,11 @@ Two-tier eval system for the Superfluid skill: deterministic script tests and AI
 # Script tests (no API key needed)
 node evals/runners/script-runner.mjs
 
-# Skill evals (requires `claude` CLI installed and authenticated)
+# Skill evals (requires the `claude` and/or `codex` CLI installed and authenticated)
 node evals/runners/skill-eval-runner.mjs --dry-run          # preview cases
-node evals/runners/skill-eval-runner.mjs                     # run all
+node evals/runners/skill-eval-runner.mjs                     # run all (Claude)
+node evals/runners/skill-eval-runner.mjs --judge-model codex # judge on Codex
+node evals/runners/skill-eval-runner.mjs --model codex --judge-model codex  # both on Codex
 
 # Model comparison
 node evals/runners/skill-eval-runner.mjs --compare evals/configs/model-comparison.json
@@ -22,7 +24,7 @@ node evals/runners/skill-eval-runner.mjs --compare evals/configs/model-compariso
 evals/
   runners/
     script-runner.mjs        # Deterministic script test runner
-    skill-eval-runner.mjs    # AI-as-judge skill eval runner (uses claude CLI)
+    skill-eval-runner.mjs    # AI-as-judge skill eval runner (claude and/or codex CLI)
   cases/
     scripts/                 # Script test cases (JSON)
       abi.cases.json         #   7 cases
@@ -35,7 +37,8 @@ evals/
       correctness.cases.json #   9 cases
       code-generation.cases.json  # 2 cases
   configs/
-    model-comparison.json    # Multi-model comparison config
+    model-comparison.json        # Multi-model comparison config
+    model-comparison-codex.json  # Codex-judge comparison config
   results/                   # Output files (gitignored)
 ```
 
@@ -104,20 +107,34 @@ For scripts that output text (not JSON), use `"type": "text"` with a
 
 **Runner:** `evals/runners/skill-eval-runner.mjs`
 
-Runs prompts through the Claude Code CLI with `--plugin-dir` to load the local skill, then has a judge model score each response against a rubric. Both generation and judging use the CC subscription — no API key needed.
+Runs each prompt through a CLI to produce an answer, then has a judge model score that answer against a rubric. Both roles use the chosen provider's subscription — no API key needed.
 
-**Requires:** `claude` CLI installed and authenticated (Claude Code subscription).
+- **Claude** generation loads the local skill via `--plugin-dir` (this also exercises skill *discovery*).
+- **Codex** generation has no plugin/skill mechanism, so it runs with `--cd` at the project root, `--sandbox read-only`, and a prompt line pointing it at `skills/superfluid/SKILL.md`. This tests skill *content*, not discovery. Web search is disabled so answers stay repo-local and deterministic.
+
+**Requires:** the `claude` and/or `codex` CLI installed and authenticated for whichever providers you use (Claude Code subscription, or `codex login`). The runner preflights each provider before running — for Codex it does a tiny `codex exec` probe to confirm auth.
+
+> Why Codex? `claude -p` headless runs are no longer included in the Anthropic subscription. Routing either role to Codex moves that cost onto the Codex subscription.
 
 **CLI flags:**
 
 - `--file <name>` — filter by case file (e.g. `--file routing`)
 - `--tag <tag>` — filter by tag
 - `--dry-run` — preview cases without running
-- `--model <alias>` — generation model (default: `sonnet`)
-- `--judge-model <alias>` — judge model (default: `sonnet`)
+- `--model <spec>` — generation model (default: `sonnet`)
+- `--judge-model <spec>` — judge model (default: `sonnet`)
 - `--compare <config.json>` — run all cases across multiple models
 
-Model aliases: `sonnet` and `opus` (the only aliases recognized by the `claude` CLI).
+**Model spec — `provider:model`:** the provider is encoded as a prefix.
+
+| Spec | Provider | Model |
+|------|----------|-------|
+| `sonnet`, `opus` | Claude (bare names, backward compatible) | as named |
+| `claude:opus` | Claude (explicit) | `opus` |
+| `codex` | Codex | its configured default |
+| `codex:gpt-5-codex` | Codex | `gpt-5-codex` |
+
+Claude bare aliases are `sonnet` / `opus`. A `:`-prefixed spec with an unknown provider (e.g. `code:foo`) fails fast.
 
 ### Case Format
 
@@ -151,12 +168,15 @@ Model aliases: `sonnet` and `opus` (the only aliases recognized by the `claude` 
   "judge_model": "opus",
   "configs": [
     { "label": "sonnet", "model": "sonnet" },
-    { "label": "opus", "model": "opus" }
+    { "label": "opus", "model": "opus" },
+    { "label": "codex", "model": "codex" }
   ]
 }
 ```
 
-Runs every case once per config, all judged by the same judge model. Prints a side-by-side comparison table and saves per-config results plus a combined summary to `evals/results/`.
+`judge_model` and each config's `model` accept the same `provider:model` specs as the
+CLI flags. `model-comparison-codex.json` shows a Codex judge over Claude generation
+configs. Runs every case once per config, all judged by the same judge model. Prints a side-by-side comparison table and saves per-config results plus a combined summary to `evals/results/`.
 
 ### Resilience
 
