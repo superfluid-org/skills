@@ -37,6 +37,8 @@ const ABI_MAP = {
   StakingRewardController:        { module: "sup",         export: "stakingRewardControllerAbi" },
   SUPToken:                       { module: "sup",         export: "supTokenAbi" },
   SUPVestingFactory:              { module: "sup",         export: "vestingFactoryAbi" },
+  ClearMacroForwarder:            { module: "main",        export: "clearMacroForwarderAbi" },
+  BlindMacroForwarder:            { module: "main",        export: "blindMacroForwarderAbi" },
 };
 
 const ALIASES = {
@@ -48,6 +50,8 @@ const ALIASES = {
   autowrap: "AutoWrapManager", vesting: "VestingSchedulerV3",
   locker: "FluidLocker", fontaine: "Fontaine", staking: "StakingRewardController",
   sup: "SUPToken",
+  clearmacroforwarder: "ClearMacroForwarder", clearmacro: "ClearMacroForwarder",
+  blindmacroforwarder: "BlindMacroForwarder", blindmacro: "BlindMacroForwarder",
 };
 
 // -- ABI signature helpers --
@@ -163,44 +167,7 @@ const NON_SDK_ABIS = {
   ],
   SuperTokenV1Library: [], // Solidity library — no selectors (all calls go through the token)
 
-  // ⚠️ TESTNET ONLY (OP Sepolia, PR #2148) — not yet in @sfpro/sdk
-  ClearMacroForwarderV1: [
-    // Functions
-    { type: "function", name: "SELF_PROVIDER", inputs: [] },
-    { type: "function", name: "runMacro", inputs: [
-      { type: "address" },
-      { type: "bytes" },
-      { type: "address" },
-      { type: "bytes" },
-    ]},
-    { type: "function", name: "encodeParams", inputs: [
-      { type: "bytes" },
-      { type: "tuple", components: [
-        { type: "string" },
-        { type: "address" },
-        { type: "string" },
-        { type: "uint256" },
-        { type: "uint256" },
-        { type: "uint256" },
-      ]},
-    ]},
-    { type: "function", name: "getDigest", inputs: [{ type: "address" }, { type: "bytes" }] },
-    { type: "function", name: "getStructHash", inputs: [{ type: "address" }, { type: "bytes" }] },
-    { type: "function", name: "getTypeHash", inputs: [{ type: "address" }, { type: "bytes" }] },
-    { type: "function", name: "getTypeDefinition", inputs: [{ type: "address" }, { type: "bytes" }] },
-    { type: "function", name: "getNonce", inputs: [{ type: "address" }, { type: "uint192" }] },
-    // Events
-    { type: "event", name: "MacroExecuted", inputs: [{ type: "address" }, { type: "address" }, { type: "bytes32" }] },
-    // Errors
-    { type: "error", name: "InvalidSignature", inputs: [] },
-    { type: "error", name: "InvalidPayload", inputs: [{ type: "string" }] },
-    { type: "error", name: "MacroContractMismatch", inputs: [{ type: "address" }, { type: "address" }] },
-    { type: "error", name: "ProviderNotAuthorized", inputs: [{ type: "string" }, { type: "address" }] },
-    { type: "error", name: "OutsideValidityWindow", inputs: [{ type: "uint256" }, { type: "uint256" }, { type: "uint256" }] },
-    { type: "error", name: "InvalidNonce", inputs: [{ type: "address" }, { type: "uint256" }] },
-  ],
-
-  // ⚠️ TESTNET ONLY (OP Sepolia, PR #2148) — interface; not deployed standalone
+  // Interface — not exported by @sfpro/sdk; not deployed standalone
   IClearMacro: [
     // Functions (EIP-712 type derivation + IMacro surface)
     { type: "function", name: "getPrimaryTypeName", inputs: [{ type: "bytes" }] },

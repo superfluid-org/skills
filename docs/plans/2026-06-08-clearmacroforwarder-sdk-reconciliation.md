@@ -158,11 +158,11 @@ verification, local/private-key signing, and parity checks — not the browser U
 - [x] verify: YAML parses; `grep -E "TESTNET|OP Sepolia|2148"` returns nothing in this file
 
 ### Task 4: Move Clear selectors to the SDK path
-- [ ] add `ClearMacroForwarder: { module: "main", export: "clearMacroForwarderAbi" }` to `ABI_MAP`
+- [x] add `ClearMacroForwarder: { module: "main", export: "clearMacroForwarderAbi" }` to `ABI_MAP`
       in `selectors.mjs`; add an alias (`clearmacroforwarder`/`clearmacro`)
-- [ ] remove ONLY the `ClearMacroForwarderV1` entry from `NON_SDK_ABIS`; **keep `IClearMacro` in
+- [x] remove ONLY the `ClearMacroForwarderV1` entry from `NON_SDK_ABIS`; **keep `IClearMacro` in
       `NON_SDK_ABIS`** (the SDK does not export it) — just strip its stale testnet comments
-- [ ] verify: `selectors.mjs ClearMacroForwarder` prints selectors via the SDK; grep confirms no
+- [x] verify: `selectors.mjs ClearMacroForwarder` prints selectors via the SDK; grep confirms no
       `ClearMacroForwarderV1` entry remains in `NON_SDK_ABIS` and `IClearMacro` is still present
 
 ### Task 5: Update the ABI resolver
