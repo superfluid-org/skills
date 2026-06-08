@@ -133,15 +133,15 @@ verification, local/private-key signing, and parity checks — not the browser U
 - [x] verify: ticket number unique/contiguous after T052; Home.md link resolves
 
 ### Task 2: Rename + expand the Clear ABI YAML to canonical `ClearMacroForwarder`
-- [ ] `git mv` `ClearMacroForwarderV1.abi.yaml` → `ClearMacroForwarder.abi.yaml`; set skill-facing
+- [x] `git mv` `ClearMacroForwarderV1.abi.yaml` → `ClearMacroForwarder.abi.yaml`; set skill-facing
       name `ClearMacroForwarder`, note underlying contract `ClearMacroForwarderV1WithPermit2`
-- [ ] update `meta`: drop testnet/PR-2148 framing; `source` → SDK/`dev` URLs; add `meta.note` that
+- [x] update `meta`: drop testnet/PR-2148 framing; `source` → SDK/`dev` URLs; add `meta.note` that
       address comes from `clearMacroForwarderAddress` / metadata `contractsV1.clearMacroForwarderV1WithPermit2`,
       deterministic across networks; EIP-712 domain `("ClearMacro","1")`
-- [ ] document functions per Reference: `runMacro`, `runPermit2AndMacro`, `getDigest`, `getNonce`,
+- [x] document functions per Reference: `runMacro`, `runPermit2AndMacro`, `getDigest`, `getNonce`,
       `getPermit2WitnessStructHash`, `getPermit2WitnessTypeString`, `encodeParams`; add `PERMIT2`
       constant, `Permit2Context` struct, `Permit2UpgradeExecuted` event; keep field-order convention
-- [ ] verify: YAML parses; the documented **functions, key events, and constants** match
+- [x] verify: YAML parses; the documented **functions, key events, and constants** match
       `clearMacroForwarderAbi` — including `runMacro`, `runPermit2AndMacro`, `getDigest`, `getNonce`,
       `getPermit2WitnessStructHash`, `getPermit2WitnessTypeString`, `PERMIT2`, `SELF_PROVIDER`,
       `eip712Domain`, events `Permit2UpgradeExecuted`/`EIP712DomainChanged` (not function names
