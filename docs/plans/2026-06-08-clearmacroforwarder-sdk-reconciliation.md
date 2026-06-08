@@ -195,10 +195,10 @@ verification, local/private-key signing, and parity checks — not the browser U
       examples distinguish `signTypedData` from raw-digest signing
 
 ### Task 8: Reframe macro-forwarders.md (legacy → BlindMacroForwarder)
-- [ ] note the legacy `MacroForwarder` is SDK-exported as `BlindMacroForwarder`
+- [x] note the legacy `MacroForwarder` is SDK-exported as `BlindMacroForwarder`
       (`blindMacroForwarderAbi`, addr `0xFD02…`); cross-link to `clear-macro.md`; explain when to use
       blind (caller-is-operator) vs clear (signed/relayed/Permit2)
-- [ ] verify: grep consistency across `MacroForwarder`/`BlindMacroForwarder`/`ClearMacroForwarder`;
+- [x] verify: grep consistency across `MacroForwarder`/`BlindMacroForwarder`/`ClearMacroForwarder`;
       no contradictory naming
 
 ### Task 9: Update SKILL.md routing, Apps, Ecosystem, Debugging Reverts, version
