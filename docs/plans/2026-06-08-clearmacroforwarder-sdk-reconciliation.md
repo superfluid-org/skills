@@ -172,10 +172,10 @@ verification, local/private-key signing, and parity checks — not the browser U
       `abi.mjs BlindMacroForwarder runMacro` return JSON
 
 ### Task 6: Regenerate selector sidecars
-- [ ] `git mv ClearMacroForwarderV1.selectors.yaml ClearMacroForwarder.selectors.yaml` first (preserve
+- [x] `git mv ClearMacroForwarderV1.selectors.yaml ClearMacroForwarder.selectors.yaml` first (preserve
       history), THEN run `bunx -p @sfpro/sdk -p js-sha3 bun skills/superfluid/scripts/selectors.mjs
       generate` to rewrite its contents from the SDK ABI
-- [ ] verify: command exits 0; `git status` clean after a second regenerate (zero drift); no
+- [x] verify: command exits 0; `git status` clean after a second regenerate (zero drift); no
       `ClearMacroForwarderV1.*` files remain; every `*.abi.yaml` has a matching `*.selectors.yaml`
 
 ### Task 7: Rewrite the Clear Macro guide
