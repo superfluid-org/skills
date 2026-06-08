@@ -1,4 +1,9 @@
-# MacroForwarder — Composable Batch Operations via User-Defined Macros
+# BlindMacroForwarder — Composable Batch Operations via User-Defined Macros
+
+> **Naming:** The Solidity contract is `MacroForwarder`; the SDK exports it as
+> `BlindMacroForwarder` (`blindMacroForwarderAbi`, `blindMacroForwarderAddress`)
+> to distinguish it from the newer `ClearMacroForwarder`. Both names refer to
+> the same deployed contract at `0xFD0268E33111565dE546af2675351A4b1587F89F`.
 
 ## What & Why
 
@@ -7,25 +12,46 @@ underlying tokens, approve a contract, create a stream, connect to a pool —
 all in one atomic transaction. Building these `Host.batchCall` operation arrays
 manually is verbose, error-prone, and not reusable.
 
-**MacroForwarder** solves this by separating *what* to do from *how* to execute
-it. A developer deploys a **macro contract** implementing `IUserDefinedMacro`
-that encapsulates the operation-building logic. Anyone can then call
-`MacroForwarder.runMacro(macro, params)` to execute the macro atomically.
+**BlindMacroForwarder** (legacy name: `MacroForwarder`) solves this by
+separating *what* to do from *how* to execute it. A developer deploys a
+**macro contract** implementing `IUserDefinedMacro` that encapsulates the
+operation-building logic. Anyone can then call `runMacro(macro, params)` to
+execute the macro atomically.
 
 Key properties:
 - **Permissionless** — anyone can deploy a macro, anyone can call `runMacro`
 - **Composable** — macros produce standard batch operations, reusing the
   existing Host infrastructure
-- **Sender-preserving** — MacroForwarder is a trusted forwarder (EIP-2771),
+- **Sender-preserving** — BlindMacroForwarder is a trusted forwarder (EIP-2771),
   so `msg.sender` in the Host context is the original caller, not the forwarder
 - **View-only building** — `buildBatchOperations` is a `view` function, so
   macros cannot mutate state during operation construction
 
-> **Clear Macro** (testnet-only, OP Sepolia) extends MacroForwarder with
-> EIP-712 clear signing, third-party relaying, and gasless execution.
-> See `clear-macro.md` for the extended system.
+## Blind vs Clear: When to Use Which
 
-## MacroForwarder Contract
+| | BlindMacroForwarder | ClearMacroForwarder |
+|---|---|---|
+| **Execution** | Caller (`msg.sender`) executes directly | Signer can delegate to a third-party relayer |
+| **Signing** | Wallet signs the transaction itself | Wallet signs EIP-712 typed data; relay submits tx |
+| **Wallet UX** | Standard transaction prompt ("blind") | Clear-signing: wallet renders human-readable fields |
+| **Gas** | Caller pays gas | Relayer pays gas (gasless for signer) |
+| **Permit2** | Not supported | Optional one-signature Permit2 upgrade path |
+| **Use when** | Caller is the operator; simple dApp flows | Signed/delegated execution, gasless UX, Permit2 upgrade |
+
+**Use BlindMacroForwarder** when the caller is also the signer and direct
+on-chain execution is fine — the simplest macro path.
+
+**Use ClearMacroForwarder** when you need relayed/gasless execution, a
+human-readable wallet signing prompt (EIP-712 `signTypedData`), or an optional
+Permit2 token upgrade bundled with the macro call. See `clear-macro.md`.
+
+> **ClearMacroForwarder** (`clearMacroForwarderAbi`, addr `0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e`)
+> is shipped in SDK 0.2.1 and deployed on ~16 networks. It is NOT testnet-only.
+> See `clear-macro.md` for the complete guide.
+
+## BlindMacroForwarder Contract
+
+**SDK**: `blindMacroForwarderAbi`, `blindMacroForwarderAddress` from `@sfpro/sdk`
 
 **Address**: `0xFD0268E33111565dE546af2675351A4b1587F89F` (same on all networks)
 
@@ -38,14 +64,14 @@ inherits [ForwarderBase.sol](https://raw.githubusercontent.com/superfluid-org/pr
 function runMacro(IUserDefinedMacro m, bytes calldata params) external payable returns (bool)
 ```
 
-MacroForwarder also exposes `buildBatchOperations(macro, params)` as a
+BlindMacroForwarder also exposes `buildBatchOperations(macro, params)` as a
 `public view` — useful for simulating what a macro will produce off-chain
 without executing it.
 
 ### Execution Flow
 
 ```
-User calls MacroForwarder.runMacro(macro, params)
+User calls BlindMacroForwarder.runMacro(macro, params)
   │
   ├─ 1. BUILD:   macro.buildBatchOperations(host, params, msgSender)  [view]
   │               → returns ISuperfluid.Operation[] array
@@ -81,7 +107,7 @@ interface IUserDefinedMacro {
 
 ### buildBatchOperations (required)
 
-Returns an array of `ISuperfluid.Operation` structs that the MacroForwarder
+Returns an array of `ISuperfluid.Operation` structs that the BlindMacroForwarder
 forwards to `host.forwardBatchCall`. This is a `view` function — it reads
 on-chain state (e.g., check if a flow exists, look up token addresses) but
 cannot write state.
@@ -254,11 +280,13 @@ For simple macros where the batch operations themselves revert on failure
 The most common pattern. The user's wallet signs the transaction directly.
 
 ```typescript
-import { getContract, parseAbi } from 'viem'
+import { blindMacroForwarderAbi, blindMacroForwarderAddress } from '@sfpro/sdk'
 
-const MACRO_FORWARDER = '0xFD0268E33111565dE546af2675351A4b1587F89F'
+const chainId = 10 // example: OP Mainnet
+const BLIND_MACRO_FORWARDER = blindMacroForwarderAddress[chainId]
+// or hardcode: '0xFD0268E33111565dE546af2675351A4b1587F89F' (same on all networks)
 
-// 1. Get contract instances
+// 1. Get the macro's param-encoding helper
 const macro = getContract({
   address: macroAddress,
   abi: parseAbi([
@@ -270,12 +298,10 @@ const macro = getContract({
 // 2. Encode params via the macro's helper
 const params = await macro.read.getParams([tokenAddr, receiverAddr, flowRate, upgradeAmount])
 
-// 3. Execute
+// 3. Execute — caller (msg.sender) is the operator
 const hash = await walletClient.writeContract({
-  address: MACRO_FORWARDER,
-  abi: parseAbi([
-    'function runMacro(address m, bytes calldata params) external payable returns (bool)'
-  ]),
+  address: BLIND_MACRO_FORWARDER,
+  abi: blindMacroForwarderAbi,
   functionName: 'runMacro',
   args: [macroAddress, params]
 })
@@ -287,10 +313,8 @@ Preview what operations a macro will produce without executing:
 
 ```typescript
 const operations = await publicClient.readContract({
-  address: MACRO_FORWARDER,
-  abi: parseAbi([
-    'function buildBatchOperations(address m, bytes calldata params) view returns ((uint32 operationType, address target, bytes data)[])'
-  ]),
+  address: BLIND_MACRO_FORWARDER,
+  abi: blindMacroForwarderAbi,
   functionName: 'buildBatchOperations',
   args: [macroAddress, params]
 })
@@ -303,6 +327,9 @@ message in their wallet instead of raw calldata.
 
 ```typescript
 import { encodeAbiParameters, parseAbiParameters, parseSignature } from 'viem'
+import { blindMacroForwarderAbi, blindMacroForwarderAddress } from '@sfpro/sdk'
+
+const BLIND_MACRO_FORWARDER = blindMacroForwarderAddress[chainId]
 
 // 1. Get the message and encoded params from the macro's view function
 const [actionCode, message, actionParams, digest] = await macro.read.encode712SetDCAPosition([
@@ -351,12 +378,10 @@ const macroParams = encodeAbiParameters(
   [actionCode, '0x656e...', actionParams, signatureVRS]  // lang = "en" as bytes32
 )
 
-// 7. Execute via MacroForwarder
+// 7. Execute via BlindMacroForwarder — caller must be the operator (msg.sender)
 const hash = await walletClient.writeContract({
-  address: MACRO_FORWARDER,
-  abi: parseAbi([
-    'function runMacro(address m, bytes calldata params) external payable returns (bool)'
-  ]),
+  address: BLIND_MACRO_FORWARDER,
+  abi: blindMacroForwarderAbi,
   functionName: 'runMacro',
   args: [macroAddress, macroParams]
 })
@@ -375,6 +400,9 @@ const hash = await walletClient.writeContract({
 - **Native value forwarding**: `runMacro` is `payable` — `msg.value` is
   forwarded through `forwardBatchCall`. Native value goes to the first
   `CALL_APP_ACTION`, `SIMPLE_FORWARD`, or `ERC2771_FORWARD` operation.
+- **Caller-is-operator**: BlindMacroForwarder does not support signed
+  delegation. The caller (`msg.sender`) is always the signer. For gasless /
+  relayed / Permit2 flows, use ClearMacroForwarder instead.
 
 ## Example: Wrap-and-Stream Macro
 
@@ -464,9 +492,9 @@ data), see `macro-forwarders-eip712-example.md`. It covers:
 
 ## Links & Source Code
 
-- [MacroForwarder.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/MacroForwarder.sol) — the forwarder contract
+- [MacroForwarder.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/MacroForwarder.sol) — the forwarder contract (SDK: `blindMacroForwarderAbi`)
 - [IUserDefinedMacro.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/40d34958f31b55fa0f9271f07794786c56a01a65/packages/ethereum-contracts/contracts/interfaces/utils/IUserDefinedMacro.sol) — the macro interface
 - [ForwarderBase.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/refs/heads/dev/packages/ethereum-contracts/contracts/utils/ForwarderBase.sol) — shared base for all trusted forwarders
 - [MacroForwarder.t.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/40d34958f31b55fa0f9271f07794786c56a01a65/packages/ethereum-contracts/test/foundry/utils/MacroForwarder.t.sol) — Foundry tests with additional example macros
 - [Superfluid Macros wiki](https://github.com/superfluid-org/protocol-monorepo/wiki/Superfluid-Macros) — design write-up
-- `clear-macro.md` — Clear Macro extension (EIP-712 clear signing, relaying, gasless; testnet-only)
+- `clear-macro.md` — ClearMacroForwarder: signed/relayed/gasless execution, Permit2, provider API (shipped SDK 0.2.1, ~16 networks)
