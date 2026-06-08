@@ -20,7 +20,7 @@ protocol architecture. This file maps use-cases to the right references.
 
 Determine the track first, then follow the Use-Case Map below.
 
-**Smart Contract dev:** SuperTokenV1Library, CFASuperAppBase, MacroForwarder, raw agreements via Host. ABI source: `@superfluid-finance/ethereum-contracts`. Addresses: `@superfluid-finance/metadata` + `tokenlist`. Data: on-chain calls. Key refs: `.abi.yaml` files, `super-apps.md`, `macro-forwarders.md`.
+**Smart Contract dev:** SuperTokenV1Library, CFASuperAppBase, BlindMacroForwarder/ClearMacroForwarder, raw agreements via Host. ABI source: `@superfluid-finance/ethereum-contracts`. Addresses: `@superfluid-finance/metadata` + `tokenlist`. Data: on-chain calls. Key refs: `.abi.yaml` files, `super-apps.md`, `macro-forwarders.md`, `clear-macro.md`.
 
 **App (frontend/backend) dev:** `@sfpro/sdk` (ABIs, wagmi hooks, addresses), subgraphs, API services. ABI source: `@sfpro/sdk`. Addresses: `@superfluid-finance/metadata` + `tokenlist`. Data: subgraphs + API services. Key refs: `sdks.md`, `api-services.md`, subgraph guides.
 
@@ -46,10 +46,16 @@ variants: Wrapper (ERC-20 backed), Native Asset/SETH (ETH backed), Pure
 call is a standalone transaction with readable wallet descriptions. Cannot be
 batched — use `Host.batchCall` with raw agreement calls for atomicity.
 
-**MacroForwarder** — extensible batch executor. Developers deploy custom
-macro contracts (`IUserDefinedMacro`) and call `MacroForwarder.runMacro()`
-to execute complex multi-step operations atomically. See
-`references/guides/macro-forwarders.md`.
+**BlindMacroForwarder** (legacy name `MacroForwarder`; SDK: `blindMacroForwarderAbi`, addr
+`0xFD0268E33111565dE546af2675351A4b1587F89F`) — extensible batch executor. Developers deploy
+custom macro contracts (`IUserDefinedMacro`) and call `runMacro()` to execute complex multi-step
+operations atomically. The caller must be the signer. See `references/guides/macro-forwarders.md`.
+
+**ClearMacroForwarder** (SDK: `clearMacroForwarderAbi`, addr `0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e`,
+deployed across ~16 networks) — EIP-712 signed macro executor with human-readable clear-signing,
+third-party relaying, and optional Permit2 token upgrade in one signature. Two modes: self-submit
+(`security.provider = "self"`) and provider-relay (relayer holds a Host SimpleACL role). See
+`references/guides/clear-macro.md` and `references/contracts/ClearMacroForwarder.abi.yaml`.
 
 **Automation** (Vesting Scheduler, FlowScheduler, Auto-Wrap) — schedule
 on-chain intent, require off-chain keepers to trigger execution.
@@ -115,10 +121,17 @@ See `references/guides/super-apps.md` for the full guide.
 ### Macro forwarders (composable batch operations)
 
 - Write a macro for complex batched operations → `references/guides/macro-forwarders.md`
-- MacroForwarder contract address and interface → also `references/guides/macro-forwarders.md`
+- BlindMacroForwarder (legacy MacroForwarder) contract address and interface → `references/guides/macro-forwarders.md`; when to use blind vs clear → `references/guides/macro-forwarders.md`
 - Batch operation types and encoding rules → also `references/contracts/Superfluid.abi.yaml` (batch_operation_types)
 - EIP-712 signed macro patterns → `references/guides/macro-forwarders-eip712-example.md`
-- **Clear Macro** (TESTNET, OP Sepolia) — extends MacroForwarder with EIP-712 clear signing for human-readable wallet prompts (multilingual), third-party relaying (not limited to `msg.sender`), gasless transactions (fees paid in the Super Token), and custom fee schemes → `references/guides/clear-macro.md`, `references/contracts/ClearMacroForwarderV1.abi.yaml`, `references/contracts/IClearMacro.abi.yaml`
+- **ClearMacroForwarder** — SDK-shipped (`clearMacroForwarderAbi`, `clearMacroForwarderAddress`,
+  metadata key `contractsV1.clearMacroForwarderV1WithPermit2`), deployed at
+  `0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e` across ~16 networks. EIP-712 clear signing for
+  human-readable wallet prompts, third-party provider relaying, optional Permit2 token upgrade in
+  one signature. Two modes: **self-submit** (`security.provider = "self"`, tx executor = signer) and
+  **provider-relay** (relayer holds a Host SimpleACL role, enabling gasless-for-signer flows).
+  → `references/guides/clear-macro.md`, `references/contracts/ClearMacroForwarder.abi.yaml`,
+  `references/contracts/IClearMacro.abi.yaml`
 
 ### Sentinels and liquidation
 
@@ -223,7 +236,7 @@ Error prefixes map to contracts:
 - `NOT_APPROVED_LOCKER`, `NOT_LOCKER_FACTORY`, `NOT_PROGRAM_MANAGER` → StakingRewardController
 - `NOT_CONNECTED_LOCKER`, `NO_ACTIVE_UNLOCK`, `TOO_EARLY_TO_TERMINATE_UNLOCK` → Fontaine
 - `NotAgentOwner`, `AlreadyJoined`, `AgentNotRegistered`, `InsufficientFee`, `FeeTransferFailed` → AgentPoolDistributor
-- `InvalidSignature`, `InvalidPayload`, `MacroContractMismatch`, `ProviderNotAuthorized`, `OutsideValidityWindow`, `InvalidNonce` → ClearMacroForwarderV1 (TESTNET, OP Sepolia)
+- `InvalidSignature`, `InvalidPayload`, `MacroContractMismatch`, `ProviderNotAuthorized`, `OutsideValidityWindow`, `InvalidNonce` → ClearMacroForwarder (SDK-shipped, multi-network)
 
 Each YAML's `errors:` section is the complete error index for that contract,
 with descriptions. Per-function `errors:` fields show which errors a specific
@@ -333,6 +346,8 @@ exports (see `references/guides/sdks.md`) or `bunx -p @superfluid-finance/metada
 Forwarder addresses are the exception — uniform across most networks:
 - CFAv1Forwarder: `0xcfA132E353cB4E398080B9700609bb008eceB125`
 - GDAv1Forwarder: `0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08`
+- ClearMacroForwarder: `0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e` (SDK: `clearMacroForwarderAddress`)
+- BlindMacroForwarder (legacy MacroForwarder): `0xFD0268E33111565dE546af2675351A4b1587F89F` (SDK: `blindMacroForwarderAddress`)
 
 Host and agreement addresses vary per network.
 
