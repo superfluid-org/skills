@@ -1,26 +1,26 @@
-# IClearMacro — interface for macros used with ClearMacroForwarderV1
+# IClearMacro — interface for macros used with ClearMacroForwarder
 # Extends IMacro with three EIP-712 type-derivation functions that provide
 # the macro-specific type name, type definition string, and action struct hash
 # needed for the EIP-712 digest that the signer approves.
 #
-# ⚠️ TESTNET ONLY — for use with ClearMacroForwarderV1 on OP Sepolia per PR #2148.
-#
 # Implement this interface (or extend ClearMacroBase) to create a macro
 # compatible with the Clear Macro relaying system.
 #
+# Note: IClearMacro is an interface, not exported by @sfpro/sdk — it stays in NON_SDK_ABIS.
+#
 # Calling convention for bytes arguments:
-#   encodedPayload — abi.encode(IClearMacroForwarderV1.Payload); same bytes passed to runMacro
+#   encodedPayload — abi.encode(ClearMacroForwarder.Payload); same bytes passed to runMacro
 #   actionParams   — Payload.action.params only; passed to getActionStructHash, buildBatchOperations, postCheck
 
 meta:
   name: IClearMacro
   version: v1
   notes:
-    - "TESTNET ONLY: for use with ClearMacroForwarderV1 on OP Sepolia per PR #2148."
     - "Implementations may extend ClearMacroBase, which decodes encodedPayload and actionParams according to the calling convention above."
     - "The Action EIP-712 type name must be exactly 'Action' — the forwarder uses it verbatim when assembling the full type definition string."
     - "Action type definition must be flat (no nested struct types) per the IClearMacro contract requirement."
-    - "DashboardClearMacro @ 0x77232a2a953b570d1fee1fe16b1902299fe7b898 (OP Sepolia) is a reference implementation demonstrating all seven operation types."
+    - "DashboardClearMacro is a chain-specific demo/reference macro demonstrating all seven operation types. Its address (e.g. 0x77232a2a953b570d1fee1fe16b1902299fe7b898) is chain-specific — use as an optional pointer only. In your own integration, treat the macro address as user-supplied."
+    - "IClearMacro is an interface not exported by @sfpro/sdk — it remains in NON_SDK_ABIS in selectors.mjs."
   source:
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/1b1e2b09ffcf553fff49ec9b243277c370144eb0/packages/ethereum-contracts/contracts/interfaces/utils/IClearMacro.sol
     - https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/1b1e2b09ffcf553fff49ec9b243277c370144eb0/packages/ethereum-contracts/contracts/interfaces/utils/IMacro.sol
@@ -28,7 +28,7 @@ meta:
   abstract: true   # interface — not deployed standalone; each macro deploys its own implementation
 
 # == EIP-712 Type Derivation ==
-# These three functions are called by ClearMacroForwarderV1 to construct the
+# These three functions are called by ClearMacroForwarder to construct the
 # EIP-712 type definition and struct hash for the payload the signer approves.
 # The forwarder assembles the full type string as:
 #   "<PrimaryTypeName>(Action action,Security security)<ActionTypeDef><SecurityTypeDef>"
@@ -42,7 +42,7 @@ getPrimaryTypeName:
     - "Gotcha: the forwarder passes the full encodedPayload here, not just actionParams. Implementations that dispatch to multiple action types can decode the discriminant from the payload."
   mutability: view
   inputs:
-    - encodedPayload: bytes   # abi.encode(IClearMacroForwarderV1.Payload)
+    - encodedPayload: bytes   # abi.encode(IClearMacroForwarder.Payload)
   outputs:
     - name: string
 
@@ -56,7 +56,7 @@ getActionTypeDefinition:
     - "Gotcha: nested struct types are not supported. All Action fields must be primitive ABI types (address, uint256, int96, bytes32, string, bytes, etc.)."
   mutability: view
   inputs:
-    - encodedPayload: bytes   # abi.encode(IClearMacroForwarderV1.Payload)
+    - encodedPayload: bytes   # abi.encode(IClearMacroForwarder.Payload)
   outputs:
     - typeDef: string
 
@@ -75,7 +75,7 @@ getActionStructHash:
     - structHash: bytes32
 
 # == Macro Execution (from IMacro) ==
-# Inherited interface methods called by ClearMacroForwarderV1 after security checks pass.
+# Inherited interface methods called by ClearMacroForwarder after security checks pass.
 
 buildBatchOperations:
   # Build the list of Host batch operations to execute on behalf of the signer.
