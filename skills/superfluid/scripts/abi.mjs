@@ -16,6 +16,8 @@ const ABI_MAP = {
   // @sfpro/sdk/abi (main)
   CFAv1Forwarder:                 { module: "main",       export: "cfaForwarderAbi" },
   GDAv1Forwarder:                 { module: "main",       export: "gdaForwarderAbi" },
+  ClearMacroForwarder:            { module: "main",       export: "clearMacroForwarderAbi" },
+  BlindMacroForwarder:            { module: "main",       export: "blindMacroForwarderAbi" },
   SuperfluidPool:                 { module: "main",       export: "gdaPoolAbi" },
   SuperToken:                     { module: "main",       export: "superTokenAbi" },
   // @sfpro/sdk/abi/core
@@ -46,6 +48,11 @@ const ABI_MAP = {
 const ALIASES = {
   cfaforwarder: "CFAv1Forwarder",
   gdaforwarder: "GDAv1Forwarder",
+  clearmacroforwarder: "ClearMacroForwarder",
+  clearmacro: "ClearMacroForwarder",
+  blindmacroforwarder: "BlindMacroForwarder",
+  blindmacro: "BlindMacroForwarder",
+  macroforwarder: "BlindMacroForwarder",
   pool: "SuperfluidPool",
   gdapool: "SuperfluidPool",
   supertoken: "SuperToken",

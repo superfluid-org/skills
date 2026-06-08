@@ -166,9 +166,9 @@ verification, local/private-key signing, and parity checks — not the browser U
       `ClearMacroForwarderV1` entry remains in `NON_SDK_ABIS` and `IClearMacro` is still present
 
 ### Task 5: Update the ABI resolver
-- [ ] add `ClearMacroForwarder` (+ aliases) to `abi.mjs` `ABI_MAP` using `clearMacroForwarderAbi`;
+- [x] add `ClearMacroForwarder` (+ aliases) to `abi.mjs` `ABI_MAP` using `clearMacroForwarderAbi`;
       add `BlindMacroForwarder` using `blindMacroForwarderAbi`; remove any "not in SDK" assumption
-- [ ] verify: `abi.mjs ClearMacroForwarder runMacro`, `... runPermit2AndMacro`, and
+- [x] verify: `abi.mjs ClearMacroForwarder runMacro`, `... runPermit2AndMacro`, and
       `abi.mjs BlindMacroForwarder runMacro` return JSON
 
 ### Task 6: Regenerate selector sidecars
