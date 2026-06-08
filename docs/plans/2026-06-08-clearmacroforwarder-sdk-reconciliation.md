@@ -246,7 +246,7 @@ verification, local/private-key signing, and parity checks — not the browser U
 - [x] SKILL.md links resolve; version consistent; script-runner selectors 6/6; --dry-run confirms routing/correctness structure valid
 
 ### Task N: Update repo docs
-- [ ] update `CLAUDE.md` ONLY where applicable: if it states a contract count, adjust it; the
+- [x] update `CLAUDE.md` ONLY where applicable: if it states a contract count, adjust it; the
       `NON_SDK_ABIS` note now applies to remaining non-SDK contracts (`CFASuperAppBase`, `IClearMacro`,
       `SuperTokenV1Library`) — confirm/adjust wording. Skip silently if `CLAUDE.md` lacks these.
 
