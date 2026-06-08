@@ -148,14 +148,14 @@ verification, local/private-key signing, and parity checks — not the browser U
       alone); grep shows no internal title claiming canonical name is `ClearMacroForwarderV1`
 
 ### Task 3: Relax the IClearMacro banner
-- [ ] remove TESTNET/OP-Sepolia/PR-2148 framing from `IClearMacro.abi.yaml`; keep the type-derivation
+- [x] remove TESTNET/OP-Sepolia/PR-2148 framing from `IClearMacro.abi.yaml`; keep the type-derivation
       guidance + flat `Action(...)` requirement
-- [ ] update the DashboardClearMacro note: it is a **chain-specific demo/reference macro** (do NOT
+- [x] update the DashboardClearMacro note: it is a **chain-specific demo/reference macro** (do NOT
       claim it is deployed on every network / "mainnet-agnostic"); in examples, treat the macro
       address as **user-supplied**, with the demo address only as an optional pointer if confirmed
-- [ ] note: `IClearMacro` is an INTERFACE not exported by `@sfpro/sdk` — it stays in `NON_SDK_ABIS`
+- [x] note: `IClearMacro` is an INTERFACE not exported by `@sfpro/sdk` — it stays in `NON_SDK_ABIS`
       (Task 4); only its stale testnet comments change here
-- [ ] verify: YAML parses; `grep -E "TESTNET|OP Sepolia|2148"` returns nothing in this file
+- [x] verify: YAML parses; `grep -E "TESTNET|OP Sepolia|2148"` returns nothing in this file
 
 ### Task 4: Move Clear selectors to the SDK path
 - [ ] add `ClearMacroForwarder: { module: "main", export: "clearMacroForwarderAbi" }` to `ABI_MAP`
