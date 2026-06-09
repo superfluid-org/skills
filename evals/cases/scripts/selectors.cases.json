@@ -7,7 +7,7 @@
       "exitCode": 0,
       "stdout": {
         "type": "text",
-        "contains": ["CFAv1Forwarder", "SuperToken", "FluidLocker", "ClearMacroForwarder", "BlindMacroForwarder", "CFASuperAppBase (non-SDK)", "IClearMacro (non-SDK)"]
+        "contains": ["CFAv1Forwarder", "SuperToken", "FluidLocker", "ClearMacroForwarder", "BlindMacroForwarder", "CFASuperAppBase (non-SDK)", "ClearMacroBase (non-SDK)"]
       }
     },
     "tags": ["smoke", "selectors"]
@@ -89,18 +89,19 @@
   },
   {
     "id": "selectors-non-sdk-interface",
-    "description": "Generates correct selectors for IClearMacro from NON_SDK_ABIS",
-    "command": ["selectors.mjs", "IClearMacro"],
+    "description": "Generates correct selectors for ClearMacroBase from NON_SDK_ABIS",
+    "command": ["selectors.mjs", "ClearMacroBase"],
     "expect": {
       "exitCode": 0,
       "stdout": {
         "type": "text",
         "contains": [
-          "# IClearMacro selectors — computed from hardcoded NON_SDK_ABIS signatures",
+          "# ClearMacroBase selectors — computed from hardcoded NON_SDK_ABIS signatures",
           "getPrimaryTypeName(bytes):",
           "0x390b89cb",
           "getActionTypeDefinition(bytes):",
-          "0x39f05f94"
+          "0x39f05f94",
+          "UnknownActionId(uint8):"
         ]
       }
     },
