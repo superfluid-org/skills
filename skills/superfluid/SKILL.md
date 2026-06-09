@@ -49,10 +49,13 @@ batched — use `Host.batchCall` with raw agreement calls for atomicity.
 **BlindMacroForwarder** (legacy name `MacroForwarder`; SDK: `blindMacroForwarderAbi`, addr
 `0xFD0268E33111565dE546af2675351A4b1587F89F`) — extensible batch executor. Developers deploy
 custom macro contracts (`IUserDefinedMacro`) and call `runMacro()` to execute complex multi-step
-operations atomically. The caller must be the signer. See `references/guides/macro-forwarders.md`.
+operations atomically. The caller must be the signer. **Legacy — superseded by ClearMacroForwarder
+for new integrations**: self-relay only, and the caller broadcasts raw (unreadable) calldata in the
+wallet. See `references/guides/macro-forwarders.md`.
 
 **ClearMacroForwarder** (SDK: `clearMacroForwarderAbi`, addr `0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e`,
-deployed across ~16 networks) — EIP-712 signed macro executor with human-readable clear-signing,
+deployed across ~16 networks) — **recommended default; supersedes BlindMacroForwarder.** EIP-712
+signed macro executor with human-readable clear-signing,
 third-party relaying, and optional Permit2 token upgrade in one signature. Two modes: self-submit
 (`security.provider = "self"`) and provider-relay (relayer holds a Host SimpleACL role). See
 `references/guides/clear-macro.md` and `references/contracts/ClearMacroForwarder.abi.yaml`.
@@ -121,7 +124,7 @@ See `references/guides/super-apps.md` for the full guide.
 ### Macro forwarders (composable batch operations)
 
 - Write a macro for complex batched operations → `references/guides/macro-forwarders.md`
-- BlindMacroForwarder (legacy MacroForwarder) contract address and interface → `references/guides/macro-forwarders.md`; when to use blind vs clear → `references/guides/macro-forwarders.md`
+- BlindMacroForwarder (legacy MacroForwarder) contract address and interface → `references/guides/macro-forwarders.md`; why ClearMacroForwarder supersedes blind → `references/guides/macro-forwarders.md`
 - Batch operation types and encoding rules → also `references/contracts/Superfluid.abi.yaml` (batch_operation_types)
 - EIP-712 signed macro patterns → `references/guides/macro-forwarders-eip712-example.md`
 - **ClearMacroForwarder** — SDK-shipped (`clearMacroForwarderAbi`, `clearMacroForwarderAddress`,

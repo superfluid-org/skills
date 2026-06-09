@@ -23,11 +23,14 @@ capabilities the base system lacks:
 **Shipped in `@sfpro/sdk` 0.2.1.** `ClearMacroForwarder` is deployed at a deterministic address
 across ~16 networks. The underlying contract is `ClearMacroForwarderV1WithPermit2`.
 
-When to use each forwarder:
-- **ClearMacroForwarder** — signer ≠ tx sender (relay), need a human-readable wallet prompt, or
-  need replay / validity-window protection.
-- **BlindMacroForwarder** (legacy `MacroForwarder`) — caller submits the tx themselves, no relay
-  required, raw calldata display in wallet is acceptable.
+**ClearMacroForwarder supersedes BlindMacroForwarder — use Clear for all new integrations.** Clear
+is the default: the user signs human-readable typed data, the signed payload can be self-submitted
+**or** relayed (possibly gaslessly), and it carries replay / validity-window protection. It does
+everything Blind does plus readable signing, and even self-submit mode avoids Blind's blind-signing.
+
+- **BlindMacroForwarder** (legacy `MacroForwarder`) is for maintaining existing deployments only.
+  Its one edge is self-relay with no signature machinery — but the caller still broadcasts a tx with
+  unreadable (raw calldata) transaction data.
 
 ## Contracts & SDK Imports
 
