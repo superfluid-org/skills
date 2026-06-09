@@ -53,7 +53,7 @@ bunx -p @sfpro/sdk bun skills/superfluid/scripts/abi.mjs SuperToken transfer
   in `skills/superfluid/scripts/selectors.mjs` (hardcoded ABI signature arrays — same structure as
   `{type, name, inputs}`). Do **not** add them to `ABI_MAP` in `selectors.mjs` or `abi.mjs`.
   `selectors.mjs generate` processes both maps and writes the `*.selectors.yaml` sidecar files.
-  Current non-SDK contracts: `CFASuperAppBase`, `IClearMacro`, `SuperTokenV1Library`.
+  Current non-SDK contracts: `CFASuperAppBase`, `ClearMacroBase`, `SuperTokenV1Library`.
 
 ## Project Vault (`.vault/`)
 

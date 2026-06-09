@@ -149,10 +149,10 @@ Examples:
     const name = resolveContract(command);
     if (!name) {
       // Check if it's a known contract not in the SDK.
-      const notInSdk = ["CFASuperAppBase", "SuperTokenV1Library", "IClearMacro"];
+      const notInSdk = ["CFASuperAppBase", "SuperTokenV1Library", "ClearMacroBase"];
       const match = notInSdk.find(n => n.toLowerCase() === command.toLowerCase());
       if (match) {
-        const reason = { CFASuperAppBase: "abstract base contract", SuperTokenV1Library: "Solidity library", IClearMacro: "interface" }[match];
+        const reason = { CFASuperAppBase: "abstract base contract", SuperTokenV1Library: "Solidity library", ClearMacroBase: "abstract base contract" }[match];
         console.error(`Error: ${match} is not available in @sfpro/sdk (${reason}).`);
         console.error(`Refer to the Rich ABI YAML: references/contracts/${match}.abi.yaml`);
       } else {

@@ -148,7 +148,7 @@
     "prompt": "I heard about something called Clear Macro in Superfluid that lets users sign operations with human-readable prompts and have a relayer execute them. Can you explain how it works, what contracts are involved, and how I'd use the off-chain Provider API?",
     "criteria": [
       { "criterion": "sdk_shipped_status", "description": "Identifies ClearMacroForwarder as SDK-shipped (@sfpro/sdk 0.2.1) and available across multiple networks — NOT testnet-only", "weight": 3 },
-      { "criterion": "names_correct_contracts", "description": "Names ClearMacroForwarder (canonical skill-facing name) and/or IClearMacro as the on-chain contracts; does NOT present ClearMacroForwarderV1 as the canonical user-facing name", "weight": 2 },
+      { "criterion": "names_correct_contracts", "description": "Names ClearMacroForwarder (canonical skill-facing name) and/or the macro-side contract (IClearMacro interface or ClearMacroBase) as the on-chain contracts; does NOT present ClearMacroForwarderV1 as the canonical user-facing name", "weight": 2 },
       { "criterion": "runMacro_first_class", "description": "Describes runMacro as the primary/simpler execution path; runPermit2AndMacro as an optional Permit2 witness flow, not the default", "weight": 2 },
       { "criterion": "correct_provider_flow", "description": "Describes the correct Provider API flow: GET /v1/capabilities → build + sign EIP-712 payload → POST /v1/relay-executions → poll for terminal state", "weight": 3 },
       { "criterion": "no_hallucination", "description": "Does not fabricate contract addresses, function names, or Provider API endpoints beyond what is documented", "weight": 3 }

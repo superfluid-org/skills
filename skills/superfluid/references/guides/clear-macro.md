@@ -9,7 +9,9 @@
 capabilities the base system lacks:
 
 1. **EIP-712 clear signing** — the user signs a human-readable typed-data message in their wallet
-   (not raw calldata). The macro derives the EIP-712 type definitions on-chain via `IClearMacro`.
+   (not raw calldata). The macro derives the EIP-712 type definitions on-chain via the `IClearMacro`
+   interface — most macros implement it by extending `ClearMacroBase` (see
+   [Authoring a Clear Macro](#authoring-a-clear-macro-with-clearmacrobase)).
 2. **Third-party relaying** — execution is not limited to `msg.sender`. A relay provider can submit
    the signed payload on the signer's behalf; the signer becomes `msg.sender` inside the Host via
    EIP-2771.
@@ -57,7 +59,9 @@ The `encodedPayload` argument to `runMacro` / `runPermit2AndMacro` is `abi.encod
 ```
 Payload {
   action: EncodedAction {
-    params: bytes   // macro-specific; interpreted by the IClearMacro contract
+    params: bytes   // macro-specific; interpreted by the macro contract.
+                    // For macros built on ClearMacroBase this is the multi-action wire format:
+                    //   abi.encode(uint8 actionId, bytes32 lang, bytes actionSpecificParams)
   }
   security: Security {
     domain:        string   // relay provider identity (e.g. "macros.superfluid.eth")
@@ -96,6 +100,9 @@ const encodedPayload = await publicClient.readContract({
   address: forwarderAddr,
   abi: clearMacroForwarderAbi,
   functionName: 'encodeParams',
+  // `actionParams` is the macro-specific action encoding. For a ClearMacroBase macro it is
+  // abi.encode(uint8 actionId, bytes32 lang, bytes actionSpecificParams) — build it via the
+  // macro's typed encode helper (see Self-Submit step 2 and the authoring section below).
   args: [actionParams, security],
 })
 ```
@@ -129,10 +136,10 @@ const typeDef = await publicClient.readContract({
 
 const primaryType = await publicClient.readContract({
   address: macroAddr,
-  abi: iClearMacroAbi, // IClearMacro ABI (see IClearMacro.abi.yaml)
+  abi: clearMacroAbi, // IClearMacro / ClearMacroBase external ABI (see ClearMacroBase.abi.yaml)
   functionName: 'getPrimaryTypeName',
   args: [encodedPayload],
-}) // e.g. "CreateStream"
+}) // e.g. "DashboardCreateFlow"
 ```
 
 Convert `typeDef` into a viem-compatible `types` object. `typeDef` is a concatenation of all type
@@ -157,11 +164,12 @@ function parseEIP712TypeDef(typeDef) {
 }
 
 const types = parseEIP712TypeDef(typeDef)
-// e.g. for a CreateStream macro with getActionTypeDefinition() ==
-//      "Action(address token,address receiver,int96 flowRate)":
-// { CreateStream: [{type:'Action',name:'action'},{type:'Security',name:'security'}],
-//   Action: [{type:'address',name:'token'},{type:'address',name:'receiver'},{type:'int96',name:'flowRate'}],
+// e.g. for a CreateFlow action whose getActionTypeDefinition() ==
+//      "Action(string description,address token,address receiver,int96 flowRate)":
+// { DashboardCreateFlow: [{type:'Action',name:'action'},{type:'Security',name:'security'}],
+//   Action: [{type:'string',name:'description'},{type:'address',name:'token'},{type:'address',name:'receiver'},{type:'int96',name:'flowRate'}],
 //   Security: [{type:'string',name:'domain'}, ...] }
+// Note: ClearMacroBase actions conventionally lead with a localized `description` field.
 ```
 
 In practice you may also hardcode `types` for a specific macro rather than parsing at runtime.
@@ -173,16 +181,22 @@ payload** — it is what you pass to `encodeParams` and what the forwarder hands
 `m.getActionStructHash(...)` on-chain. It is **not** what goes into the EIP-712 `message`.
 
 The macro's `getActionTypeDefinition()` returns a **flat, macro-specific** `Action` type whose name
-is exactly `Action` (e.g. `Action(address token,address receiver,int96 flowRate)`) — never
-`Action(bytes params)`. For the wallet signature to match the on-chain digest, `message.action` must
-hold the **decoded** macro fields that match that type definition (the same fields
-`getActionStructHash` decodes out of `actionParams`). Signing `{ params: actionParams }` against a
-real macro's type will either revert with `InvalidSignature` (the message shape doesn't match the
-type from `getTypeDefinition`) or, for a macro that literally typed its action as `bytes`, collapse
-the wallet prompt back to opaque bytes — defeating clear signing.
+is exactly `Action` (e.g. `Action(string description,address token,address receiver,int96 flowRate)`)
+— never `Action(bytes params)`. For the wallet signature to match the on-chain digest,
+`message.action` must hold the **decoded** macro fields that match that type definition (the same
+values `getActionStructHash` reconstructs from `actionParams`). Signing `{ params: actionParams }`
+against a real macro's type will either revert with `InvalidSignature` (the message shape doesn't
+match the type from `getTypeDefinition`) or, for a macro that literally typed its action as `bytes`,
+collapse the wallet prompt back to opaque bytes — defeating clear signing.
 
-Practically: you already have the action fields as variables (you encoded them into `actionParams`).
-Pass those same values as `message.action`.
+Practically: you already have the action fields as variables (you encoded them into
+`actionSpecificParams`). Pass those same values as `message.action`, plus the leading `description`.
+
+⚠️ The `description` is computed on-chain by the macro from `(lang, actionSpecificParams)` — it is
+**not** a field you choose freely. To get the exact string the digest commits to, read it back from
+the macro (most `ClearMacroBase` macros expose a `describe*`/description view, or you can recompute
+it deterministically). A mismatched `description` produces a different struct hash and an
+`InvalidSignature` revert.
 
 ## Execution Mode 1 — Self-Submit
 
@@ -195,7 +209,8 @@ import { clearMacroForwarderAbi, clearMacroForwarderAddress } from '@sfpro/sdk/a
 
 const chainId = 8453 // Base mainnet (example)
 const forwarderAddr = clearMacroForwarderAddress[chainId]
-const macroAddr = '0x…' // user-supplied IClearMacro contract address
+const macroAddr = '0x…' // user-supplied IClearMacro / ClearMacroBase contract address
+const lang = '0x656e000000000000000000000000000000000000000000000000000000000000' // bytes32("en")
 
 // 1. Get next nonce for the signer (key 0 = simple sequential)
 const nonce = await publicClient.readContract({
@@ -205,19 +220,20 @@ const nonce = await publicClient.readContract({
   args: [account.address, 0n],
 })
 
-// 2. Build the macro-specific action fields, then encode them to the wire `bytes`.
-//    `actionFields` holds the DECODED fields matching getActionTypeDefinition();
-//    `actionParams` is their ABI-encoded form (the wire payload).
+// 2. Build the wire `actionParams` via the macro's typed encode helper.
+//    For a ClearMacroBase macro this returns abi.encode(uint8 actionId, bytes32 lang, bytes
+//    actionSpecificParams) — i.e. it bakes in the actionId. `actionFields` holds the DECODED
+//    fields matching getActionTypeDefinition() (used later in message.action).
 const actionFields = {
-  token: '0x…',      // example fields for a CreateStream macro:
-  receiver: '0x…',   //   Action(address token,address receiver,int96 flowRate)
+  token: '0x…',      // example fields for a CreateFlow action:
+  receiver: '0x…',   //   Action(string description,address token,address receiver,int96 flowRate)
   flowRate: 0n,
 }
 const actionParams = await publicClient.readContract({
   address: macroAddr,
   abi: macroHelperAbi,
-  functionName: 'encodeAction',
-  args: [actionFields.token, actionFields.receiver, actionFields.flowRate],
+  functionName: 'encodeCreateFlow', // ClearMacroBase macros expose one encode<Action>() per actionId
+  args: [lang, actionFields.token, actionFields.receiver, actionFields.flowRate],
 })
 
 // 3. Build security struct (self-submit)
@@ -256,9 +272,19 @@ const types = parseEIP712TypeDef(typeDef)
 
 const primaryType = await publicClient.readContract({
   address: macroAddr,
-  abi: iClearMacroAbi,
+  abi: clearMacroAbi,
   functionName: 'getPrimaryTypeName',
   args: [encodedPayload],
+})
+
+// 5b. The `description` is computed on-chain from (lang, actionSpecificParams) — read it back
+//     so message.action matches the digest exactly. ClearMacroBase macros typically expose a
+//     describe<Action>() view; otherwise recompute it deterministically off-chain.
+const description = await publicClient.readContract({
+  address: macroAddr,
+  abi: macroHelperAbi,
+  functionName: 'describeCreateFlow',
+  args: [lang, actionFields.token, actionFields.receiver, actionFields.flowRate],
 })
 
 // 6. Sign — wallet renders the human-readable clear-signing prompt
@@ -271,9 +297,9 @@ const signature = await walletClient.signTypedData({
   message: {
     // The message struct matches the primaryType; it contains action and security.
     // `action` holds the DECODED macro-specific fields matching getActionTypeDefinition()
-    // — NOT { params: actionParams }. These must hash to the same value the forwarder
-    // computes via m.getActionStructHash(actionParams).
-    action: actionFields,
+    // (leading `description` + the action fields) — NOT { params: actionParams }. These must
+    // hash to the same value the forwarder computes via m.getActionStructHash(actionParams).
+    action: { description, ...actionFields },
     security,
   },
 })
@@ -439,7 +465,7 @@ await walletClient.writeContract({
 
 ## IClearMacro Interface
 
-A Clear Macro contract must implement `IClearMacro`. It extends `IMacro` (the
+A Clear Macro contract must satisfy `IClearMacro`. It extends `IMacro` (the
 `buildBatchOperations` / `postCheck` interface — same role as `IUserDefinedMacro` in
 `BlindMacroForwarder`) with three EIP-712 type-derivation methods:
 
@@ -451,27 +477,104 @@ interface IClearMacro is IMacro {
 }
 ```
 
-- `getPrimaryTypeName` — returns the EIP-712 primary type name (e.g. `"CreateStream"`)
+- `getPrimaryTypeName` — returns the EIP-712 primary type name (e.g. `"DashboardCreateFlow"`)
 - `getActionTypeDefinition` — returns the action type definition string. The type name must be
-  exactly `Action` and the fields must be **flat** macro-specific primitives
-  (e.g. `"Action(address token,address receiver,int96 flowRate)"`), never `"Action(bytes params)"`
+  exactly `Action` and the fields must be **flat** macro-specific primitives, conventionally led
+  by `string description` (e.g. `"Action(string description,address token,address receiver,int96 flowRate)"`),
+  never `"Action(bytes params)"`
 - `getActionStructHash` — computes the struct hash for `actionParams`; used by the forwarder to
   assemble the full struct hash for signature verification
 
-See `IClearMacro.abi.yaml` for the full interface documentation.
+Most macros don't implement this interface by hand — they extend `ClearMacroBase` (below), which
+provides all five external functions and dispatches them by `actionId`. See `ClearMacroBase.abi.yaml`
+for the full external ABI documentation.
+
+## Authoring a Clear Macro with `ClearMacroBase`
+
+`ClearMacroBase` is an abstract contract (`contracts/utils/ClearMacroBase.sol`) that implements
+`IClearMacro` for **multi-action** macros. It owns the EIP-712 plumbing; you register one action
+per `actionId` and provide the per-action handlers.
+
+**Wire format it imposes** on `Payload.action.params` (`actionParams`):
+
+```
+abi.encode(uint8 actionId, bytes32 lang, bytes actionSpecificParams)
+```
+
+- `actionId` selects which registered action runs (a stable enum on the wire).
+- `lang` (bytes32, e.g. `"en"`) selects the localized `description` baked into the digest.
+- `actionSpecificParams` holds that action's own ABI-encoded fields.
+
+**To author one:** override `_registerActions()` and register an `ActionSpec` per action; expose a
+typed `encode<Action>()` helper per action so callers build `actionParams` without hand-encoding.
+
+```solidity
+import { ClearMacroBase } from
+    "@superfluid-finance/ethereum-contracts/contracts/utils/ClearMacroBase.sol";
+
+contract MyClearMacro is ClearMacroBase {
+    enum ActionId { CreateFlow, Upgrade }       // stable ids used on the wire
+
+    string constant _TYPEDEF_CREATE_FLOW =
+        "Action(string description,address token,address receiver,int96 flowRate)";
+
+    function _registerActions() internal override {
+        _registerAction(uint8(ActionId.CreateFlow), ActionSpec({
+            primaryTypeName:      "DashboardCreateFlow",
+            actionTypeDefinition: _TYPEDEF_CREATE_FLOW,
+            getActionStructHash:  _structHashCreateFlow,   // (bytes actionSpecificParams, bytes32 lang)
+            buildOperations:      _buildCreateFlow,         // (ISuperfluid, bytes, address account)
+            postCheck:            _noOpPostCheck            // ClearMacroBase no-op helper
+        }));
+        // ... _registerAction(uint8(ActionId.Upgrade), ...)
+    }
+
+    // Typed caller helper — returns the full actionParams wire format.
+    function encodeCreateFlow(bytes32 lang, address token, address receiver, int96 flowRate)
+        public pure returns (bytes memory)
+    {
+        return abi.encode(uint8(ActionId.CreateFlow), lang, abi.encode(token, receiver, flowRate));
+    }
+
+    // Per-action handler: derive the localized description and hash per EIP-712.
+    function _structHashCreateFlow(bytes memory actionSpecificParams, bytes32 lang)
+        internal view returns (bytes32)
+    {
+        (address token, address receiver, int96 flowRate) =
+            abi.decode(actionSpecificParams, (address, address, int96));
+        if (lang != bytes32("en")) revert UnsupportedLanguage();
+        string memory description = /* build human-readable string from the fields */;
+        return keccak256(abi.encode(
+            keccak256(bytes(_TYPEDEF_CREATE_FLOW)),
+            keccak256(bytes(description)),   // dynamic fields are keccak256-hashed per EIP-712
+            token, receiver, flowRate
+        ));
+    }
+
+    function _buildCreateFlow(ISuperfluid host, bytes memory actionSpecificParams, address /*account*/)
+        internal view returns (ISuperfluid.Operation[] memory) { /* build batch ops */ }
+}
+```
+
+Errors: an unregistered `actionId` reverts `UnknownActionId(actionId)`; an unhandled `lang` should
+revert `UnsupportedLanguage()`. A **single-action** macro can implement `IClearMacro` directly and
+skip the `actionId`/`lang` framing — but `ClearMacroBase` is the path most macros (including the
+`DashboardClearMacro` reference) take. Full reference example: `MultiActionClearMacro.t.sol` in the
+monorepo.
 
 ## DashboardClearMacro (Demo / Reference Implementation)
 
-`DashboardClearMacro` is a **chain-specific demo and reference implementation** of `IClearMacro`.
-It is not guaranteed to be deployed on every network — treat its address as user-supplied or
-environment-specific.
+`DashboardClearMacro` is a **chain-specific demo and reference implementation** built on
+`ClearMacroBase` (multi-action). It is not guaranteed to be deployed on every network — treat its
+address as user-supplied or environment-specific.
 
 Demo address (optimism-sepolia): `0x77232a2a953b570d1fee1fe16b1902299fe7b898`
 
-Supported operations: Approve / Transfer / Upgrade / Downgrade Super Tokens; CreateFlow /
-UpdateFlow / DeleteFlow (CFA); `describe*` view functions returning human-readable descriptions.
+Supported actions: Approve / Transfer / Upgrade / Downgrade Super Tokens; CreateFlow /
+UpdateFlow / DeleteFlow (CFA); `describe*` view functions returning the human-readable
+descriptions bound into each action's digest.
 
-Use it as a reference when building your own `IClearMacro` contract.
+Use it as a reference when building your own `ClearMacroBase` macro.
 
 ## Notes
 
@@ -502,6 +605,8 @@ Errors emitted by `runMacro` / `runPermit2AndMacro` when execution is rejected:
 | `OutsideValidityWindow` | `block.timestamp` outside `[validAfter, validBefore]` |
 | `InvalidPayload` | payload structurally invalid (reserved for subcontracts) |
 | `SafeERC20FailedOperation` | Permit2 token pull failed (`runPermit2AndMacro` only) |
+| `UnknownActionId(uint8)` | `actionId` in the payload has no registered action (`ClearMacroBase` macros) |
+| `UnsupportedLanguage()` | `lang` not handled by the action's description builder (`ClearMacroBase` macros) |
 
 ## Links & Source
 
@@ -511,4 +616,6 @@ Errors emitted by `runMacro` / `runPermit2AndMacro` when execution is rejected:
 - [Provider API OpenAPI](https://clearmacro-provider.superfluid.dev/docs/json) — authoritative request/response schema (re-verify before integrating)
 - `macro-forwarders.md` — BlindMacroForwarder (legacy MacroForwarder) pattern and batch operation types
 - `ClearMacroForwarder.abi.yaml` — full forwarder ABI reference
-- `IClearMacro.abi.yaml` — full interface ABI reference
+- `ClearMacroBase.abi.yaml` — macro-side ABI reference (implements the `IClearMacro` interface)
+- [ClearMacroBase.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/e117279d761d65379e63b330be89e897d6ca7eb4/packages/ethereum-contracts/contracts/utils/ClearMacroBase.sol) — abstract base for multi-action macros
+- [MultiActionClearMacro.t.sol](https://raw.githubusercontent.com/superfluid-org/protocol-monorepo/e117279d761d65379e63b330be89e897d6ca7eb4/packages/ethereum-contracts/test/foundry/macros/MultiActionClearMacro.t.sol) — reference multi-action macro example

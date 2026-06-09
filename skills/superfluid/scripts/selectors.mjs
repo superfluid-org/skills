@@ -168,15 +168,26 @@ const NON_SDK_ABIS = {
   ],
   SuperTokenV1Library: [], // Solidity library — no selectors (all calls go through the token)
 
-  // Interface — not exported by @sfpro/sdk; not deployed standalone
-  IClearMacro: [
+  // Abstract base contract — not exported by @sfpro/sdk; not deployed standalone.
+  // External ABI equals the IClearMacro interface (EIP-712 type derivation + IMacro surface)
+  // plus the two custom errors below.
+  ClearMacroBase: [
     // Functions (EIP-712 type derivation + IMacro surface)
     { type: "function", name: "getPrimaryTypeName", inputs: [{ type: "bytes" }] },
     { type: "function", name: "getActionTypeDefinition", inputs: [{ type: "bytes" }] },
     { type: "function", name: "getActionStructHash", inputs: [{ type: "bytes" }] },
     { type: "function", name: "buildBatchOperations", inputs: [{ type: "address" }, { type: "bytes" }, { type: "address" }] },
     { type: "function", name: "postCheck", inputs: [{ type: "address" }, { type: "bytes" }, { type: "address" }] },
+    // Errors
+    { type: "error", name: "UnknownActionId", inputs: [{ type: "uint8" }] },
+    { type: "error", name: "UnsupportedLanguage", inputs: [] },
   ],
+};
+
+// Backward-compatible aliases for NON_SDK_ABIS lookups (old name → current key).
+const NON_SDK_ALIASES = {
+  iclearmacro: "ClearMacroBase",
+  clearmacrobase: "ClearMacroBase",
 };
 
 // -- File writing --
@@ -259,8 +270,9 @@ Examples:
   default: {
     const name = resolveContract(command);
     if (!name) {
-      // Check non-SDK contracts.
-      const nonSdk = Object.keys(NON_SDK_ABIS).find(k => k.toLowerCase() === command.toLowerCase());
+      // Check non-SDK contracts (including backward-compatible aliases).
+      const nonSdk = Object.keys(NON_SDK_ABIS).find(k => k.toLowerCase() === command.toLowerCase())
+        ?? NON_SDK_ALIASES[command.toLowerCase()];
       if (nonSdk) {
         const abi = NON_SDK_ABIS[nonSdk];
         if (abi.length) {

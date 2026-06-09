@@ -131,7 +131,7 @@ See `references/guides/super-apps.md` for the full guide.
   one signature. Two modes: **self-submit** (`security.provider = "self"`, tx executor = signer) and
   **provider-relay** (relayer holds a Host SimpleACL role, enabling gasless-for-signer flows).
   → `references/guides/clear-macro.md`, `references/contracts/ClearMacroForwarder.abi.yaml`,
-  `references/contracts/IClearMacro.abi.yaml`
+  `references/contracts/ClearMacroBase.abi.yaml`
 
 ### Sentinels and liquidation
 
@@ -176,7 +176,7 @@ Contracts use "FLUID" and "Locker" internally — public-facing names are "SUP" 
 - SUP token, governance, DAO, distribution → `references/guides/sup-and-dao.md`
 - Token prices, filtered token list, CoinGecko IDs → See API Services (CMS) below
 - Stream accounting, per-day chunking → See API Services (Accounting) below (CFA + ERC-20 only, no GDA)
-- Comprehensive balances / history / CSV exports (CFA + GDA + IDA) → See API Services (Balance API) below
+- Comprehensive balances / point-in-time (historical) balance / buffer+connected+disconnected breakdown / CSV exports (CFA + GDA + IDA) → See API Services (Balance API) below
 - Generate or deep-link an accounting/tax report → https://reporter.superfluid.org; param spec: https://reporter.superfluid.org/llms.txt
 - Resolve ENS / Farcaster / Lens handles → See API Services (Whois) below
 - Query protocol data via GraphQL → See Subgraphs below
@@ -381,7 +381,7 @@ package details, see `references/guides/sdks.md`.
 ### API Services
 
 - Super API `https://superapi.kazpi.com` — Real-time on-chain Super Token balances (live balance only)
-- Balance API `https://balances.superfluid.dev` — comprehensive CFA+GDA+IDA balances, history, reports, movements; read-only, no auth
+- Balance API `https://balances.superfluid.dev` — event-sourced indexer: point-in-time/historical CFA+GDA+IDA balances (buffer/connected/disconnected), snapshots, reports, movements; read-only, no auth
 - CMS `https://cms.superfluid.pro` — Token prices, price history, filtered token list
 - Points `https://cms.superfluid.pro/points` — SUP points campaigns
 - Accounting `https://accounting.superfluid.dev/v1` — Stream accounting with per-day chunking
