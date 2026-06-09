@@ -24,24 +24,49 @@ Base URL: `https://balances.superfluid.dev` · Read-only, no auth · mainnet + t
 
 [Scalar UI](https://balances.superfluid.dev/ui) · [OpenAPI](https://balances.superfluid.dev/doc)
 
+**What it is** — an event-sourced balance *indexer*. It reconstructs Super Token
+balance state purely from on-chain log events, giving perfect accounting for ~99.9%
+of accounts. Because it replays the full event history, it can return the exact
+balance state at **any point in time** (pass `timestamp`), not just "now" — something
+RPC and the subgraph can't do cheaply. Reach for it whenever you need history,
+point-in-time balances, GDA/IDA coverage, or CSV exports.
+
+**Balance components** — the indexer decomposes balance into distinct parts:
+- `connectedBalance` — the on-chain-visible balance (matches `realtimeBalanceOfNow`):
+  CFA stream balance + deposit + connected GDA member balance + approved IDA subscriber balance.
+- `disconnectedBalance` — claimable-but-unclaimed amounts: disconnected GDA pool member
+  balance + unapproved IDA subscriber balance.
+- `deposit` — the CFA stream **buffer**: a protective reserve locked while streams are active.
+- `totalBalance` = `connectedBalance` + `disconnectedBalance`.
+- `availableBalance` = `totalBalance` − `deposit` (spendable liquidity after the buffer).
+
 **Disambiguation** — choose the right API for the job:
 - **Super API** — single live balance; fast, no history
 - **Accounting API** — CFA + ERC-20 only; no GDA support
-- **Balance API** — most comprehensive: CFA + GDA + IDA, history, snapshots, reports, CSV export
+- **Balance API** — most comprehensive: event-sourced, point-in-time + full history,
+  CFA + GDA + IDA, snapshots, reports, CSV export
 
 ### Endpoints
 
-- `GET /v1/chains` — list supported chains
-- `GET /v1/accounts/{account}/tokens` — all Super Tokens held by an account
-- `GET /v1/accounts/{account}/tokens/{token}/counterparties` — all counterparties for a token
-- `GET /v1/accounts/{account}/tokens/{token}/balance` — point-in-time balance:
-  `connected`, `disconnected`, `total`, `available`, `deposit`, `netFlowRate`, `maybeCriticalAt`
-- `GET /v1/accounts/{account}/tokens/{token}/balance-snapshots` — historical snapshots (for charting)
-- `GET /v1/accounts/{account}/tokens/{token}/entries` — raw ledger entries
+- `GET /v1/chains` — list supported chains (optional `network`: mainnet/testnet/all)
+- `GET /v1/accounts/{account}/tokens` — all Super Tokens held by an account (`chain`, `network`)
+- `GET /v1/accounts/{account}/tokens/{token}/counterparties` — all counterparties for a token (`chain`)
+- `GET /v1/accounts/{account}/tokens/{token}/balance` — point-in-time balance; `chain`
+  required, optional `timestamp` (omit for current). Returns `connectedBalance`,
+  `disconnectedBalance`, `totalBalance`, `availableBalance`, `deposit`,
+  `connectedNetFlowRate`, `maybeCriticalAt`, `timestamp`, `token`.
+- `GET /v1/accounts/{account}/tokens/{token}/balance-snapshots` — historical snapshots for
+  charting; `chain`, optional `startTimestamp`/`endTimestamp`/`points`. Each point carries
+  `connectedBalance`, `disconnectedBalance`, `deposit`, `totalBalance`.
+- `GET /v1/accounts/{account}/tokens/{token}/entries` — raw ledger entries; `chain`, optional
+  `counterparty`, `startTimestamp`, `endTimestamp`, `category`, `entryType`, `limit`, `offset`, `direction`
 - `GET /v1/accounts/{account}/tokens/{token}/balance-report` — aggregated report:
   required `chain`, `startDate`, `endDate`; optional `period` (daily/weekly/monthly),
-  `format` (json|csv), `view` (totals|by_counterparty|by_category), `extrapolate` (boolean)
-- `GET /v1/accounts/{account}/tokens/{token}/movements` — bank-statement view; cursor pagination
+  `format` (json|csv), `view` (totals|by_counterparty|by_category), `category`,
+  `counterparty`, `counterpartyDetail`, `extrapolate` (boolean)
+- `GET /v1/accounts/{account}/tokens/{token}/movements` — bank-statement view; cursor
+  pagination (`cursor`/`limit`/`offset`/`sort`), plus filters `counterparty`,
+  `startTimestamp`, `endTimestamp`, `movementType`, `category`, `direction`, `isOngoing`, `isDisconnected`
 
 ## CMS
 
