@@ -57,8 +57,8 @@ jobs:
         if: steps.check.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         continue-on-error: true
         run: |
-          npx clawhub@0.7 login --token "$CLAWHUB_AUTH" --no-browser
-          npx clawhub@0.7 publish ./skills/superfluid \
+          npx --yes clawhub@latest login --token "$CLAWHUB_AUTH" --no-browser
+          npx --yes clawhub@latest publish ./skills/superfluid \
             --slug superfluid \
             --name "Superfluid Protocol" \
             --version "${{ steps.version.outputs.version }}" \
