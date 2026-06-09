@@ -27,23 +27,34 @@ Key properties:
 - **View-only building** — `buildBatchOperations` is a `view` function, so
   macros cannot mutate state during operation construction
 
-## Blind vs Clear: When to Use Which
+## Blind vs Clear: Clear Supersedes Blind
 
-| | BlindMacroForwarder | ClearMacroForwarder |
+**ClearMacroForwarder supersedes BlindMacroForwarder. Use Clear for all new
+integrations.** Blind is legacy — it is documented here for existing deployments
+and to explain the underlying `IUserDefinedMacro` pattern that Clear builds on.
+Clear does everything Blind does *plus* human-readable signing and *optional*
+gasless relay; even Clear's self-submit mode removes Blind's blind-signing
+downside.
+
+| | BlindMacroForwarder (legacy) | ClearMacroForwarder (recommended) |
 |---|---|---|
-| **Execution** | Caller (`msg.sender`) executes directly | Signer can delegate to a third-party relayer |
-| **Signing** | Wallet signs the transaction itself | Wallet signs EIP-712 typed data; relay submits tx |
-| **Wallet UX** | Standard transaction prompt ("blind") | Clear-signing: wallet renders human-readable fields |
-| **Gas** | Caller pays gas | Relayer pays gas (gasless for signer) |
+| **Signing** | Wallet signs raw calldata it can't render ("blind") | Wallet renders human-readable EIP-712 typed data |
+| **Execution** | Self-relay only — the caller must broadcast their own tx (no signed payload exists for anyone else to submit) | Self-submit **or** third-party relay |
+| **Gas** | Caller always pays | Caller pays on self-submit, or relayer pays (gasless for signer) when relayed |
+| **Replay/validity** | None | ERC-4337-style nonce + `validAfter`/`validBefore` window |
 | **Permit2** | Not supported | Optional one-signature Permit2 upgrade path |
-| **Use when** | Caller is the operator; simple dApp flows | Signed/delegated execution, gasless UX, Permit2 upgrade |
+| **Status** | Legacy | Recommended default |
 
-**Use BlindMacroForwarder** when the caller is also the signer and direct
-on-chain execution is fine — the simplest macro path.
+**Prefer ClearMacroForwarder.** It supersedes Blind because the user signs
+human-readable typed data (EIP-712 `signTypedData`) instead of opaque calldata,
+the same signed payload can be self-submitted **or** relayed by a third party
+(possibly gaslessly), and it carries replay + validity-window protection. See
+`clear-macro.md`.
 
-**Use ClearMacroForwarder** when you need relayed/gasless execution, a
-human-readable wallet signing prompt (EIP-712 `signTypedData`), or an optional
-Permit2 token upgrade bundled with the macro call. See `clear-macro.md`.
+**Blind's one remaining edge** is that it can be self-relayed with no payload or
+signature machinery — but even then the user still broadcasts a transaction with
+unreadable transaction data. Reach for Blind only when maintaining an existing
+Blind integration where that blind-signing display is already accepted.
 
 > **ClearMacroForwarder** (`clearMacroForwarderAbi`, addr `0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e`)
 > is shipped in SDK 0.2.1 and deployed on ~16 networks. It is NOT testnet-only.
