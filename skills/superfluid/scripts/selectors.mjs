@@ -41,6 +41,14 @@ const ABI_MAP = {
   BlindMacroForwarder:            { module: "main",        export: "blindMacroForwarderAbi" },
 };
 
+// Macro forwarders merge the full Superfluid protocol error set into their SDK ABI so viem
+// can decode reverts propagated from the Host/agreements. Those errors are not thrown by the
+// forwarder itself and are documented in their own *.selectors.yaml files, so we trim them.
+const MERGED_ABI_CONTRACTS = new Set(["ClearMacroForwarder", "BlindMacroForwarder"]);
+
+// Superfluid protocol errors are SCREAMING_SNAKE_CASE; forwarder/OZ-infra errors are PascalCase.
+const isPropagatedProtocolError = (name) => /^[A-Z0-9_]+$/.test(name);
+
 const ALIASES = {
   cfaforwarder: "CFAv1Forwarder", gdaforwarder: "GDAv1Forwarder",
   pool: "SuperfluidPool", supertoken: "SuperToken", token: "SuperToken",
@@ -89,7 +97,12 @@ function padTo(str, width) {
 function formatYaml(contractName, abi, fromSdk = true) {
   const functions = abi.filter(i => i.type === "function").sort((a, b) => a.name.localeCompare(b.name));
   const events = abi.filter(i => i.type === "event").sort((a, b) => a.name.localeCompare(b.name));
-  const errors = abi.filter(i => i.type === "error").sort((a, b) => a.name.localeCompare(b.name));
+  let errors = abi.filter(i => i.type === "error").sort((a, b) => a.name.localeCompare(b.name));
+
+  // Macro forwarders carry the full protocol error set (merged into the SDK ABI for viem
+  // decoding). Trim the propagated errors — they live in their own contracts' selector files.
+  const trimmedErrors = MERGED_ABI_CONTRACTS.has(contractName);
+  if (trimmedErrors) errors = errors.filter(e => !isPropagatedProtocolError(e.name));
 
   const source = fromSdk ? "computed from @sfpro/sdk ABI" : "computed from hardcoded NON_SDK_ABIS signatures";
   const lines = [`# ${contractName} selectors — ${source}`];
@@ -122,6 +135,16 @@ function formatYaml(contractName, abi, fromSdk = true) {
 
   if (errors.length) {
     lines.push("", "errors:");
+    if (trimmedErrors) {
+      lines.push(
+        "  # Forwarder + EIP-712/OZ-infra errors only. The full Superfluid protocol error set",
+        "  # (CFA_*, GDA_*, IDA_*, HOST_*, SF_TOKEN_*, SUPER_TOKEN_*, SUPERFLUID_POOL_*) is merged",
+        "  # into the SDK ABI so viem can decode reverts propagated from the Host and agreements;",
+        "  # those are documented in their own *.selectors.yaml files (ConstantFlowAgreementV1,",
+        "  # GeneralDistributionAgreementV1, InstantDistributionAgreementV1, Superfluid, SuperToken,",
+        "  # SuperfluidPool).",
+      );
+    }
     const entries = errors.map(e => {
       const sig = signature(e);
       return { sig, hex: selector4(sig) };
