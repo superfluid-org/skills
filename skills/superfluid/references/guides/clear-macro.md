@@ -1,12 +1,13 @@
 # Clear Macro — EIP-712 Clear Signing with Relay Execution
 
 > Prerequisite: read `macro-forwarders.md` for the `BlindMacroForwarder` / `IUserDefinedMacro`
-> pattern and batch operation types. Clear Macro extends that system.
+> pattern and batch operation types. Clear Macro is the successor that builds on the same macro pattern.
 
 ## What is Clear Macro
 
-`ClearMacroForwarder` extends the base `BlindMacroForwarder` (legacy `MacroForwarder`) with four
-capabilities the base system lacks:
+`ClearMacroForwarder` is a separate forwarder — it does **not** inherit `BlindMacroForwarder`
+(legacy `MacroForwarder`); both independently extend `ForwarderBase` and drive user-defined macros.
+Clear is the successor, adding four capabilities Blind lacks:
 
 1. **EIP-712 clear signing** — the user signs a human-readable typed-data message in their wallet
    (not raw calldata). The macro derives the EIP-712 type definitions on-chain via the `IClearMacro`
