@@ -27,6 +27,10 @@ to cover the relay fee." Verification showed this is unsubstantiated:
   user signs over), not a property of the relay. The reference `DashboardClearMacro` does not
   do this.
 
+Confirmed by the maintainer: provider relaying is a **new solution still in BETA with no fee
+model yet**. So the recovery mechanism the docs described doesn't merely lack documentation —
+it does not exist at this stage.
+
 Only the cost-recovery clause was wrong. The first half — "gasless from the signer's
 perspective: the provider fronts native gas" — is correct and was kept.
 
@@ -54,5 +58,6 @@ Bumped version 1.2.3 → 1.2.4 in all four required locations:
 
 No selectors regeneration needed — only prose / `meta.notes` changed, not ABI signatures.
 
-Follow-up: confirm the real fee/cost-recovery model with the provider author (d10r) before
-re-asserting any specific mechanism in the docs.
+Follow-up: provider relaying is in BETA with no fee model yet. Revisit the docs once relaying
+leaves BETA and/or a fee model is introduced (confirm with the provider author, d10r) before
+re-asserting any specific cost-recovery mechanism.
