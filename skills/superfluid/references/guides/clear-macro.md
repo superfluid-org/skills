@@ -319,8 +319,10 @@ const hash = await walletClient.writeContract({
 
 ## Execution Mode 2 — Provider Relay (Gasless)
 
-A relay provider submits the transaction on the signer's behalf. The signer only signs; gas is paid
-by the provider and recovered from the signer's Super Token balance.
+A relay provider submits the transaction on the signer's behalf. The signer only signs; the provider
+fronts native gas. Whether and how the provider recovers that cost (e.g. a fee charged in Super
+Tokens) is provider-specific and is **not** enforced by the forwarder — the current reference
+provider documents no fee scheme.
 
 ```
 1. GET /v1/capabilities
@@ -591,8 +593,10 @@ Use it as a reference when building your own `ClearMacroBase` macro.
   specific relay provider. A payload signed for one provider cannot be relayed by another.
 - **Signature scope**: the signed payload covers the full `Security` struct plus the action.
   The relay provider cannot alter what the macro does — only when to submit (within validity window).
-- **Gasless from signer's perspective**: the relay provider pays native gas and recovers cost from
-  the signer's Super Token balance. The signer must hold enough Super Token to cover the relay fee.
+- **Gasless from signer's perspective**: the relay provider fronts native gas, so the signer pays
+  none. How — or whether — the provider recovers that cost is provider-specific and is not enforced
+  by the forwarder. Charging the signer's Super Token balance is one possible model, but the current
+  reference provider documents no fee scheme.
 - **Self-submit gotcha**: `Security.provider = "self"` requires `msg.sender == signer`; any other
   sender gets `ProviderNotAuthorized`.
 
