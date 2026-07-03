@@ -14,6 +14,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T057-supervault-awareness]] -- Add SuperVault product awareness (Apps entry + clear-macro cross-link, 1.2.4 → 1.2.5)
 - [[T056-clear-macro-relay-cost-claim]] -- Soften unverified ClearMacro relay cost-recovery claim (1.2.3 → 1.2.4)
 - [[T055-version-bump-1.2.3]] -- Version bump 1.2.2 → 1.2.3 (ClearMacroForwarder / Blind inheritance wording fix)
 - [[T054-codex-cli-eval-support]] -- Add Codex CLI support to the skill-eval runner (per-role provider selection via `provider:model` prefix)

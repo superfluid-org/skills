@@ -583,6 +583,11 @@ descriptions bound into each action's digest.
 
 Use it as a reference when building your own `ClearMacroBase` macro.
 
+**Live mainnet deployment:** [SuperVault](https://supervault.suplabs.org) (Superfluid Labs technical
+demo, Base mainnet) drives its vault deposit+connect and redeem flows through a `ClearMacroBase`
+macro (`SyncVaultMacro`, `0xA2175966fD97356C9ADb72ECC40875BC02Fa110b`) executed via the
+`ClearMacroForwarder`; the macro source is not public.
+
 ## Notes
 
 - **Signing path**: use `wallet.signTypedData` with the types from `getTypeDefinition` so the
