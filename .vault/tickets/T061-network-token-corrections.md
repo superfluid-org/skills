@@ -47,3 +47,8 @@ Sources verified:
   npm `latest` of ethereum-contracts is 1.15.2, `@sfpro/sdk` latest 0.3.1.
 - Dust crash reproduced with viem (`1n` at 60ms and 400ms throws); guarded version returns 0, identical
   results for non-dust rates.
+
+Correction (orchestrator, 2026-10-27): the npm `ethereum-contracts` 1.15.2 package already
+lacks the four canonical wrapper functions (1.15.1 still has them), and `@sfpro/sdk` 0.2.3
+removed them; the protocol CHANGELOG files the change under v1.15.3, which is what deployed
+it on-chain. The `meta.notes` line now says so instead of "removed in v1.15.3 / sdk 0.3.x".
