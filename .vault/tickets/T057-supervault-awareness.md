@@ -57,6 +57,12 @@ Scope constraints (user decisions):
   - `skills/superfluid/SKILL.md` — frontmatter `metadata.version`
   - `landing-page/index.html` — version badge text
 
-Follow-up: if SuperVault graduates from time-limited demo to a durable product (or the
+Follow-up: if SuperVault graduates from technical demo to a durable product (or the
 contracts are open-sourced), revisit with a deep-research doc and possibly Rich ABI YAML
 treatment.
+
+Re-check 2026-10-27 before merge: site, docs and contracts still live on Base
+(vault `totalAssets` ~9,652 USDC). The docs now call SuperVault a "technical demo"
+and "live reference implementation" with no time limit, so the SKILL.md entry
+drops "time-limited". Addresses and the 1% DAO fee (dao.superfluid.eth =
+`0xac808840f02c47C05507f48165d2222FF28EF4e1`) re-verified.
