@@ -137,6 +137,8 @@ distributeFlow:
     - "Gotcha: Actual flow rate may differ from requested due to integer division rounding (requestedFlowRate / totalUnits). The remainder does not stay in the pool — it is streamed to the pool admin as a continuous adjustment flow."
     - "Gotcha: If requestedFlowRate < totalUnits, per-unit rate truncates to 0 and the entire flow goes to admin as adjustment."
     - "Gotcha: Unit changes (updateMemberUnits) can only increase the adjustment flow (sticky), never decrease it. Re-call distributeFlow to reset the per-unit rate and adjustment flow."
+    - "Gotcha: Solvency (patrician/pleb/pirate and reward split) uses the account-level totalDeposit from SuperToken.realtimeBalanceOf, summed across CFA and GDA (v1.15.3, live on all networks). Older logic used only this agreement's deposit, so mixed CFA+GDA senders could be treated as pirate."
+    - "Gotcha: Liquidating a critical sender with no flow into this pool reverts GDA_FLOW_DOES_NOT_EXIST (v1.15.3)."
   mutability: nonpayable
   access: admin | anyone(if-pool-allows) | anyone(if-liquidation)
   inputs:
@@ -148,7 +150,7 @@ distributeFlow:
   outputs:
     - newCtx: bytes
   emits: [FlowDistributionUpdated, BufferAdjusted]
-  errors: [GDA_ONLY_SUPER_TOKEN_POOL, GDA_NO_NEGATIVE_FLOW_RATE, GDA_DISTRIBUTE_FROM_ANY_ADDRESS_NOT_ALLOWED, GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED, GDA_NON_CRITICAL_SENDER, GDA_INSUFFICIENT_BALANCE]
+  errors: [GDA_ONLY_SUPER_TOKEN_POOL, GDA_NO_NEGATIVE_FLOW_RATE, GDA_DISTRIBUTE_FROM_ANY_ADDRESS_NOT_ALLOWED, GDA_DISTRIBUTE_FOR_OTHERS_NOT_ALLOWED, GDA_FLOW_DOES_NOT_EXIST, GDA_NON_CRITICAL_SENDER, GDA_INSUFFICIENT_BALANCE]
 
 # == Member Management ==
 # Manage pool members and claims through the Host.
