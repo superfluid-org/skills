@@ -320,17 +320,17 @@ const hash = await walletClient.writeContract({
 ## Execution Mode 2 — Provider Relay (Gasless)
 
 A relay provider submits the transaction on the signer's behalf. The signer only signs; the provider
-fronts native gas. Provider relaying is a **new capability still in BETA with no fee model yet** —
-whether and how a provider eventually recovers that cost (e.g. a fee charged in Super Tokens) would
-be provider-specific and is **not** enforced by the forwarder. The current reference provider
-documents no fee scheme.
+fronts native gas. Provider relaying is a **new capability still in BETA**. The forwarder and provider
+enforce no fee. Fees are a macro-level design choice: the Dashboard's public-source
+`DashboardClearMacro` (`github.com/superfluid-org/superfluid-dashboard/tree/master/contracts`)
+charges a disclosed USDCx relay fee bound into the signed description.
 
 ```
 1. GET /v1/capabilities
-   → discover which chains and macros the provider supports
-   → get provider domain string for Security.domain / Security.provider
+   → providerName (use for Security.domain AND Security.provider)
+   → chains[]: chainId, forwarderAddress, supportedKinds, supportedAuthorizationMethods, macroPolicy
 
-2. Build payload with Security.provider = <provider identifier from capabilities>
+2. Build payload with Security.domain = Security.provider = capabilities.providerName
    Set a validity window (e.g. validBefore = now + 5 minutes)
 
 3. wallet.signTypedData(domain, types, message)
@@ -338,35 +338,39 @@ documents no fee scheme.
 
 4. POST /v1/relay-executions
    → submit { kind, chainId, macroAddress, signerAddress, payload, signature }
-   → receive { id }
+   → 202 new / 200 existing execution (same signed intent is deduplicated); body has { id, state, terminal }
    Note: validBefore/validAfter/nonce are ABI-encoded inside payload — do not flatten them
 
-5. poll GET /v1/relay-executions/{id}
-   → repeat with backoff until terminal state:
-     succeeded | reverted | rejected | failed | expired | canceled
+5. poll GET /v1/relay-executions/{id} until `terminal` is true
+   state: awaiting_authorization (Safe only) | pending | submitted → succeeded | reverted | rejected | failed | expired | canceled
 ```
 
-> Re-verify the live Provider API request schema against `/docs/json` before treating this
-> example as canonical — the exact field names and shape may have changed.
+**Provider API base URL**: `https://clearmacro-provider.superfluid.dev` (OpenAPI: `/docs/json`)
 
-**Provider API base URL**: `https://clearmacro-provider.superfluid.dev`
+Chain support comes from `/v1/capabilities`, **not** from SDK metadata. Check it before prompting
+the user to sign.
 
-Chain support comes from `/v1/capabilities` — **not** from SDK metadata. Check the capabilities
-response before prompting the user to sign.
+⚠️ The provider sends **no CORS headers**. Browser apps cannot call it directly: proxy it
+same-origin (e.g. a framework rewrite) or from a server.
 
 ```typescript
-// 1. Fetch capabilities
-const caps = await fetch(
-  'https://clearmacro-provider.superfluid.dev/v1/capabilities'
-).then(r => r.json())
-// caps contains supported chains, macro allowlist, and provider identity
+const PROVIDER = 'https://clearmacro-provider.superfluid.dev' // browser: your same-origin proxy path
 
-// 2–3. Build payload with provider domain, then sign (same as self-submit but
-//      set security.provider and security.domain from caps, and add a validity window)
+// 1. Fetch capabilities
+const caps: {
+  providerName: string
+  chains: { chainId: number; forwarderAddress: Address; supportedKinds: string[]; supportedAuthorizationMethods: string[] }[]
+} = await fetch(`${PROVIDER}/v1/capabilities`).then(r => r.json())
+const chainCaps = caps.chains.find(c => c.chainId === chainId)
+if (!chainCaps) throw new Error('chain not supported by provider')
+// chainCaps.forwarderAddress must equal forwarderAddr
+
+// 2–3. Build payload, then sign (same as self-submit, but domain/provider come from
+//      capabilities and there is a validity window)
 const security = {
-  domain: caps.domain ?? '',
+  domain: caps.providerName,
   macroContract: macroAddr,
-  provider: caps.provider ?? '',
+  provider: caps.providerName,
   validAfter: 0n,
   validBefore: BigInt(Math.floor(Date.now() / 1000) + 300), // 5-minute window
   nonce,
@@ -374,35 +378,48 @@ const security = {
 // ... build encodedPayload, types, and sign as in self-submit steps 4–6
 
 // 4. Submit to relay
-const relayRes = await fetch(
-  'https://clearmacro-provider.superfluid.dev/v1/relay-executions',
-  {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      kind: 'clearMacroV1',
-      chainId,
-      macroAddress: macroAddr,
-      signerAddress: signerAddr,
-      payload: encodedPayload,
-      signature,
-    }),
-  }
-).then(r => r.json())
-const { id } = relayRes
+const relayRes = await fetch(`${PROVIDER}/v1/relay-executions`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    kind: 'clearMacroV1',
+    chainId,
+    macroAddress: macroAddr,
+    signerAddress: account.address,
+    payload: encodedPayload,
+    signature,
+  }),
+})
+if (!relayRes.ok) throw new Error(`relay rejected: ${await relayRes.text()}`) // 422 = payload/signature/validity/preflight failed
+const { id }: { id: string } = await relayRes.json()
 
 // 5. Poll for result (use exponential backoff in production)
-async function waitForRelay(id) {
-  const TERMINAL = new Set(['succeeded', 'reverted', 'rejected', 'failed', 'expired', 'canceled'])
+async function waitForRelay(id: string) {
   while (true) {
-    const res = await fetch(
-      `https://clearmacro-provider.superfluid.dev/v1/relay-executions/${id}`
-    ).then(r => r.json())
-    if (TERMINAL.has(res.status)) return res
+    const res = await fetch(`${PROVIDER}/v1/relay-executions/${id}`).then(r => r.json())
+    if (res.terminal) return res // res.state: succeeded | reverted | rejected | failed | expired | canceled
     await new Promise(r => setTimeout(r, 2000))
   }
 }
+const result = await waitForRelay(id)
+// Final hash: result.receipt?.transactionHash ?? result.transaction?.hash
+// (`receipt` can be missing even on `succeeded`). On failure see result.error { code, message, retryable }.
 ```
+
+Optional request fields: `clientRequestId` (your correlation ID, echoed back, not used for
+deduplication), `metadata` (string map echoed back; no secrets), `forceExecuteAfterPreflightRevert`
+(still creates the execution after a deterministic preflight revert; does not bypass auth, policy,
+signature or validity checks). `DELETE /v1/relay-executions/{id}` cancels while `awaiting_authorization`
+or `pending` (before relayer submission).
+
+### Safe / ERC-1271 signers
+
+`signerAddress` may be an ERC-1271 contract signer. `supportedAuthorizationMethods` lists
+`signature` and `safeMessageV1`. For a Safe: propose the same EIP-712 message to the Safe Transaction
+Service as a Safe message, then send `authorization: { type: 'safeMessageV1', safeMessageHash }`
+(the Safe message hash) in place of `signature`. The execution stays `awaiting_authorization`, and the
+provider polls until the Safe owners' confirmations make ERC-1271 validate the digest. The resource's
+`authorization.messageLink` deep-links to the Safe web app. Set `validBefore` long enough for owners to confirm.
 
 ## Optional: runPermit2AndMacro
 
