@@ -29,13 +29,13 @@ meta:
       avalanche-c: "0x1fA9fFe8Db73F701454B195151Db4Abb18423cf2"
       celo-mainnet: "0x26747Fe93fAC8bF28E1e24A558a2bC7E4d9846cA"
       scroll-mainnet: "0x4112557F0F228A18654d3C39599421DE9F61144d"
-      degenchain: "0xb19CE3e7DA9FbAf9De2526BD662A82f26421A53E"
+      arc-mainnet: "0xBDa1B20e5deef07AA19C2Af5c8a3430642b2C366"
     testnet:
       avalanche-fuji: "0xA44dEC7A0Dde1a56AeDe4143C1ef89cf5d956782"
       base-sepolia: "0x9358C7dCCc6B8CA6F526311e8ac266F8C861B7ea"
       eth-sepolia: "0x9358C7dCCc6B8CA6F526311e8ac266F8C861B7ea"
       optimism-sepolia: "0x51BDA2C5F627d456E282257710F4A4b6Eb094A52"
-      scroll-sepolia: "0x296556422F44F19E5d216CBf98348A03BDc445E7"
+      arc-testnet: "0x73a4A5B5CBa803D90f9cEE00F60523d48ddd53e2"
 
 # == Abbreviations ==
 # ctx  — context (Superfluid call context bytes, carries msg.sender and userData)
