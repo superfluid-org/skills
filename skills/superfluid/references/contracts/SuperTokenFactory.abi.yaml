@@ -24,7 +24,7 @@ meta:
     NON_UPGRADABLE (deprecated, reverts), SEMI_UPGRADABLE (UUPSProxy),
     FULL_UPGRADABLE (FullUpgradableSuperTokenProxy).
   notes:
-    - "Canonical wrapper API (createCanonicalERC20Wrapper and 3 related functions) was removed in ethereum-contracts v1.15.3 and @sfpro/sdk 0.3.x. npm latest of ethereum-contracts may still be 1.15.2 and include it."
+    - "Canonical wrapper API (createCanonicalERC20Wrapper and 3 related functions) is gone: absent from the npm ethereum-contracts 1.15.2 ABI and @sfpro/sdk 0.2.3+, removed on-chain with v1.15.3 (calls revert). Storage slot kept for upgrade safety."
   upgradability_enum:
     NON_UPGRADABLE: 0   # deprecated — createERC20Wrapper reverts
     SEMI_UPGRADABLE: 1  # UUPSProxy — upgradable via host.updateSuperTokenLogic
