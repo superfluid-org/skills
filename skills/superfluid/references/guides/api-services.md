@@ -89,13 +89,11 @@ campaign-scoped `X-API-Key` (server-side only). Pass the numeric `campaignId`;
 `campaign` is a deprecated alias.
 
 - `GET /points/balance?campaignId&account` → `points`, `cappedPoints`
-- `POST /points/balance` — up to 100 accounts, one campaign
-- `POST /points/balance-batch` — one account, up to 50 `campaignIds`; returns
-  `points[]`, `cappedPoints[]` and `warnings` (missing campaigns return 0)
-- `GET /points/signed-balance?campaignId&account` → `points`, `uncappedPoints`,
-  `signatureTimestamp`, `signature`, `signer`
-- `POST /points/signed-balance-batch` — one account, up to 50 `campaignIds`,
-  one signature over all (for batch `FluidLocker.claim`)
+- `POST /points/balance` (≤100 accounts) and `/points/balance-batch` (one
+  account, ≤50 `campaignIds`; missing campaigns return 0 plus `warnings`)
+- `GET /points/signed-balance?campaignId&account` → signed `points`, `uncappedPoints`
+- `POST /points/signed-balance-batch` — one signature over ≤50 `campaignIds`
+  (for batch `FluidLocker.claim`)
 
 Per-campaign cap: a capped account gets `cappedPoints: 1` (unsigned `points`
 stays the true balance) and signed `points: 1` (`uncappedPoints` is the true

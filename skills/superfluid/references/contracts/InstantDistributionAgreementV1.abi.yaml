@@ -3,8 +3,8 @@
 # Superseded by GeneralDistributionAgreementV1 (GDA), which supports both
 # instant and streaming distributions through a unified pool model.
 #
-# SOFT-FROZEN (v1.15.3; live on every network as of 2026-10-27): createIndex, updateIndex,
-# distribute, updateSubscription and approveSubscription revert
+# SOFT-FROZEN (v1.15.3; live on every network as of 2026-10-27): createIndex,
+# updateIndex, distribute, updateSubscription and approveSubscription revert
 # IDA_NEW_ACTIVITY_FROZEN. claim, revokeSubscription and deleteSubscription
 # still work; existing balances are preserved. Exception: optimism-mainnet and
 # optimism-sepolia stay active (Super DCA) with a 32 approved-subscription cap.

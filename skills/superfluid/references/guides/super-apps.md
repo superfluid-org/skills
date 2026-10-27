@@ -46,7 +46,8 @@ sequence:
   stipend; gas the before hook uses is gone for the after hook. The value is
   per network: 3M on eth-mainnet and scroll-mainnet, 7.5M avalanche-c,
   8.5M xdai-mainnet, 12M elsewhere (2026-10-27). Read it on the host; don't
-  hardcode. Running out of gas reverts `HOST_NEED_MORE_GAS` (no jail).
+  hardcode. An app that exhausts its stipend fails like any revert (jailed on
+  termination); `HOST_NEED_MORE_GAS` means the caller sent too little gas.
 - **Context:** the Host reverts `HOST_CALLBACK_CONTEXT_TOO_LARGE` if `ctx`
   exceeds 32 KiB before any hook. No jail; retry with smaller `userData`.
 - **Returndata:** callback returndata over 128 KiB (or not valid ABI bytes)
