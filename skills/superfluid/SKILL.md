@@ -39,8 +39,8 @@ governance, and SuperTokenFactory.
 CFA (1:1 streams), GDA (many-to-many via pools), IDA (deprecated, replaced by GDA).
 
 **Super Token** — ERC-20/ERC-777/ERC-2612 with real-time balance. Three
-variants: Wrapper (ERC-20 backed), Native Asset/SETH (ETH backed), Pure
-(pre-minted).
+variants: Wrapper (ERC-20 backed), Native Asset/SETH (native-asset backed,
+not on every network), Pure (pre-minted).
 
 **Forwarders** (CFAv1Forwarder, GDAv1Forwarder) — convenience wrappers. Each
 call is a standalone transaction with readable wallet descriptions. Cannot be
@@ -258,6 +258,14 @@ always in 18-decimal SuperToken units, regardless of underlying token decimals.
 The contract handles scaling internally. The only place underlying decimals
 matter is the ERC-20 `approve()` call. Example: to wrap 100 USDC, approve
 100e6 on USDC, then call `upgrade(100e18)`.
+
+**Native-asset Super Token is not universal** — Some networks have none
+(arc-mainnet): metadata `nativeTokenWrapper` is absent. Detect token type from
+tokenlist `superTokenInfo.type` or `getUnderlyingToken()` (zero address =
+Native Asset or Pure), never from the symbol. Arc USDCx is Native Asset on
+arc-testnet but a Wrapper of 6-decimal USDC `0x3600000000000000000000000000000000000000`
+on arc-mainnet (approve 6-dec, `upgrade` 18-dec; `upgradeByETH` reverts).
+Testnet-tested code picks the wrong wrap path on mainnet.
 
 **GDA pool connections vs. membership** — Pool membership is unlimited (an
 account can hold units in any number of pools). However, only 256 pools can be

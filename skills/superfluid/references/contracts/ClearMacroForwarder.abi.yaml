@@ -51,13 +51,13 @@ meta:
       avalanche-c: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
       celo-mainnet: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
       scroll-mainnet: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
-      degenchain: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
+      arc-mainnet: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
     testnet:
       avalanche-fuji: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
       base-sepolia: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
       eth-sepolia: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
       optimism-sepolia: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
-      scroll-sepolia: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
+      arc-testnet: "0xC1EaB73855155D4e021f7EB4f866996Bac2fe25e"
 
 # == Glossary ==
 # encodedPayload — abi.encode(Payload{action: EncodedAction{params}, security: Security{...}})
