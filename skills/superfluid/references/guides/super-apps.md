@@ -44,7 +44,7 @@ sequence:
 
 - **Gas:** each before/after pair shares one `Host.CALLBACK_GAS_LIMIT()`
   stipend; gas the before hook uses is gone for the after hook. The value is
-  per network: 3M on eth-mainnet and scroll-mainnet, 7.5M avalanche-c,
+  per network: 3M on eth-mainnet and scroll-mainnet, 7.5M avalanche-c/fuji,
   8.5M xdai-mainnet, 12M elsewhere (2026-10-27). Read it on the host; don't
   hardcode. An app that exhausts its stipend fails like any revert (jailed on
   termination); `HOST_NEED_MORE_GAS` means the caller sent too little gas.

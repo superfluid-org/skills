@@ -344,7 +344,7 @@ callAppBeforeCallback:
   # StaticCall a Super App's before-callback. Returns the callback data.
   # If the callback reverts during a termination, the app is jailed instead of reverting.
   notes:
-    - "Gotcha: v1.15.3 adds a callbackGasLimit input and a remainingCallbackGas output (before and after share one CALLBACK_GAS_LIMIT stipend). @sfpro/sdk 0.3.1 still ships the 4-arg ABI below."
+    - "Gotcha: Before and after share one CALLBACK_GAS_LIMIT stipend; pass remainingCallbackGas to the after-callback. @sfpro/sdk 0.3.1 still ships the pre-v1.15.3 4-arg ABI without these."
   mutability: nonpayable
   access: agreement
   inputs:
@@ -352,8 +352,10 @@ callAppBeforeCallback:
     - callData: bytes
     - isTermination: bool
     - ctx: bytes
+    - callbackGasLimit: uint256   # capped to CALLBACK_GAS_LIMIT; CallbackUtils.SENTINEL_CALLBACK_GAS_LIMIT = full stipend
   outputs:
     - cbdata: bytes
+    - remainingCallbackGas: uint256  # unused part of the capped stipend
   errors: [HOST_ONLY_LISTED_AGREEMENT, HOST_CALLBACK_CONTEXT_TOO_LARGE, HOST_NEED_MORE_GAS, APP_RULE]
 
 callAppAfterCallback:
@@ -366,6 +368,7 @@ callAppAfterCallback:
     - callData: bytes
     - isTermination: bool
     - ctx: bytes
+    - callbackGasLimit: uint256   # capped to CALLBACK_GAS_LIMIT
   outputs:
     - newCtx: bytes
   errors: [HOST_ONLY_LISTED_AGREEMENT, HOST_CALLBACK_CONTEXT_TOO_LARGE, HOST_NEED_MORE_GAS, APP_RULE]
