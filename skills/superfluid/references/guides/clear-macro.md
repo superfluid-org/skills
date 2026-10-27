@@ -617,10 +617,8 @@ macro (`SyncVaultMacro`, `0xA2175966fD97356C9ADb72ECC40875BC02Fa110b`) executed 
 - **Signature scope**: the signed payload covers the full `Security` struct plus the action.
   The relay provider cannot alter what the macro does — only when to submit (within validity window).
 - **Gasless from signer's perspective**: the relay provider fronts native gas, so the signer pays
-  none. Provider relaying is a new capability still in BETA with **no fee model yet**. How — or
-  whether — a provider eventually recovers that cost is provider-specific and is not enforced by the
-  forwarder. Charging the signer's Super Token balance is one possible future model, but the current
-  reference provider documents no fee scheme.
+  none. The forwarder and provider enforce no fee; any fee is a macro-level design choice disclosed
+  in the signed description (e.g. `DashboardClearMacro`'s USDCx relay fee).
 - **Self-submit gotcha**: `Security.provider = "self"` requires `msg.sender == signer`; any other
   sender gets `ProviderNotAuthorized`.
 
