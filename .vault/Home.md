@@ -14,6 +14,9 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T062-api-and-v1-15-3-protocol-changes]] -- Points/SUP metrics/Claim Programs API updates; v1.15.3 IDA freeze, callback limits, account-level solvency
+- [[T061-network-token-corrections]] -- Arc in / Degen and Scroll Sepolia out, native-asset gotcha, canonical wrapper removal, flowing-balance dust guard
+- [[T060-clear-macro-guide-corrections]] -- Fix Clear Macro relay example (state, providerName, Safe auth, CORS), fee wording, allowlist note
 - [[T059-superfluid-wallet-awareness]] -- Add Superfluid Wallet awareness (Apps entry + keyword)
 - [[T058-fluid-ep-stop-funding-semantics]] -- Correct FluidEPProgramManager stopFunding/cancelProgram semantics
 - [[T057-supervault-awareness]] -- Add SuperVault product awareness (Apps entry + clear-macro cross-link, 1.2.4 → 1.2.5)
