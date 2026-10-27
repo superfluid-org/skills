@@ -396,7 +396,9 @@ const { id }: { id: string } = await relayRes.json()
 // 5. Poll for result (use exponential backoff in production)
 async function waitForRelay(id: string) {
   while (true) {
-    const res = await fetch(`${PROVIDER}/v1/relay-executions/${id}`).then(r => r.json())
+    const r = await fetch(`${PROVIDER}/v1/relay-executions/${id}`)
+    if (!r.ok) throw new Error(`poll failed: ${r.status} ${await r.text()}`) // e.g. 404 unknown id
+    const res = await r.json()
     if (res.terminal) return res // res.state: succeeded | reverted | rejected | failed | expired | canceled
     await new Promise(r => setTimeout(r, 2000))
   }
