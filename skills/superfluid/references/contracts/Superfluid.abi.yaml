@@ -343,6 +343,8 @@ isCompositeAppAllowed:
 callAppBeforeCallback:
   # StaticCall a Super App's before-callback. Returns the callback data.
   # If the callback reverts during a termination, the app is jailed instead of reverting.
+  notes:
+    - "Gotcha: v1.15.3 adds a callbackGasLimit input and a remainingCallbackGas output (before and after share one CALLBACK_GAS_LIMIT stipend). @sfpro/sdk 0.3.1 still ships the 4-arg ABI below."
   mutability: nonpayable
   access: agreement
   inputs:
@@ -352,7 +354,7 @@ callAppBeforeCallback:
     - ctx: bytes
   outputs:
     - cbdata: bytes
-  errors: [HOST_ONLY_LISTED_AGREEMENT, HOST_NEED_MORE_GAS, APP_RULE]
+  errors: [HOST_ONLY_LISTED_AGREEMENT, HOST_CALLBACK_CONTEXT_TOO_LARGE, HOST_NEED_MORE_GAS, APP_RULE]
 
 callAppAfterCallback:
   # Call a Super App's after-callback. Returns the (potentially modified) context.
@@ -366,7 +368,7 @@ callAppAfterCallback:
     - ctx: bytes
   outputs:
     - newCtx: bytes
-  errors: [HOST_ONLY_LISTED_AGREEMENT, HOST_NEED_MORE_GAS, APP_RULE]
+  errors: [HOST_ONLY_LISTED_AGREEMENT, HOST_CALLBACK_CONTEXT_TOO_LARGE, HOST_NEED_MORE_GAS, APP_RULE]
 
 appCallbackPush:
   # Push a new callback frame onto the context stack before invoking a Super App.
@@ -611,7 +613,10 @@ APP_WHITE_LISTING_ENABLED:
     - bool
 
 CALLBACK_GAS_LIMIT:
-  # Maximum gas forwarded to Super App callbacks.
+  # Gas stipend per Super App before/after callback pair (shared since v1.15.3).
+  # Constructor immutable, per network. Observed 2026-10-27: 3M eth-mainnet and
+  # scroll-mainnet, 7.5M avalanche-c/fuji, 8.5M xdai-mainnet, 12M elsewhere
+  # (was 15M on Base/Optimism before v1.15.3). Read it on the host; don't hardcode.
   mutability: view
   outputs:
     - uint64
@@ -731,6 +736,7 @@ errors:
 
   # Callback execution
   - HOST_NEED_MORE_GAS                # insufficient gas for Super App callback
+  - HOST_CALLBACK_CONTEXT_TOO_LARGE   # ctx > 32 KiB (shrink userData); app not jailed (v1.15.3)
 
   # Super App rule violations (generic, carries a reason code)
   # Reason codes (from SuperAppDefinitions.sol):
@@ -739,7 +745,8 @@ errors:
   #   12 — NO_CRITICAL_RECEIVER_ACCOUNT (callback made receiver critical)
   #   20 — CTX_IS_READONLY (state change in before-callback staticcall)
   #   21 — CTX_IS_NOT_CLEAN (context not properly returned)
-  #   22 — CTX_IS_MALFORMATED (context bytes corrupted/fabricated)
+  #   22 — CTX_IS_MALFORMATED (context bytes corrupted/fabricated, or returndata
+  #        malformed or > 128 KiB since v1.15.3)
   #   30 — COMPOSITE_APP_IS_NOT_WHITELISTED (no allowCompositeApp)
   #   31 — COMPOSITE_APP_IS_JAILED (downstream app is jailed)
   #   40 — MAX_APP_LEVEL_REACHED (callback nesting exceeded limit)
