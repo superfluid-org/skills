@@ -474,5 +474,11 @@ scheduling, auto-wrap) to appear in the Dashboard UI and for Superfluid
 off-chain keepers to trigger the automation contracts. Without allowlisting,
 automations won't be executed on time and are effectively useless.
 
+On networks where the Dashboard's Clear Macro is deployed, the Dashboard lets
+EOAs schedule FlowScheduler streams through that macro without allowlisting
+(the macro fee is meant to pay for keeper execution). Not confirmed in public
+keeper docs, so allowlisting remains the documented route. Vesting and
+auto-wrap are unchanged.
+
 - Request: [allowlisting form](https://airtable.com/appmq3TJDdQUrTQpx/shrWouN6ursCkOQ86)
 - Check status: `GET https://allowlist.superfluid.dev/api/allowlist/{account}/{chainId}`
