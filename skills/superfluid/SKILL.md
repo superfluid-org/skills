@@ -400,6 +400,7 @@ package details, see `references/guides/sdks.md`.
 - Whois `https://whois.superfluid.finance` — Resolve profiles (ENS, Farcaster, Lens, AF)
 - Token Prices `https://token-prices-api.superfluid.dev/v1/{network}/{token}` — Super Token prices (CoinGecko-backed)
 - Claim Programs `https://claim.superfluid.org/api/programs` — SUP reward programs: seasons, allocations, pool addresses, flow rates
+- SUP Metrics `https://sup-metrics-api.superfluid.dev` — SUP circulating supply, distribution split, DAO members, delegation/voting scores
 
 For per-API endpoints, query patterns, Swagger/OpenAPI links, and gotchas,
 see `references/guides/api-services.md`.
