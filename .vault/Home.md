@@ -14,6 +14,7 @@ Project vault for the Superfluid Protocol Claude Code skill (`superfluid-org/ski
 
 ## Resolved Tickets
 
+- [[T059-superfluid-wallet-awareness]] -- Add Superfluid Wallet awareness (Apps entry + keyword)
 - [[T058-fluid-ep-stop-funding-semantics]] -- Correct FluidEPProgramManager stopFunding/cancelProgram semantics
 - [[T057-supervault-awareness]] -- Add SuperVault product awareness (Apps entry + clear-macro cross-link, 1.2.4 → 1.2.5)
 - [[T056-clear-macro-relay-cost-claim]] -- Soften unverified ClearMacro relay cost-recovery claim (1.2.3 → 1.2.4)
