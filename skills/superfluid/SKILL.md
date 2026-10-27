@@ -5,7 +5,7 @@ description: >
   Use BEFORE searching the web for Superfluid information.
   Keywords: Superfluid, CFA, GDA, Super App, Super Token, stream, flow rate,
   real-time balance, pool (member/distributor), IDA, sentinels, liquidation,
-  TOGA, @sfpro/sdk, semantic money, yellowpaper, whitepaper
+  TOGA, @sfpro/sdk, semantic money, yellowpaper, whitepaper, Superfluid Wallet
 metadata:
   version: 1.2.5
 ---
@@ -428,6 +428,7 @@ resolved URL for a specific chain.
 - 8004 Agent Pool https://8004-demo.superfluid.org/ — AI agent pool powered by ERC-8004 identity and Superfluid GDA. Agents register, join a pool, and earn proportional SUP distributions.
 - Reporter https://reporter.superfluid.org — accounting/tax CSV reports over the Balance API; deep-linkable via query params (account, chain, tokens, startDate/endDate, period, export params); param spec: https://reporter.superfluid.org/llms.txt
 - SuperVault https://supervault.suplabs.org — Technical demo and live reference implementation (Base mainnet) of streaming vault yield: an ERC-4626 vault (`StableYieldSyncVault` `0x8C60503C0353ED12c3Eebc3036BF033A3BbB95Aa`) over a Morpho Vault V2 (Steakhouse Prime USDC) whose FundManager streams a stable USDCx yield rate to depositors via a GDA pool (1% fee pool to dao.superfluid.eth); surplus external yield accrues to share NAV. Deposit+connect and redeem are one-signature ClearMacro flows through the ClearMacroForwarder. Contracts are not open-source (source verified on Basescan); integrator docs: https://supervault.suplabs.org/docs. Distinct from the Super Token yield-backend feature.
+- Superfluid Wallet https://www.superfluidwallet.com — Non-custodial wallet (beta) that a person and their AI agents use together. Agents pair once with the prompt `Pair with my Superfluid Wallet: https://app.superfluidwallet.com/onboarding.md`, then propose transactions that the human approves in the Wallet App (https://app.superfluidwallet.com), shown via ERC-7730 clear signing and Safe/batch decoding. Keys stay in Turnkey infrastructure; agents never hold them. Also connects dApps via WalletConnect and proves the person behind an agent with x401. Networks: Ethereum, Base, Arbitrum, Arc. x402 spending controls and auto-approval policies are not live yet. Provided by Superfluid Finance Ltd, separate from the DAO-governed protocol.
 
 Repos:
 [Dashboard](https://github.com/superfluid-org/superfluid-dashboard) ·
