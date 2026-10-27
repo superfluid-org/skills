@@ -27,7 +27,8 @@ Files changed:
   one-liners, `DELETE` cancel), added "Safe / ERC-1271 signers", rewrote the fee sentence.
 - `skills/superfluid/references/contracts/ClearMacroForwarder.abi.yaml`: same fee rewording in `meta.notes`
   (comment/notes only, selector sidecars unaffected).
-- `skills/superfluid/SKILL.md`: one hedged sentence under Automation Allowlisting.
+- `skills/superfluid/SKILL.md`: an exception under Automation Allowlisting (first hedged; firmed up
+  2026-10-27 after the maintainer confirmed keepers execute these schedules).
 
 Sources verified: live `https://clearmacro-provider.superfluid.dev/docs/json` and `/v1/capabilities`
 (no `Access-Control-Allow-Origin`; `OPTIONS` returns 404); Dashboard `master` `contracts/README.md`,
