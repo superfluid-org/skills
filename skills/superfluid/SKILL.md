@@ -479,15 +479,14 @@ Superfluid token list along with its underlying token (if any).
   → opens issue in [superfluid-org/assets](https://github.com/superfluid-org/assets/issues)
 
 **Automation Allowlisting** — required for automations (vesting, flow
-scheduling, auto-wrap) to appear in the Dashboard UI and for Superfluid
-off-chain keepers to trigger the automation contracts. Without allowlisting,
+scheduling, auto-wrap; see exception below) to appear in the Dashboard UI
+and for Superfluid off-chain keepers to trigger the automation contracts. Without allowlisting,
 automations won't be executed on time and are effectively useless.
 
-On networks where the Dashboard's Clear Macro is deployed, the Dashboard lets
-EOAs schedule FlowScheduler streams through that macro without allowlisting
-(the macro fee is meant to pay for keeper execution). Not confirmed in public
-keeper docs, so allowlisting remains the documented route. Vesting and
-auto-wrap are unchanged.
+Exception: on networks where the Dashboard's Clear Macro is deployed, EOAs
+can schedule FlowScheduler streams through that macro without allowlisting;
+its relay fee pays for keeper execution. Vesting and auto-wrap still require
+allowlisting.
 
 - Request: [allowlisting form](https://airtable.com/appmq3TJDdQUrTQpx/shrWouN6ursCkOQ86)
 - Check status: `GET https://allowlist.superfluid.dev/api/allowlist/{account}/{chainId}`
