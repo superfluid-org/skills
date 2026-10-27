@@ -74,3 +74,11 @@ metadata 1.6.5):
   CFA-only sender (GDA deposit 0), GDA `isPatricianPeriod` at a timestamp just past
   insolvency returns true, matching CFA. Pre-v1.15.3 GDA logic returns false there (it used
   only the GDA buffer).
+
+Follow-up (orchestrator, 2026-10-27): the v1.15.3 selectors above were checked with
+`cast sig` against `ethereum-contracts@v1.15.3` source and added by hand to
+`Superfluid.selectors.yaml` (5-arg callbacks replace the 4-arg ones,
+`HOST_CALLBACK_CONTEXT_TOO_LARGE`) and `InstantDistributionAgreementV1.selectors.yaml`
+(`NEW_ACTIVITY_FROZEN`, `IDA_NEW_ACTIVITY_FROZEN`, `IDA_TOO_MANY_SUBSCRIPTIONS`), aligned
+as `selectors.mjs` formats them. Running `generate` with `@sfpro/sdk` 0.3.1 would drop
+them again; regenerate only once the SDK ships the v1.15.3 Host and IDA ABIs.
