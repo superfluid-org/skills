@@ -344,7 +344,7 @@ callAppBeforeCallback:
   # StaticCall a Super App's before-callback. Returns the callback data.
   # If the callback reverts during a termination, the app is jailed instead of reverting.
   notes:
-    - "Gotcha: Before and after share one CALLBACK_GAS_LIMIT stipend; pass remainingCallbackGas to the after-callback. @sfpro/sdk 0.3.1 still ships the pre-v1.15.3 4-arg ABI without these."
+    - "Gotcha: Before and after share one CALLBACK_GAS_LIMIT stipend; pass remainingCallbackGas to the after-callback. @sfpro/sdk ships this ABI from 0.3.2."
   mutability: nonpayable
   access: agreement
   inputs:

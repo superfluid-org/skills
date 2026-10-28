@@ -135,10 +135,13 @@ errors:
   IDA_INDEX_DOES_NOT_EXIST():                            0xedeaa63b
   IDA_INDEX_SHOULD_GROW():                               0xcfdca725
   IDA_INSUFFICIENT_BALANCE():                            0x16e759bb
+  IDA_INVALID_MAX_NUM_SUBSCRIPTIONS():                   0xd88c9dfa
+  IDA_NEW_ACTIVITY_FROZEN():                             0xace0382a
   IDA_OPERATION_NOT_ALLOWED():                           0x92da6d17
   IDA_SUBSCRIPTION_ALREADY_APPROVED():                   0x3eb2f849
   IDA_SUBSCRIPTION_DOES_NOT_EXIST():                     0xb6c8c980
   IDA_SUBSCRIPTION_IS_NOT_APPROVED():                    0x37412573
+  IDA_TOO_MANY_SUBSCRIPTIONS():                          0x6db410ea
   IDA_ZERO_ADDRESS_SUBSCRIBER():                         0xc90a4674
   SafeCastOverflowedIntDowncast(uint8,int256):           0x327269a7
   SafeCastOverflowedIntToUint(int256):                   0xa8ce4432

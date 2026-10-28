@@ -82,3 +82,8 @@ Follow-up (orchestrator, 2026-10-27): the v1.15.3 selectors above were checked w
 (`NEW_ACTIVITY_FROZEN`, `IDA_NEW_ACTIVITY_FROZEN`, `IDA_TOO_MANY_SUBSCRIPTIONS`), aligned
 as `selectors.mjs` formats them. Running `generate` with `@sfpro/sdk` 0.3.1 would drop
 them again; regenerate only once the SDK ships the v1.15.3 Host and IDA ABIs.
+
+Follow-up 2026-10-28: `@sfpro/sdk` 0.3.2 ships the v1.15.3 ABIs. Regenerated all sidecars with it
+(installed 0.3.2 explicitly; `bunx -p @sfpro/sdk` resolved a cached older version). It reproduces
+every hand-added selector and adds `IDA_INVALID_MAX_NUM_SUBSCRIPTIONS`, TOGA `bond`, and the current
+SafeCast errors. TOGA.abi.yaml now documents `bond` (arc-mainnet only) and the `bondAmount` output name.
