@@ -384,7 +384,7 @@ When to use each:
 - `@superfluid-finance/sdk-core` → replaced by `@sfpro/sdk`
 - `@superfluid-finance/sdk-redux` → replaced by wagmi + `@sfpro/sdk`
 - `@superfluid-finance/js-sdk` → replaced by `@sfpro/sdk`
-- `@superfluid-finance/widget` → no replacement
+- `@superfluid-finance/widget` → retired, no replacement (see https://superfluid.org/checkout-retired)
 
 For ABI import tables, address exports, detailed SDK guidance, and deprecated
 package details, see `references/guides/sdks.md`.
