@@ -7,7 +7,7 @@ description: >
   real-time balance, pool (member/distributor), IDA, sentinels, liquidation,
   TOGA, @sfpro/sdk, semantic money, yellowpaper, whitepaper, Superfluid Wallet
 metadata:
-  version: 1.2.5
+  version: 1.2.6
 ---
 
 # Superfluid Protocol Skill
