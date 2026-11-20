@@ -3,7 +3,7 @@
 .vault               export-ignore
 evals/**             export-ignore
 evals                export-ignore
-CLAUDE.md            export-ignore
+AGENTS.md            export-ignore
 CONTRIBUTING.md      export-ignore
 .claude-plugin/**    export-ignore
 .claude-plugin       export-ignore
